@@ -13,15 +13,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.GenericResponse;
+import com.referexpert.referexpert.beans.ReferUser;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
@@ -48,21 +48,21 @@ public class RegistrationController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/authtest", method = RequestMethod.GET)
+    @GetMapping(value = "/authtest")
     public ResponseEntity<GenericResponse> getAuth() {
         ResponseEntity<GenericResponse> entity = new ResponseEntity<>(new GenericResponse("Authentication working"),
                 HttpStatus.OK);
         return entity;
     }
 
-    @RequestMapping(value = "/referexpert/usertypes", method = RequestMethod.GET)
+    @GetMapping(value = "/referexpert/usertypes")
     public ResponseEntity<List<UserType>> getUserTypes() {
         List<UserType> usertypes = mySQLService.selectAllUserTypes();
         ResponseEntity<List<UserType>> entity = new ResponseEntity<>(usertypes, HttpStatus.OK);
         return entity;
     }
 
-    @RequestMapping(value = "/referexpert/usertype/{usertype}", method = RequestMethod.GET)
+    @GetMapping(value = "/referexpert/usertype/{usertype}")
     public ResponseEntity<List<UserType>> getUserTypeByUserType(@PathVariable("usertype") String usertype) {
         List<UserType> usertypes = mySQLService
                 .selectUserTypeByUserType(usertype != null ? usertype.toUpperCase() : "");
@@ -70,7 +70,7 @@ public class RegistrationController {
         return entity;
     }
 
-    @RequestMapping(value = "/referexpert/usertype/{usertype}/userspecialities", method = RequestMethod.GET)
+    @GetMapping(value = "/referexpert/usertype/{usertype}/userspecialities")
     public ResponseEntity<UserSpeciality> getUserSpecialitiesByUserType(@PathVariable("usertype") String usertype) {
         UserSpeciality userSpeciality = mySQLService
                 .selectUserSpecialityByUserType(usertype != null ? usertype.toUpperCase() : "");
@@ -78,7 +78,7 @@ public class RegistrationController {
         return entity;
     }
 
-    @RequestMapping(value = "/referexpert/registeruser", method = RequestMethod.POST)
+    @PostMapping(value = "/referexpert/registeruser")
     public ResponseEntity<GenericResponse> registerUser(@RequestBody String registration,
             @RequestParam("referralid") String referralId) {
         ObjectMapper mapper = new ObjectMapper();
@@ -122,7 +122,7 @@ public class RegistrationController {
         return entity;
     }
 
-    @RequestMapping(value = "/referexpert/confirmaccount", method = RequestMethod.GET)
+    @GetMapping(value = "/referexpert/confirmaccount")
     public ResponseEntity<GenericResponse> confirmUserAccount(@RequestParam("token") String token,
             @RequestParam("user") String email) {
         ResponseEntity<GenericResponse> entity = null;
@@ -144,11 +144,23 @@ public class RegistrationController {
         return entity;
     }
 
-    @RequestMapping(value = "/referexpert/referuser", method = RequestMethod.GET)
-    public ResponseEntity<GenericResponse> referUser(@RequestParam("useremail") String userEmail,
-            @RequestParam("docemail") String docEmail) {
+    @PostMapping(value = "/referexpert/referuser")
+    public ResponseEntity<GenericResponse> referUser(@RequestBody String referString) {
+        ObjectMapper mapper = new ObjectMapper();
         ResponseEntity<GenericResponse> entity = null;
+        ReferUser referUser= null;
+        try {
+            referUser = mapper.readValue(referString, ReferUser.class);
+        }
+        catch (Exception e) {
+            logger.error("Unable to parse the input :: " + referString);
+            logger.error("Exception as follows :: " + e);
+            entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
+        }
+        logger.info("JSON to Object Conversion :: " + referUser != null ? referUser.toString() : null);
         String criteria = " email = ?";
+        String userEmail = referUser.getUserEmail();
+        String docEmail = referUser.getDocEmail();
         if (mySQLService.selectUserProfile(userEmail, criteria)) {
             if (!docEmail.contains(",")) {
                 entity = processReferral(userEmail, docEmail);

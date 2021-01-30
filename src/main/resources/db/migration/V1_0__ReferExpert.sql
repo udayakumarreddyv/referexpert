@@ -60,7 +60,7 @@ REFERENCES user_speciality(user_speciality_id);
 
 INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,phone,fax,is_active,created_timestamp,updated_timestamp) VALUES ('manual_insert','Uday','Reddy','udayakumarreddyv@gmail.com','test*987',1,1,'1234 AND LN ATLN GA 33333','999999999','999999999','Y',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,phone,fax,is_active,created_timestamp,updated_timestamp) VALUES ('manual_insert1','Andrew','Elick','your_gmail@gmail.com','test*987',2,2,'1234 AND LN ATLN GA 33333','999999999','999999999','Y',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
-INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,phone,fax,is_active,created_timestamp,updated_timestamp) VALUES ('manual_insert2','Yuvaraj','Thakur','your_gmail@gmail.com','test*987',3,4,'1234 AND LN ATLN GA 33333','999999999','999999999','Y',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,phone,fax,is_active,created_timestamp,updated_timestamp) VALUES ('manual_insert2','Yuvaraj','Thakur','your_gmail1@gmail.com','test*987',3,4,'1234 AND LN ATLN GA 33333','999999999','999999999','Y',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 COMMIT;
 
 CREATE TABLE confirmation_token
