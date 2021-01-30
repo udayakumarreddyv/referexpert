@@ -37,6 +37,12 @@ public class Constants {
     public static String ACTIVE = "Y";
     
     public static String INACTIVE = "N";
+    
+    public static String PENDING = "P";
+    
+    public static String SERVICE = "SERVICE";
+    
+    public static String APPOINTMENT = "APPOINTMENT";
 
 }
 

@@ -45,11 +45,13 @@ public class RegistrationController {
 
     @GetMapping(value = "/health")
     public ResponseEntity health() {
+        logger.debug("I am still alive and healthy");
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping(value = "/authtest")
     public ResponseEntity<GenericResponse> getAuth() {
+        logger.debug("Hurray.. Authentication working");
         ResponseEntity<GenericResponse> entity = new ResponseEntity<>(new GenericResponse("Authentication working"),
                 HttpStatus.OK);
         return entity;

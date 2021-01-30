@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.referexpert.referexpert.beans.ConfirmationToken;
+import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
@@ -236,9 +237,89 @@ public class MySQLServiceImpl implements MySQLService {
             userRegistrations = mysqlRepository.selectActiveUsers(criteria);
         }
         catch (Exception e) {
-            logger.error("Exception while updating data into user_referral");
+            logger.error("Exception while fetching data into user_referral");
             logger.error("Exception details :: " + e);
         }
         return userRegistrations;
+    }
+
+    @Override
+    public int insertAppointment(Appointment appointment) {
+        String referFrom = null;
+        String referTo = null;
+        
+        String criteriaFrom = " email = '" + appointment.getAppointmentFrom() + "'";
+        List<UserRegistration> fromUsers = selectActiveUsers(criteriaFrom);
+        if(fromUsers != null && fromUsers.size() > 0) {
+            referFrom = fromUsers.get(0).getUserId();
+        }
+        
+        String criteriaTo = " email = '" + appointment.getAppointmentTo() + "'";
+        List<UserRegistration> toUsers = selectActiveUsers(criteriaTo);
+        if(toUsers != null && toUsers.size() > 0) {
+            referTo = toUsers.get(0).getUserId();
+        }
+        
+        int value = 0;
+        try {
+            value = mysqlRepository.insertAppointment(appointment, referFrom, referTo);
+        }
+        catch (DuplicateKeyException e) {
+            logger.error("Exception while inserting data into appointment");
+            logger.error("Exception details :: " + e);
+            return 999999;
+        }
+        catch (DataIntegrityViolationException e) {
+            logger.error("Exception while inserting data into appointment");
+            logger.error("Exception details :: " + e);
+            return 888888;
+        }
+        catch (Exception e) {
+            logger.error("Exception while inserting data into appointment");
+            logger.error("Exception details :: " + e);
+            return 0;
+        }
+        return value;
+    }
+
+    @Override
+    public int updateAppointmentAccepted(String appointmentId, String indicator) {
+        int value = 0;
+        try {
+            value = mysqlRepository.updateAppointmentAccepted(appointmentId, indicator);
+        }
+        catch (Exception e) {
+            logger.error("Exception while updating data into appointment");
+            logger.error("Exception details :: " + e);
+            return 0;
+        }
+        return value;
+    }
+
+    @Override
+    public int updateAppointmentServed(String appointmentId, String indicator) {
+        int value = 0;
+        try {
+            value = mysqlRepository.updateAppointmentServed(appointmentId, indicator);
+        }
+        catch (Exception e) {
+            logger.error("Exception while updating data into appointment");
+            logger.error("Exception details :: " + e);
+            return 0;
+        }
+        return value;
+    }
+
+    @Override
+    public List<Appointment> selectAppointments(String criteria) {
+        List<Appointment> appointments = new ArrayList<Appointment>();
+        try {
+            appointments = mysqlRepository.selectAppointments(criteria);
+        }
+        catch (Exception e) {
+            logger.error("Exception while fetching data into appointment");
+            logger.error("Exception details :: " + e);
+        }
+        return appointments;
     }
 }

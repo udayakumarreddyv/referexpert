@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,42 +25,47 @@ public class UserController {
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    Environment env;
-
-    @Autowired
     private MySQLServiceImpl mySQLService;
 
-    @GetMapping(value = "/referexpert/deactiveuser/{user}")
-    public ResponseEntity<GenericResponse> deactivateUserAccount(@PathVariable("user") String email) {
-        ResponseEntity<GenericResponse> entity = null;
-        // If present deactive user status
-        String criteria = " email = ?";
-        if (mySQLService.selectUserProfile(email, criteria)) {
-            int value = mySQLService.updateUserProfile(email, Constants.INACTIVE);
-            if (value == 0) {
-                entity = new ResponseEntity<>(new GenericResponse("Issue in updating user profile"),
-                        HttpStatus.BAD_REQUEST);
-            } else {
-                entity = new ResponseEntity<>(new GenericResponse("Deactivated Successfully"), HttpStatus.OK);
-            }
-        } else {
-            entity = new ResponseEntity<>(new GenericResponse("User doesn't exists"), HttpStatus.NOT_FOUND);
-        }
+    @PostMapping(value = "/referexpert/deactiveuser")
+    public ResponseEntity<GenericResponse> deactivateUserAccount(@RequestBody String emailString) {
+        ResponseEntity<GenericResponse> entity = updateUserStatus(emailString, Constants.INACTIVE);
         return entity;
     }
 
-    @GetMapping(value = "/referexpert/activeuser/{user}")
-    public ResponseEntity<GenericResponse> activateUserAccount(@PathVariable("user") String email) {
+    @PostMapping(value = "/referexpert/activeuser")
+    public ResponseEntity<GenericResponse> activateUserAccount(@RequestBody String emailString) {
+        ResponseEntity<GenericResponse> entity = updateUserStatus(emailString, Constants.ACTIVE);
+        return entity;
+    }
+    
+    private ResponseEntity<GenericResponse> updateUserStatus(String emailString, String status) {
+        ObjectMapper mapper = new ObjectMapper();
         ResponseEntity<GenericResponse> entity = null;
-        // If present active user status
+        UserRegistration userRegistration = null;
+        try {
+            userRegistration = mapper.readValue(emailString, UserRegistration.class);
+        }
+        catch (Exception e) {
+            logger.error("Unable to parse the input :: " + emailString);
+            logger.error("Exception as follows :: " + e);
+            entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
+        }
+        logger.info("JSON to Object Conversion :: " + userRegistration != null ? userRegistration.toString() : null);
+        // If present deactive user status
         String criteria = " email = ?";
+        String email = userRegistration.getEmail();
         if (mySQLService.selectUserProfile(email, criteria)) {
-            int value = mySQLService.updateUserProfile(email, Constants.ACTIVE);
+            int value = mySQLService.updateUserProfile(email, status);
             if (value == 0) {
                 entity = new ResponseEntity<>(new GenericResponse("Issue in updating user profile"),
                         HttpStatus.BAD_REQUEST);
             } else {
-                entity = new ResponseEntity<>(new GenericResponse("Activated Successfully"), HttpStatus.OK);
+                if(Constants.INACTIVE.equals(status)) {
+                    entity = new ResponseEntity<>(new GenericResponse("Deactivated Successfully"), HttpStatus.OK);
+                } else {
+                    entity = new ResponseEntity<>(new GenericResponse("Activated Successfully"), HttpStatus.OK);
+                }
             }
         } else {
             entity = new ResponseEntity<>(new GenericResponse("User doesn't exists"), HttpStatus.NOT_FOUND);

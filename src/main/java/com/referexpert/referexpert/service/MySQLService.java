@@ -3,6 +3,7 @@ package com.referexpert.referexpert.service;
 import java.util.List;
 
 import com.referexpert.referexpert.beans.ConfirmationToken;
+import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
@@ -36,6 +37,14 @@ public interface MySQLService {
     public boolean selectUserReferral(String userReferralId);
 
     public int updateUserReferral(String email, String indicator);
-    
+
     public List<UserRegistration> selectActiveUsers(String criteria);
+
+    public int insertAppointment(Appointment referExpert);
+
+    public int updateAppointmentAccepted(String referExpertId, String indicator);
+
+    public int updateAppointmentServed(String referExpertId, String indicator);
+    
+    public List<Appointment> selectAppointments(String criteria);
 }

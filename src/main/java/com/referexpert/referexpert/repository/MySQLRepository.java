@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.referexpert.referexpert.beans.ConfirmationToken;
+import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
@@ -197,6 +198,46 @@ public class MySQLRepository {
             return userRegistrations;
         } else {
             return new ArrayList<UserRegistration>();
+        }
+    }
+    
+    public int insertAppointment(Appointment appointment, String referFrom, String referTo) throws Exception {
+        int value = mysqlJdbcTemplate.update(QueryConstants.INSERT_APPOINTMENT,
+                new Object[] { appointment.getAppointmentId(), referFrom, referTo, appointment.getDateAndTimeString(),
+                        Constants.PENDING, Constants.INACTIVE, new Timestamp(System.currentTimeMillis()),
+                        new Timestamp(System.currentTimeMillis()) });
+        return value;
+    }
+    
+    public int updateAppointmentAccepted(String appointmentId, String indicator) throws Exception {
+        int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_APPOINTMENT_STATUS,
+                new Object[] { indicator, new Timestamp(System.currentTimeMillis()), appointmentId });
+        return value;
+    }
+    
+    public int updateAppointmentServed(String appointmentId, String indicator) throws Exception {
+        int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_SERVED_STATUS,
+                new Object[] { indicator, new Timestamp(System.currentTimeMillis()), appointmentId });
+        return value;
+    }
+    
+    public List<Appointment> selectAppointments(String criteria) throws Exception {
+        StringBuffer query = new StringBuffer(QueryConstants.SELECT_APPOINTMENT).append(criteria);
+        List<Appointment> appointments = mysqlJdbcTemplate.query(query.toString(),
+                new Object[] {  }, (rs, rowNum) -> {
+                    Appointment appointment = new Appointment();
+                    appointment.setAppointmentId(rs.getString(1));
+                    appointment.setAppointmentFrom(rs.getString(2));
+                    appointment.setAppointmentTo(rs.getString(3));
+                    appointment.setDateAndTimeString(rs.getString(4));
+                    appointment.setIsAccepted(rs.getString(5));
+                    appointment.setIsServed(rs.getString(6));
+                    return appointment;
+                });
+        if (appointments != null && appointments.size() > 0) {
+            return appointments;
+        } else {
+            return new ArrayList<Appointment>();
         }
     }
 }
