@@ -58,7 +58,7 @@ public class UserController {
         String criteria = " email = ?";
         String email = userRegistration.getEmail();
         if (mySQLService.selectUserProfile(email, criteria)) {
-            int value = mySQLService.updateUserProfile(email, status);
+            int value = mySQLService.updateUserActivation(email, status);
             if (value == 0) {
                 entity = new ResponseEntity<>(new GenericResponse("Issue in updating user profile"),
                         HttpStatus.BAD_REQUEST);

@@ -138,7 +138,7 @@ public class RegistrationController {
         // check for token present in database or not. If present active user status
         String criteria = " email = ?";
         if (mySQLService.selectConfirmationToken(token) && mySQLService.selectUserProfile(email, criteria)) {
-            int value = mySQLService.updateUserProfile(email, Constants.ACTIVE);
+            int value = mySQLService.updateUserActivation(email, Constants.ACTIVE);
             if (value == 0) {
                 entity = new ResponseEntity<>(new GenericResponse("Issue in updating user profile"),
                         HttpStatus.BAD_REQUEST);
@@ -206,4 +206,103 @@ public class RegistrationController {
         }
         return entity;
     }
+    
+    @GetMapping(value = "/referexpert/users/{email}")
+    public ResponseEntity<UserRegistration> selectUserProfile(@PathVariable("email") String email) {
+        String criteria = " email = '" + email + "'";
+        UserRegistration userRegistration =  mySQLService.selectUser(criteria);
+        userRegistration.setPassword(null);
+        return new ResponseEntity<UserRegistration>(userRegistration, HttpStatus.OK);
+    }
+    
+    @PostMapping(value = "/referexpert/userprofile")
+    public ResponseEntity<GenericResponse> updateprofile(@RequestBody String registration) {
+        ObjectMapper mapper = new ObjectMapper();
+        ResponseEntity<GenericResponse> entity = null;
+        UserRegistration userRegistration = null;
+        try {
+            userRegistration = mapper.readValue(registration, UserRegistration.class);
+        }
+        catch (Exception e) {
+            logger.error("Unable to parse the input :: " + registration);
+            logger.error("Exception as follows :: " + e);
+            entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
+        }
+        logger.info("JSON to Object Conversion :: " + userRegistration != null ? userRegistration.toString() : null);
+        int value = mySQLService.updateUserProfile(userRegistration);
+        if (value == 0) {
+            entity = new ResponseEntity<>(new GenericResponse("Issue in updating user profile"),
+                    HttpStatus.BAD_REQUEST);
+        } else {
+            entity = new ResponseEntity<>(new GenericResponse("User profile updated Successfully"), HttpStatus.OK);
+        }
+        return entity;
+    }
+ 
+    @PostMapping(value = "/referexpert/updatepassword")
+    public ResponseEntity<GenericResponse> updatePassword(@RequestBody String registration) {
+        return managePassword(registration,"update");
+    }
+    
+    @PostMapping(value = "/referexpert/resetnotification")
+    public ResponseEntity<GenericResponse> resetNotification(@RequestBody String registration) {
+        ObjectMapper mapper = new ObjectMapper();
+        UserRegistration userRegistration = null;
+        try {
+            userRegistration = mapper.readValue(registration, UserRegistration.class);
+        }
+        catch (Exception e) {
+            logger.error("Unable to parse the input :: " + registration);
+            logger.error("Exception as follows :: " + e);
+            return new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
+        }
+        logger.info("JSON to Object Conversion :: " + userRegistration != null ? userRegistration.toString() : null);
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(userRegistration.getEmail());
+        mailMessage.setSubject("Password rest request");
+        mailMessage.setFrom(env.getProperty("spring.mail.username"));
+        mailMessage.setText(
+                "Please click on below link to reset your password :: <Link to registration page of website>");
+        emailSenderService.sendEmail(mailMessage);
+        return new ResponseEntity<>(new GenericResponse("Email sent successful"), HttpStatus.OK);
+    }
+    
+    @PostMapping(value = "/referexpert/resetpassword")
+    public ResponseEntity<GenericResponse> resetPassword(@RequestBody String registration) {
+       return managePassword(registration,"reset");
+    }
+
+    private ResponseEntity<GenericResponse> managePassword(String registration, String action) {
+        ObjectMapper mapper = new ObjectMapper();
+        ResponseEntity<GenericResponse> entity = null;
+        UserRegistration userRegistration = null;
+        try {
+            userRegistration = mapper.readValue(registration, UserRegistration.class);
+        }
+        catch (Exception e) {
+            logger.error("Unable to parse the input :: " + registration);
+            logger.error("Exception as follows :: " + e);
+            entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
+        }
+        logger.info("JSON to Object Conversion :: " + userRegistration != null ? userRegistration.toString() : null);
+        int value = mySQLService.updateUserPassword(userRegistration.getEmail(), bcryptEncoder.encode(userRegistration.getPassword()));
+        if (value == 0) {
+            entity = new ResponseEntity<>(new GenericResponse("Issue in updating user profile"),
+                    HttpStatus.BAD_REQUEST);
+        } else {
+            if("reset".equals(action)) {
+                SimpleMailMessage mailMessage = new SimpleMailMessage();
+                mailMessage.setTo(userRegistration.getEmail());
+                mailMessage.setSubject("Password rest successful");
+                mailMessage.setFrom(env.getProperty("spring.mail.username"));
+                mailMessage.setText(
+                        "Your pasword reset succesful, please login here <link to login page> with your new password");
+                emailSenderService.sendEmail(mailMessage);                
+            }
+            entity = new ResponseEntity<>(new GenericResponse("Password updated Successfully"), HttpStatus.OK);
+        }
+        return entity;
+    }
+    
+    
 }

@@ -28,7 +28,11 @@ public interface MySQLService {
 
     public boolean selectConfirmationToken(String token);
 
-    public int updateUserProfile(String email, String indicator);
+    public int updateUserActivation(String email, String indicator);
+    
+    public int updateUserPassword(String email, String password);
+    
+    public int updateUserProfile(UserRegistration userRegistration);
 
     public int deleteConfirmationToken(String token);
 

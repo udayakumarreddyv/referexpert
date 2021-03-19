@@ -118,11 +118,9 @@ public class MySQLRepository {
 
     public boolean selectUserProfile(String email, String criteria) throws Exception {
         StringBuffer query = new StringBuffer(QueryConstants.SELECT_USER_PROFILE).append(criteria);
-     
-        List<String> users = mysqlJdbcTemplate.query(query.toString(), new Object[] { email },
-                (rs, rowNum) -> {
-                    return rs.getString(1);
-                });
+        List<String> users = mysqlJdbcTemplate.query(query.toString(), new Object[] { email }, (rs, rowNum) -> {
+            return rs.getString(1);
+        });
         if (users != null && users.size() > 0) {
             return true;
         } else {
@@ -142,9 +140,25 @@ public class MySQLRepository {
         }
     }
 
-    public int updateUserProfile(String email, String indicator) throws Exception {
-        int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_USER_PROFILE,
+    public int updateUserActivation(String email, String indicator) throws Exception {
+        int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_USER_ACTIVATION,
                 new Object[] { indicator, new Timestamp(System.currentTimeMillis()), email });
+        return value;
+    }
+
+    public int updateUserPassword(String email, String password) throws Exception {
+        int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_USER_PASSWORD,
+                new Object[] { password, new Timestamp(System.currentTimeMillis()), email });
+        return value;
+    }
+
+    public int updateUserProfile(UserRegistration userRegistration, Integer userTypeId, Integer userSpecialityId)
+            throws Exception {
+        int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_USER_PROFILE,
+                new Object[] { userRegistration.getFirstName(), userRegistration.getLastName(), userTypeId,
+                        userSpecialityId, userRegistration.getAddress(), userRegistration.getPhone(),
+                        userRegistration.getFax(), new Timestamp(System.currentTimeMillis()),
+                        userRegistration.getEmail() });
         return value;
     }
 
@@ -178,11 +192,11 @@ public class MySQLRepository {
                 new Object[] { indicator, new Timestamp(System.currentTimeMillis()), email });
         return value;
     }
-    
+
     public List<UserRegistration> selectActiveUsers(String criteria) throws Exception {
         StringBuffer query = new StringBuffer(QueryConstants.SELECT_ACTIVE_USER).append(criteria);
-        List<UserRegistration> userRegistrations = mysqlJdbcTemplate.query(query.toString(),
-                new Object[] {  }, (rs, rowNum) -> {
+        List<UserRegistration> userRegistrations = mysqlJdbcTemplate.query(query.toString(), new Object[] {},
+                (rs, rowNum) -> {
                     UserRegistration userRegistration = populateUser(rs);
                     return userRegistration;
                 });
@@ -192,11 +206,11 @@ public class MySQLRepository {
             return new ArrayList<UserRegistration>();
         }
     }
-    
+
     public UserRegistration selectUser(String criteria) throws Exception {
         StringBuffer query = new StringBuffer(QueryConstants.SELECT_ACTIVE_USER).append(criteria);
-        List<UserRegistration> userRegistrations = mysqlJdbcTemplate.query(query.toString(),
-                new Object[] {  }, (rs, rowNum) -> {
+        List<UserRegistration> userRegistrations = mysqlJdbcTemplate.query(query.toString(), new Object[] {},
+                (rs, rowNum) -> {
                     UserRegistration userRegistration = populateUser(rs);
                     return userRegistration;
                 });
@@ -222,7 +236,7 @@ public class MySQLRepository {
         userRegistration.setPassword(rs.getString(11));
         return userRegistration;
     }
-  
+
     public int insertAppointment(Appointment appointment, String referFrom, String referTo) throws Exception {
         int value = mysqlJdbcTemplate.update(QueryConstants.INSERT_APPOINTMENT,
                 new Object[] { appointment.getAppointmentId(), referFrom, referTo, appointment.getDateAndTimeString(),
@@ -230,32 +244,31 @@ public class MySQLRepository {
                         new Timestamp(System.currentTimeMillis()) });
         return value;
     }
-    
+
     public int updateAppointmentAccepted(String appointmentId, String indicator) throws Exception {
         int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_APPOINTMENT_STATUS,
                 new Object[] { indicator, new Timestamp(System.currentTimeMillis()), appointmentId });
         return value;
     }
-    
+
     public int updateAppointmentServed(String appointmentId, String indicator) throws Exception {
         int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_SERVED_STATUS,
                 new Object[] { indicator, new Timestamp(System.currentTimeMillis()), appointmentId });
         return value;
     }
-    
+
     public List<Appointment> selectAppointments(String criteria) throws Exception {
         StringBuffer query = new StringBuffer(QueryConstants.SELECT_APPOINTMENT).append(criteria);
-        List<Appointment> appointments = mysqlJdbcTemplate.query(query.toString(),
-                new Object[] {  }, (rs, rowNum) -> {
-                    Appointment appointment = new Appointment();
-                    appointment.setAppointmentId(rs.getString(1));
-                    appointment.setAppointmentFrom(rs.getString(2));
-                    appointment.setAppointmentTo(rs.getString(3));
-                    appointment.setDateAndTimeString(rs.getString(4));
-                    appointment.setIsAccepted(rs.getString(5));
-                    appointment.setIsServed(rs.getString(6));
-                    return appointment;
-                });
+        List<Appointment> appointments = mysqlJdbcTemplate.query(query.toString(), new Object[] {}, (rs, rowNum) -> {
+            Appointment appointment = new Appointment();
+            appointment.setAppointmentId(rs.getString(1));
+            appointment.setAppointmentFrom(rs.getString(2));
+            appointment.setAppointmentTo(rs.getString(3));
+            appointment.setDateAndTimeString(rs.getString(4));
+            appointment.setIsAccepted(rs.getString(5));
+            appointment.setIsServed(rs.getString(6));
+            return appointment;
+        });
         if (appointments != null && appointments.size() > 0) {
             return appointments;
         } else {

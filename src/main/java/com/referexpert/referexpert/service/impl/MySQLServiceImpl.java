@@ -161,13 +161,41 @@ public class MySQLServiceImpl implements MySQLService {
     }
 
     @Override
-    public int updateUserProfile(String email, String indicator) {
+    public int updateUserActivation(String email, String indicator) {
         int value = 0;
         try {
-            value = mysqlRepository.updateUserProfile(email, indicator);
+            value = mysqlRepository.updateUserActivation(email, indicator);
         }
         catch (Exception e) {
-            logger.error("Exception while updating data into user_profile");
+            logger.error("Exception while updating active indicator into user_profile");
+            logger.error("Exception details :: " + e);
+            return 0;
+        }
+        return value;
+    }
+
+    public int updateUserPassword(String email, String password) {
+        int value = 0;
+        try {
+            value = mysqlRepository.updateUserPassword(email, password);
+        }
+        catch (Exception e) {
+            logger.error("Exception while updating password into user_profile");
+            logger.error("Exception details :: " + e);
+            return 0;
+        }
+        return value;
+    }
+
+    public int updateUserProfile(UserRegistration userRegistration) {
+        int value = 0;
+        Integer userTypeId = selectUserTypeById(userRegistration.getUserType());
+        Integer userSpecialityId = selectUserSpecialityById(userTypeId, userRegistration.getUserSpeciality());
+        try {
+            value = mysqlRepository.updateUserProfile(userRegistration, userTypeId, userSpecialityId);
+        }
+        catch (Exception e) {
+            logger.error("Exception while updating profile into user_profile");
             logger.error("Exception details :: " + e);
             return 0;
         }
@@ -192,7 +220,7 @@ public class MySQLServiceImpl implements MySQLService {
     public int insertUserReferral(String referralId, String userEmail, String docEmail, String isRegistered) {
         int value = 0;
         try {
-            value = mysqlRepository.insertUserReferral(referralId,userEmail, docEmail, isRegistered);
+            value = mysqlRepository.insertUserReferral(referralId, userEmail, docEmail, isRegistered);
         }
         catch (Exception e) {
             logger.error("Exception while inserting data into user_referral");
@@ -245,19 +273,16 @@ public class MySQLServiceImpl implements MySQLService {
     public int insertAppointment(Appointment appointment) {
         String referFrom = null;
         String referTo = null;
-        
         String criteriaFrom = " email = '" + appointment.getAppointmentFrom() + "'";
         List<UserRegistration> fromUsers = selectActiveUsers(criteriaFrom);
-        if(fromUsers != null && fromUsers.size() > 0) {
+        if (fromUsers != null && fromUsers.size() > 0) {
             referFrom = fromUsers.get(0).getUserId();
         }
-        
         String criteriaTo = " email = '" + appointment.getAppointmentTo() + "'";
         List<UserRegistration> toUsers = selectActiveUsers(criteriaTo);
-        if(toUsers != null && toUsers.size() > 0) {
+        if (toUsers != null && toUsers.size() > 0) {
             referTo = toUsers.get(0).getUserId();
         }
-        
         int value = 0;
         try {
             value = mysqlRepository.insertAppointment(appointment, referFrom, referTo);
@@ -320,7 +345,7 @@ public class MySQLServiceImpl implements MySQLService {
         }
         return appointments;
     }
-    
+
     @Override
     public UserRegistration selectUser(String criteria) {
         UserRegistration userRegistration = new UserRegistration();
@@ -333,7 +358,7 @@ public class MySQLServiceImpl implements MySQLService {
         }
         return userRegistration;
     }
-    
+
     @Override
     public UserRegistration save(UserRegistration userRegistration) {
         try {

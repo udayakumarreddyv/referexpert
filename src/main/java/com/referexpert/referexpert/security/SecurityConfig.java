@@ -53,7 +53,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf().disable().authorizeRequests()
                 .antMatchers("/authenticate", "/register", "/referexpert/referuser", "/health",
                         "/referexpert/usertype*", "/referexpert/confirmaccount", "/referexpert/usertype/**",
-                        "/referexpert/registeruser", "/referexpert/validateuser")
+                        "/referexpert/registeruser", "/referexpert/validateuser", "/referexpert/resetpassword",
+                        "/referexpert/resetnotification")
                 .permitAll().anyRequest().authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
