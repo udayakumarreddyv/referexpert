@@ -45,7 +45,7 @@ public class QueryConstants {
     public static String UPDATE_USER_REFERRAL = "update user_referral set is_registered = ?, updated_timestamp = ? where doc_email = ?";
     
     public static String SELECT_ACTIVE_USER = "select up.user_id, up.first_name, up.last_name, up.email, ut.user_type, us.user_speciality, up.address, "
-            + "up.phone, up.fax, up.is_active from user_profile up, user_type ut, user_speciality us where up.user_type_id = ut.user_type_id "
+            + "up.phone, up.fax, up.is_active, up.password from user_profile up, user_type ut, user_speciality us where up.user_type_id = ut.user_type_id "
             + "and up.user_speciality_id = us.user_speciality_id and up.is_active = 'Y' and ";
     
     public static String INSERT_APPOINTMENT = "insert into appointment (appointment_id, appointment_from, appointment_to, date_time, is_accepted, is_served, "

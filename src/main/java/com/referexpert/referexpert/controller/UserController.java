@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import com.referexpert.referexpert.constant.Constants;
 import com.referexpert.referexpert.service.impl.MySQLServiceImpl;
 
 @RestController
+@CrossOrigin()
 public class UserController {
     
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -72,33 +74,7 @@ public class UserController {
         }
         return entity;
     }
-    
-    @PostMapping(value = "/referexpert/validateuser")
-    public ResponseEntity<GenericResponse> validateUser(@RequestBody String credentials) {
-        ObjectMapper mapper = new ObjectMapper();
-        ResponseEntity<GenericResponse> entity = null;
-        UserRegistration userRegistration = null;
-        try {
-            userRegistration = mapper.readValue(credentials, UserRegistration.class);
-        }
-        catch (Exception e) {
-            logger.error("Unable to parse the input :: " + credentials);
-            logger.error("Exception as follows :: " + e);
-            entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
-        }
-        logger.info("JSON to Object Conversion :: " + userRegistration != null ? userRegistration.toString() : null);
-        String userEmail = userRegistration.getEmail();
-        String password = userRegistration.getPassword();
-        String criteria = " email = '" + userEmail + "' and password = '" + password + "'";
-        List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
-        if (users != null && users.size() > 0) {
-            entity = new ResponseEntity<>(new GenericResponse("User Exists"), HttpStatus.OK);
-        } else {
-            entity = new ResponseEntity<>(new GenericResponse("Invalid Username/Password"), HttpStatus.NOT_FOUND);
-        }
-        return entity;
-    }
-    
+      
     @GetMapping(value = "/referexpert/users/firstname/{firstname}")
     public ResponseEntity<List<UserRegistration>> selectUsersByFirstName(@PathVariable("firstname") String firstName) {
         String criteria = " first_name like '%" + firstName + "%'";

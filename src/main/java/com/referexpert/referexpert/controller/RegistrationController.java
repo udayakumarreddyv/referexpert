@@ -11,6 +11,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +32,7 @@ import com.referexpert.referexpert.service.EmailSenderService;
 import com.referexpert.referexpert.service.impl.MySQLServiceImpl;
 
 @RestController
+@CrossOrigin()
 public class RegistrationController {
 
     private final static Logger logger = LoggerFactory.getLogger(RegistrationController.class);
@@ -42,6 +45,9 @@ public class RegistrationController {
 
     @Autowired
     private EmailSenderService emailSenderService;
+    
+    @Autowired
+    private PasswordEncoder bcryptEncoder;
 
     @GetMapping(value = "/health")
     public ResponseEntity health() {
@@ -79,7 +85,7 @@ public class RegistrationController {
         ResponseEntity<UserSpeciality> entity = new ResponseEntity<>(userSpeciality, HttpStatus.OK);
         return entity;
     }
-
+    
     @PostMapping(value = "/referexpert/registeruser")
     public ResponseEntity<GenericResponse> registerUser(@RequestBody String registration,
             @RequestParam("referralid") String referralId) {
@@ -97,6 +103,7 @@ public class RegistrationController {
         logger.info("JSON to Object Conversion :: " + userRegistration != null ? userRegistration.toString() : null);
         if (mySQLService.selectUserReferral(referralId)) {
             userRegistration.setUserId(UUID.randomUUID().toString());
+            userRegistration.setPassword(bcryptEncoder.encode(userRegistration.getPassword()));
             int value = mySQLService.insertUserProfile(userRegistration);
             if (value == 999999) {
                 entity = new ResponseEntity<>(new GenericResponse("User Already Exists"), HttpStatus.BAD_REQUEST);

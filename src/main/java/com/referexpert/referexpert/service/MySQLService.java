@@ -47,4 +47,8 @@ public interface MySQLService {
     public int updateAppointmentServed(String referExpertId, String indicator);
     
     public List<Appointment> selectAppointments(String criteria);
+    
+    public UserRegistration selectUser(String criteria);
+    
+    public UserRegistration save(UserRegistration userRegistration);
 }

@@ -1,5 +1,7 @@
 package com.referexpert.referexpert.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -181,17 +183,7 @@ public class MySQLRepository {
         StringBuffer query = new StringBuffer(QueryConstants.SELECT_ACTIVE_USER).append(criteria);
         List<UserRegistration> userRegistrations = mysqlJdbcTemplate.query(query.toString(),
                 new Object[] {  }, (rs, rowNum) -> {
-                    UserRegistration userRegistration = new UserRegistration();
-                    userRegistration.setUserId(rs.getString(1));
-                    userRegistration.setFirstName(rs.getString(2));
-                    userRegistration.setLastName(rs.getString(3));
-                    userRegistration.setEmail(rs.getString(4));
-                    userRegistration.setUserType(rs.getString(5));
-                    userRegistration.setUserSpeciality(rs.getString(6));
-                    userRegistration.setAddress(rs.getString(7));
-                    userRegistration.setPhone(rs.getString(8));
-                    userRegistration.setFax(rs.getString(9));
-                    userRegistration.setIsActive(rs.getString(10));
+                    UserRegistration userRegistration = populateUser(rs);
                     return userRegistration;
                 });
         if (userRegistrations != null && userRegistrations.size() > 0) {
@@ -201,6 +193,36 @@ public class MySQLRepository {
         }
     }
     
+    public UserRegistration selectUser(String criteria) throws Exception {
+        StringBuffer query = new StringBuffer(QueryConstants.SELECT_ACTIVE_USER).append(criteria);
+        List<UserRegistration> userRegistrations = mysqlJdbcTemplate.query(query.toString(),
+                new Object[] {  }, (rs, rowNum) -> {
+                    UserRegistration userRegistration = populateUser(rs);
+                    return userRegistration;
+                });
+        if (userRegistrations != null && userRegistrations.size() > 0) {
+            return userRegistrations.get(0);
+        } else {
+            return new UserRegistration();
+        }
+    }
+
+    private UserRegistration populateUser(ResultSet rs) throws SQLException {
+        UserRegistration userRegistration = new UserRegistration();
+        userRegistration.setUserId(rs.getString(1));
+        userRegistration.setFirstName(rs.getString(2));
+        userRegistration.setLastName(rs.getString(3));
+        userRegistration.setEmail(rs.getString(4));
+        userRegistration.setUserType(rs.getString(5));
+        userRegistration.setUserSpeciality(rs.getString(6));
+        userRegistration.setAddress(rs.getString(7));
+        userRegistration.setPhone(rs.getString(8));
+        userRegistration.setFax(rs.getString(9));
+        userRegistration.setIsActive(rs.getString(10));
+        userRegistration.setPassword(rs.getString(11));
+        return userRegistration;
+    }
+  
     public int insertAppointment(Appointment appointment, String referFrom, String referTo) throws Exception {
         int value = mysqlJdbcTemplate.update(QueryConstants.INSERT_APPOINTMENT,
                 new Object[] { appointment.getAppointmentId(), referFrom, referTo, appointment.getDateAndTimeString(),

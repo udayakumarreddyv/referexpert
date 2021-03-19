@@ -9,10 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.Appointment;
+import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
@@ -20,7 +19,6 @@ import com.referexpert.referexpert.repository.MySQLRepository;
 import com.referexpert.referexpert.service.MySQLService;
 
 @Service("mysqlService")
-@Transactional
 public class MySQLServiceImpl implements MySQLService {
 
     private static final Logger logger = LoggerFactory.getLogger(MySQLServiceImpl.class);
@@ -321,5 +319,30 @@ public class MySQLServiceImpl implements MySQLService {
             logger.error("Exception details :: " + e);
         }
         return appointments;
+    }
+    
+    @Override
+    public UserRegistration selectUser(String criteria) {
+        UserRegistration userRegistration = new UserRegistration();
+        try {
+            userRegistration = mysqlRepository.selectUser(criteria);
+        }
+        catch (Exception e) {
+            logger.error("Exception while fetching data from User profile");
+            logger.error("Exception details :: " + e);
+        }
+        return userRegistration;
+    }
+    
+    @Override
+    public UserRegistration save(UserRegistration userRegistration) {
+        try {
+            insertUserProfile(userRegistration);
+        }
+        catch (Exception e) {
+            logger.error("Exception while fetching data from User profile");
+            logger.error("Exception details :: " + e);
+        }
+        return userRegistration;
     }
 }
