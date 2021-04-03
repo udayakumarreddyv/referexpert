@@ -11,6 +11,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -209,9 +211,22 @@ public class RegistrationController {
     
     @GetMapping(value = "/referexpert/users/{email}")
     public ResponseEntity<UserRegistration> selectUserProfile(@PathVariable("email") String email) {
+        UserRegistration userRegistration = getUserDetails(email);
+        return new ResponseEntity<UserRegistration>(userRegistration, HttpStatus.OK);
+    }
+
+    private UserRegistration getUserDetails(String email) {
         String criteria = " email = '" + email + "'";
         UserRegistration userRegistration =  mySQLService.selectUser(criteria);
         userRegistration.setPassword(null);
+        return userRegistration;
+    }
+    
+    @GetMapping(value = "/referexpert/userdetails")
+    public ResponseEntity<UserRegistration> selectUserDetails() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        UserRegistration userRegistration = getUserDetails(userDetails.getUsername());
         return new ResponseEntity<UserRegistration>(userRegistration, HttpStatus.OK);
     }
     
