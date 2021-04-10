@@ -89,6 +89,26 @@ public class UserController {
         return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
     }
     
+    @GetMapping(value = "/referexpert/users/city/{city}")
+    public ResponseEntity<List<UserRegistration>> selectUsersByCity(@PathVariable("city") String city) {
+        String criteria = " city like '%" + city + "%'";
+        List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
+        return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
+    }
+    
+    @GetMapping(value = "/referexpert/users/state/{state}")
+    public ResponseEntity<List<UserRegistration>> selectUsersByState(@PathVariable("state") String state) {
+        String criteria = " state like '%" + state + "%'";
+        List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
+        return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
+    }
+    
+    @GetMapping(value = "/referexpert/users/zip/{zip}")
+    public ResponseEntity<List<UserRegistration>> selectUsersByZip(@PathVariable("zip") String zip) {
+        String criteria = " zip = '" + zip + "'";
+        List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
+        return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
+    }
     
     @GetMapping(value = "/referexpert/users/type/{type}")
     public ResponseEntity<List<UserRegistration>> selectUsersByType(@PathVariable("type") String type) {
