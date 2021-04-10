@@ -11,9 +11,21 @@ public class Appointment {
 
     private String appointmentFrom;
 
+    private String fromFirstName;
+
+    private String fromLastName;
+
     private String appointmentTo;
 
+    private String toFirstName;
+
+    private String toLastName;
+
     private String dateAndTimeString;
+
+    private String subject;
+
+    private String reason;
 
     private String isAccepted;
 
@@ -67,10 +79,60 @@ public class Appointment {
         this.isServed = isServed;
     }
 
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public String getFromFirstName() {
+        return fromFirstName;
+    }
+
+    public void setFromFirstName(String fromFirstName) {
+        this.fromFirstName = fromFirstName;
+    }
+
+    public String getFromLastName() {
+        return fromLastName;
+    }
+
+    public void setFromLastName(String fromLastName) {
+        this.fromLastName = fromLastName;
+    }
+
+    public String getToFirstName() {
+        return toFirstName;
+    }
+
+    public void setToFirstName(String toFirstName) {
+        this.toFirstName = toFirstName;
+    }
+
+    public String getToLastName() {
+        return toLastName;
+    }
+
+    public void setToLastName(String toLastName) {
+        this.toLastName = toLastName;
+    }
+
     @Override
     public String toString() {
         return "Appointment [appointmentId=" + appointmentId + ", appointmentFrom=" + appointmentFrom
-                + ", appointmentTo=" + appointmentTo + ", dateAndTimeString=" + dateAndTimeString + ", isAccepted="
-                + isAccepted + ", isServed=" + isServed + "]";
+                + ", fromFirstName=" + fromFirstName + ", fromLastName=" + fromLastName + ", appointmentTo="
+                + appointmentTo + ", toFirstName=" + toFirstName + ", toLastName=" + toLastName + ", dateAndTimeString="
+                + dateAndTimeString + ", subject=" + subject + ", reason=" + reason + ", isAccepted=" + isAccepted
+                + ", isServed=" + isServed + "]";
     }
 }

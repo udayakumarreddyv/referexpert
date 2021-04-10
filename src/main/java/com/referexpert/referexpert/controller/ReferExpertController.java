@@ -59,6 +59,8 @@ public class ReferExpertController {
             entity = new ResponseEntity<>(new GenericResponse("User Already Exists"), HttpStatus.BAD_REQUEST);
         } else if (value == 888888) {
             entity = new ResponseEntity<>(new GenericResponse("Reference Data Incorrect"), HttpStatus.BAD_REQUEST);
+        } else if (value == 0) {
+            entity = new ResponseEntity<>(new GenericResponse("Issue in request appointment"), HttpStatus.BAD_REQUEST);
         } else {
             sendNotification(appointment.getAppointmentTo());
             entity = new ResponseEntity<>(new GenericResponse("Appointment Request Successful"), HttpStatus.OK);

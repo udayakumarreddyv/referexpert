@@ -4,6 +4,8 @@ CREATE TABLE appointment
    appointment_from varchar(255) NOT NULL,
    appointment_to varchar(255) NOT NULL,
    date_time varchar(100),
+   subject varchar(100),
+   reason varchar(500),
    is_accepted varchar(1),
    is_served varchar(1),
    created_timestamp timestamp,

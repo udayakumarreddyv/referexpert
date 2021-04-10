@@ -103,7 +103,8 @@ public class MySQLRepository {
         int value = mysqlJdbcTemplate.update(QueryConstants.INSERT_USER_PROFILE,
                 new Object[] { userRegistration.getUserId(), userRegistration.getFirstName(),
                         userRegistration.getLastName(), userRegistration.getEmail(), userRegistration.getPassword(),
-                        userTypeId, userSpecialityId, userRegistration.getAddress(), userRegistration.getPhone(),
+                        userTypeId, userSpecialityId, userRegistration.getAddress(), userRegistration.getCity(),
+                        userRegistration.getState(), userRegistration.getZip(), userRegistration.getPhone(),
                         userRegistration.getFax(), Constants.INACTIVE, new Timestamp(System.currentTimeMillis()),
                         new Timestamp(System.currentTimeMillis()) });
         return value;
@@ -156,7 +157,8 @@ public class MySQLRepository {
             throws Exception {
         int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_USER_PROFILE,
                 new Object[] { userRegistration.getFirstName(), userRegistration.getLastName(), userTypeId,
-                        userSpecialityId, userRegistration.getAddress(), userRegistration.getPhone(),
+                        userSpecialityId, userRegistration.getAddress(), userRegistration.getCity(),
+                        userRegistration.getState(), userRegistration.getZip(), userRegistration.getPhone(),
                         userRegistration.getFax(), new Timestamp(System.currentTimeMillis()),
                         userRegistration.getEmail() });
         return value;
@@ -222,26 +224,30 @@ public class MySQLRepository {
     }
 
     private UserRegistration populateUser(ResultSet rs) throws SQLException {
+        int i = 0;
         UserRegistration userRegistration = new UserRegistration();
-        userRegistration.setUserId(rs.getString(1));
-        userRegistration.setFirstName(rs.getString(2));
-        userRegistration.setLastName(rs.getString(3));
-        userRegistration.setEmail(rs.getString(4));
-        userRegistration.setUserType(rs.getString(5));
-        userRegistration.setUserSpeciality(rs.getString(6));
-        userRegistration.setAddress(rs.getString(7));
-        userRegistration.setPhone(rs.getString(8));
-        userRegistration.setFax(rs.getString(9));
-        userRegistration.setIsActive(rs.getString(10));
-        userRegistration.setPassword(rs.getString(11));
+        userRegistration.setUserId(rs.getString(++i));
+        userRegistration.setFirstName(rs.getString(++i));
+        userRegistration.setLastName(rs.getString(++i));
+        userRegistration.setEmail(rs.getString(++i));
+        userRegistration.setUserType(rs.getString(++i));
+        userRegistration.setUserSpeciality(rs.getString(++i));
+        userRegistration.setAddress(rs.getString(++i));
+        userRegistration.setCity(rs.getString(++i));
+        userRegistration.setState(rs.getString(++i));
+        userRegistration.setZip(rs.getString(++i));
+        userRegistration.setPhone(rs.getString(++i));
+        userRegistration.setFax(rs.getString(++i));
+        userRegistration.setIsActive(rs.getString(++i));
+        userRegistration.setPassword(rs.getString(++i));
         return userRegistration;
     }
 
     public int insertAppointment(Appointment appointment, String referFrom, String referTo) throws Exception {
         int value = mysqlJdbcTemplate.update(QueryConstants.INSERT_APPOINTMENT,
                 new Object[] { appointment.getAppointmentId(), referFrom, referTo, appointment.getDateAndTimeString(),
-                        Constants.PENDING, Constants.INACTIVE, new Timestamp(System.currentTimeMillis()),
-                        new Timestamp(System.currentTimeMillis()) });
+                        appointment.getSubject(), appointment.getReason(), Constants.PENDING, Constants.INACTIVE,
+                        new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()) });
         return value;
     }
 
@@ -260,13 +266,20 @@ public class MySQLRepository {
     public List<Appointment> selectAppointments(String criteria) throws Exception {
         StringBuffer query = new StringBuffer(QueryConstants.SELECT_APPOINTMENT).append(criteria);
         List<Appointment> appointments = mysqlJdbcTemplate.query(query.toString(), new Object[] {}, (rs, rowNum) -> {
+            int i = 0;
             Appointment appointment = new Appointment();
-            appointment.setAppointmentId(rs.getString(1));
-            appointment.setAppointmentFrom(rs.getString(2));
-            appointment.setAppointmentTo(rs.getString(3));
-            appointment.setDateAndTimeString(rs.getString(4));
-            appointment.setIsAccepted(rs.getString(5));
-            appointment.setIsServed(rs.getString(6));
+            appointment.setAppointmentId(rs.getString(++i));
+            appointment.setAppointmentFrom(rs.getString(++i));
+            appointment.setFromFirstName(rs.getString(++i));
+            appointment.setFromLastName(rs.getString(++i));
+            appointment.setAppointmentTo(rs.getString(++i));
+            appointment.setToFirstName(rs.getString(++i));
+            appointment.setToLastName(rs.getString(++i));
+            appointment.setDateAndTimeString(rs.getString(++i));
+            appointment.setIsAccepted(rs.getString(++i));
+            appointment.setIsServed(rs.getString(++i));
+            appointment.setSubject(rs.getString(++i));
+            appointment.setReason(rs.getString(++i));
             return appointment;
         });
         if (appointments != null && appointments.size() > 0) {

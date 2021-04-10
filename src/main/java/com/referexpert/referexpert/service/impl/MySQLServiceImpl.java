@@ -261,6 +261,7 @@ public class MySQLServiceImpl implements MySQLService {
         List<UserRegistration> userRegistrations = new ArrayList<UserRegistration>();
         try {
             userRegistrations = mysqlRepository.selectActiveUsers(criteria);
+            userRegistrations.parallelStream().forEach(x -> x.setPassword(null));
         }
         catch (Exception e) {
             logger.error("Exception while fetching data into user_referral");

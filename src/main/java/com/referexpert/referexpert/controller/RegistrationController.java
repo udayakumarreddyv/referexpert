@@ -111,6 +111,8 @@ public class RegistrationController {
                 entity = new ResponseEntity<>(new GenericResponse("User Already Exists"), HttpStatus.BAD_REQUEST);
             } else if (value == 888888) {
                 entity = new ResponseEntity<>(new GenericResponse("Reference Data Incorrect"), HttpStatus.BAD_REQUEST);
+            } else if (value == 0) {
+                entity = new ResponseEntity<>(new GenericResponse("Issue in Registration"), HttpStatus.BAD_REQUEST);
             } else {
                 // Store confirmation in table and send email
                 ConfirmationToken confirmationToken = new ConfirmationToken(userRegistration);

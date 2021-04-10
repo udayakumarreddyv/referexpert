@@ -23,6 +23,12 @@ public class UserRegistration {
 
     private String address;
 
+    private String city;
+
+    private String state;
+
+    private String zip;
+
     private String phone;
 
     private String fax;
@@ -117,10 +123,35 @@ public class UserRegistration {
         this.isActive = isActive;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
+
     @Override
     public String toString() {
         return "UserRegistration [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
                 + email + ", password=" + password + ", userType=" + userType + ", userSpeciality=" + userSpeciality
-                + ", address=" + address + ", phone=" + phone + ", fax=" + fax + ", isActive=" + isActive + "]";
+                + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip + ", phone=" + phone
+                + ", fax=" + fax + ", isActive=" + isActive + "]";
     }
 }
