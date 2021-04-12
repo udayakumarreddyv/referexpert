@@ -2,6 +2,7 @@ package com.referexpert.referexpert.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
 import com.referexpert.referexpert.repository.MySQLRepository;
 import com.referexpert.referexpert.service.MySQLService;
+import com.referexpert.referexpert.util.DistanceCalculator;
 
 @Service("mysqlService")
 public class MySQLServiceImpl implements MySQLService {
@@ -268,6 +270,46 @@ public class MySQLServiceImpl implements MySQLService {
             logger.error("Exception details :: " + e);
         }
         return userRegistrations;
+    }
+    
+    @Override
+    public List<UserRegistration> selectActiveUsersByDistance(String criteria, int distance, String email) {
+        UserRegistration userRegistration = selectUser(" email = '" + email + "'");
+        List<UserRegistration> userRegistrations = new ArrayList<UserRegistration>();
+        try {
+            userRegistrations = getUserRegistrations(criteria, distance, userRegistration.getLattitude(),
+                    userRegistration.getLongitude());
+        }
+        catch (Exception e) {
+            logger.error("Exception while fetching data into user_referral");
+            logger.error("Exception details :: " + e);
+        }
+        return userRegistrations;
+    }
+    
+    @Override
+    public List<UserRegistration> selectActiveUsersByCoordinates(String criteria, Double lattitude, Double longitude,
+            int distance) {
+        List<UserRegistration> userRegistrations = new ArrayList<UserRegistration>();
+        try {
+            userRegistrations = getUserRegistrations(criteria, distance, lattitude, longitude);
+        }
+        catch (Exception e) {
+            logger.error("Exception while fetching data into user_referral");
+            logger.error("Exception details :: " + e);
+        }
+        return userRegistrations;
+    }
+
+    private List<UserRegistration> getUserRegistrations(String criteria, int distance, Double lattitude,
+            Double longitude) throws Exception {
+        List<UserRegistration> userRegistrations = mysqlRepository.selectActiveUsers(criteria);
+        userRegistrations.parallelStream().forEach(x -> x.setPassword(null));
+        List<UserRegistration> finalList = userRegistrations.parallelStream()
+                .filter(p -> DistanceCalculator.isDistanceInRange(lattitude, longitude, p.getLattitude(),
+                        p.getLongitude(), distance))
+                .collect(Collectors.toCollection(() -> new ArrayList<UserRegistration>()));
+        return finalList;
     }
 
     @Override

@@ -105,7 +105,8 @@ public class MySQLRepository {
                         userRegistration.getLastName(), userRegistration.getEmail(), userRegistration.getPassword(),
                         userTypeId, userSpecialityId, userRegistration.getAddress(), userRegistration.getCity(),
                         userRegistration.getState(), userRegistration.getZip(), userRegistration.getPhone(),
-                        userRegistration.getFax(), Constants.INACTIVE, new Timestamp(System.currentTimeMillis()),
+                        userRegistration.getFax(), Constants.INACTIVE, userRegistration.getLattitude(),
+                        userRegistration.getLongitude(), new Timestamp(System.currentTimeMillis()),
                         new Timestamp(System.currentTimeMillis()) });
         return value;
     }
@@ -159,8 +160,8 @@ public class MySQLRepository {
                 new Object[] { userRegistration.getFirstName(), userRegistration.getLastName(), userTypeId,
                         userSpecialityId, userRegistration.getAddress(), userRegistration.getCity(),
                         userRegistration.getState(), userRegistration.getZip(), userRegistration.getPhone(),
-                        userRegistration.getFax(), new Timestamp(System.currentTimeMillis()),
-                        userRegistration.getEmail() });
+                        userRegistration.getFax(), userRegistration.getLattitude(), userRegistration.getLongitude(),
+                        new Timestamp(System.currentTimeMillis()), userRegistration.getEmail() });
         return value;
     }
 
@@ -240,6 +241,8 @@ public class MySQLRepository {
         userRegistration.setFax(rs.getString(++i));
         userRegistration.setIsActive(rs.getString(++i));
         userRegistration.setPassword(rs.getString(++i));
+        userRegistration.setLattitude(rs.getDouble(++i));
+        userRegistration.setLongitude(rs.getDouble(++i));
         return userRegistration;
     }
 

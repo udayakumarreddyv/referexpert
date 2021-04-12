@@ -31,7 +31,7 @@ import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
 import com.referexpert.referexpert.constant.Constants;
 import com.referexpert.referexpert.service.EmailSenderService;
-import com.referexpert.referexpert.service.impl.MySQLServiceImpl;
+import com.referexpert.referexpert.service.MySQLService;
 
 @RestController
 @CrossOrigin()
@@ -43,7 +43,7 @@ public class RegistrationController {
     Environment env;
 
     @Autowired
-    private MySQLServiceImpl mySQLService;
+    private MySQLService mySQLService;
 
     @Autowired
     private EmailSenderService emailSenderService;

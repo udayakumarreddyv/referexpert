@@ -48,6 +48,8 @@ CREATE TABLE user_profile
    phone varchar(20),
    fax varchar(20),
    is_active varchar(1),
+   lattitude decimal(20,17),
+   longitude decimal(20,17),
    created_timestamp timestamp,
    updated_timestamp timestamp
 );
@@ -61,9 +63,9 @@ ADD CONSTRAINT fk_up_usr_spl_id
 FOREIGN KEY (user_speciality_id)
 REFERENCES user_speciality(user_speciality_id);
 
-INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,city,state,zip,phone,fax,is_active,created_timestamp,updated_timestamp) VALUES ('manual_insert','Uday','Reddy','udayakumarreddyv@gmail.com','test*987',1,1,'1234 AND LN','Atlanta','Georgia','33333','999999999','999999999','Y',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
-INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,city,state,zip,phone,fax,is_active,created_timestamp,updated_timestamp) VALUES ('manual_insert1','Andrew','Elick','your_gmail@gmail.com','test*987',2,2,'1234 AND LN','Atlanta','Georgia','33333','999999999','999999999','Y',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
-INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,city,state,zip,phone,fax,is_active,created_timestamp,updated_timestamp) VALUES ('manual_insert2','Yuvaraj','Thakur','your_gmail1@gmail.com','test*987',3,4,'1234 AND LN','Atlanta','Georgia','33333','999999999','999999999','Y',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,city,state,zip,phone,fax,is_active,lattitude,longitude,created_timestamp,updated_timestamp) VALUES ('manual_insert','Uday','Reddy','udayakumarreddyv@gmail.com','test*987',1,1,'1234 AND LN','Atlanta','Georgia','33333','999999999','999999999','Y',34.09085883350354, -84.27777246068659,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,city,state,zip,phone,fax,is_active,lattitude,longitude,created_timestamp,updated_timestamp) VALUES ('manual_insert1','Andrew','Elick','your_gmail@gmail.com','test*987',2,2,'1234 AND LN','Atlanta','Georgia','33333','999999999','999999999','Y',34.09082463783247, -84.19892513370299,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,city,state,zip,phone,fax,is_active,lattitude,longitude,created_timestamp,updated_timestamp) VALUES ('manual_insert2','Yuvaraj','Thakur','your_gmail1@gmail.com','test*987',3,4,'1234 AND LN','Atlanta','Georgia','33333','999999999','999999999','Y',34.21327859725992, -84.11648646068224,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 COMMIT;
 
 CREATE TABLE confirmation_token

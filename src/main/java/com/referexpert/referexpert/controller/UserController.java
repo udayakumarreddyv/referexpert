@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.referexpert.referexpert.beans.GenericResponse;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.constant.Constants;
-import com.referexpert.referexpert.service.impl.MySQLServiceImpl;
+import com.referexpert.referexpert.service.MySQLService;
 
 @RestController
 @CrossOrigin()
@@ -27,7 +29,7 @@ public class UserController {
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    private MySQLServiceImpl mySQLService;
+    private MySQLService mySQLService;
 
     @PostMapping(value = "/referexpert/deactiveuser")
     public ResponseEntity<GenericResponse> deactivateUserAccount(@RequestBody String emailString) {
@@ -77,50 +79,82 @@ public class UserController {
       
     @GetMapping(value = "/referexpert/users/firstname/{firstname}")
     public ResponseEntity<List<UserRegistration>> selectUsersByFirstName(@PathVariable("firstname") String firstName) {
-        String criteria = " first_name like '%" + firstName + "%'";
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String criteria =  " email != '" + userDetails.getUsername() + "' and first_name like '%" + firstName + "%'";
         List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
         return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
     }
     
     @GetMapping(value = "/referexpert/users/lastname/{lastname}")
     public ResponseEntity<List<UserRegistration>> selectUsersByLastName(@PathVariable("lastname") String lastName) {
-        String criteria = " last_name like '%" + lastName + "%'";
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String criteria =  " email != '" + userDetails.getUsername() + "' and last_name like '%" + lastName + "%'";
         List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
         return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
     }
     
     @GetMapping(value = "/referexpert/users/city/{city}")
     public ResponseEntity<List<UserRegistration>> selectUsersByCity(@PathVariable("city") String city) {
-        String criteria = " city like '%" + city + "%'";
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String criteria =  " email != '" + userDetails.getUsername() + "' and city like '%" + city + "%'";
         List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
         return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
     }
     
     @GetMapping(value = "/referexpert/users/state/{state}")
     public ResponseEntity<List<UserRegistration>> selectUsersByState(@PathVariable("state") String state) {
-        String criteria = " state like '%" + state + "%'";
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String criteria =  " email != '" + userDetails.getUsername() + "' and state like '%" + state + "%'";
         List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
         return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
     }
     
     @GetMapping(value = "/referexpert/users/zip/{zip}")
     public ResponseEntity<List<UserRegistration>> selectUsersByZip(@PathVariable("zip") String zip) {
-        String criteria = " zip = '" + zip + "'";
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String criteria =  " email != '" + userDetails.getUsername() + "' and zip = '" + zip + "'";
         List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
         return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
     }
     
     @GetMapping(value = "/referexpert/users/type/{type}")
     public ResponseEntity<List<UserRegistration>> selectUsersByType(@PathVariable("type") String type) {
-        String criteria = " user_type like '%" + type + "%'";
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String criteria =  " email != '" + userDetails.getUsername() + "' and user_type like '%" + type + "%'";
         List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
         return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
     }
     
     @GetMapping(value = "/referexpert/users/speciality/{speciality}")
     public ResponseEntity<List<UserRegistration>> selectUsersBySpeciality(@PathVariable("speciality") String speciality) {
-        String criteria = " user_speciality like '%" + speciality + "%'";
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String criteria =  " email != '" + userDetails.getUsername() + "' and user_speciality like '%" + speciality + "%'";
         List<UserRegistration> users =  mySQLService.selectActiveUsers(criteria);
+        return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
+    }
+    
+    @GetMapping(value = "/referexpert/users/distance/{distance}")
+    public ResponseEntity<List<UserRegistration>> selectUsersByDistance(@PathVariable("distance") int distance) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String criteria =  " email != '" + userDetails.getUsername() + "'";
+        List<UserRegistration> users =  mySQLService.selectActiveUsersByDistance(criteria, distance, userDetails.getUsername());
+        return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
+    }
+    
+    @GetMapping(value = "/referexpert/users/distance/{lattitude}/{longitude}/{distance}")
+    public ResponseEntity<List<UserRegistration>> selectUsersByCoordinates(@PathVariable("lattitude") Double lattitude,
+            @PathVariable("longitude") Double longitude, @PathVariable("distance") int distance) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String criteria = " email != '" + userDetails.getUsername() + "'";
+        List<UserRegistration> users = mySQLService.selectActiveUsersByCoordinates(criteria, lattitude, longitude, distance);
         return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
     }
 }

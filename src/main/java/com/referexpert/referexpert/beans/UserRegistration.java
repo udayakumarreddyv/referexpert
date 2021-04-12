@@ -33,6 +33,10 @@ public class UserRegistration {
 
     private String fax;
 
+    private Double lattitude;
+
+    private Double longitude;
+
     private String isActive;
 
     public String getUserId() {
@@ -147,11 +151,28 @@ public class UserRegistration {
         this.zip = zip;
     }
 
+    public Double getLattitude() {
+        return lattitude;
+    }
+
+    public void setLattitude(Double lattitude) {
+        this.lattitude = lattitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
     @Override
     public String toString() {
         return "UserRegistration [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
                 + email + ", password=" + password + ", userType=" + userType + ", userSpeciality=" + userSpeciality
                 + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip + ", phone=" + phone
-                + ", fax=" + fax + ", isActive=" + isActive + "]";
+                + ", fax=" + fax + ", lattitude=" + lattitude + ", longitude=" + longitude + ", isActive=" + isActive
+                + "]";
     }
 }

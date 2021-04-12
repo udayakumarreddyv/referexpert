@@ -43,6 +43,10 @@ public interface MySQLService {
     public int updateUserReferral(String email, String indicator);
 
     public List<UserRegistration> selectActiveUsers(String criteria);
+    
+    public List<UserRegistration> selectActiveUsersByDistance(String criteria, int distance, String email);
+    
+    public List<UserRegistration> selectActiveUsersByCoordinates(String criteria, Double lattitude, Double longitude, int distance);
 
     public int insertAppointment(Appointment referExpert);
 

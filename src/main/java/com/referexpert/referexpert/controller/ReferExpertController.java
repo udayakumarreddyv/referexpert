@@ -22,7 +22,7 @@ import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.GenericResponse;
 import com.referexpert.referexpert.constant.Constants;
 import com.referexpert.referexpert.service.EmailSenderService;
-import com.referexpert.referexpert.service.impl.MySQLServiceImpl;
+import com.referexpert.referexpert.service.MySQLService;
 
 @RestController
 @CrossOrigin()
@@ -31,7 +31,7 @@ public class ReferExpertController {
     private final static Logger logger = LoggerFactory.getLogger(ReferExpertController.class);
     
     @Autowired
-    private MySQLServiceImpl mySQLService;
+    private MySQLService mySQLService;
     
     @Autowired
     Environment env;

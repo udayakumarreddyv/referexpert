@@ -19,18 +19,18 @@ public class QueryConstants {
     public static String SELECT_USER_SPECIALITY = "select user_type from user_type";
 
     public static String INSERT_USER_PROFILE = "insert into user_profile (user_id, first_name, last_name, email, password, user_type_id, "
-            + "user_speciality_id, address, city, state, zip, phone, fax, is_active, created_timestamp, updated_timestamp) "
-            + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            + "user_speciality_id, address, city, state, zip, phone, fax, is_active, lattitude, longitude, created_timestamp, updated_timestamp) "
+            + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     public static String UPDATE_USER_ACTIVATION = "update user_profile set is_active = ?, updated_timestamp = ? where email = ?";
 
     public static String UPDATE_USER_PASSWORD = "update user_profile set password = ?, updated_timestamp = ? where email = ?";
 
     public static String UPDATE_USER_PROFILE = "update user_profile set first_name = ?, last_name = ?, user_type_id  = ?, user_speciality_id  = ?, "
-            + " address  = ?, city = ?, state = ?, zip = ?, phone  = ?, fax  = ?, updated_timestamp = ? where email = ?";
+            + " address  = ?, city = ?, state = ?, zip = ?, phone  = ?, fax  = ?, lattitude =?, longitude = ?, updated_timestamp = ? where email = ?";
 
     public static String SELECT_USER_PROFILE = "select user_id, first_name, last_name, email, password, user_type_id, "
-            + " user_speciality_id, address, city, state, zip, phone, fax, is_active, created_timestamp, updated_timestamp "
+            + " user_speciality_id, address, city, state, zip, phone, fax, is_active, lattitude, longitude, created_timestamp, updated_timestamp "
             + " from user_profile where ";
 
     public static String INSERT_CONFIRMATION_TOKEN = "insert into confirmation_token (token_id, confirmation_token, created_timestamp, user_id) "
@@ -50,7 +50,7 @@ public class QueryConstants {
     public static String UPDATE_USER_REFERRAL = "update user_referral set is_registered = ?, updated_timestamp = ? where doc_email = ?";
 
     public static String SELECT_ACTIVE_USER = "select up.user_id, up.first_name, up.last_name, up.email, ut.user_type, us.user_speciality, up.address, "
-            + "up.city, up.state, up.zip, up.phone, up.fax, up.is_active, up.password from user_profile up, user_type ut, user_speciality us "
+            + "up.city, up.state, up.zip, up.phone, up.fax, up.is_active, up.password, up.lattitude, up.longitude from user_profile up, user_type ut, user_speciality us "
             + "where up.user_type_id = ut.user_type_id and up.user_speciality_id = us.user_speciality_id and up.is_active = 'Y' and ";
 
     public static String INSERT_APPOINTMENT = "insert into appointment (appointment_id, appointment_from, appointment_to, date_time, subject, reason, "
