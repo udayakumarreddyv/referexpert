@@ -23,4 +23,23 @@ public class DistanceCalculator {
             return dist <= distance;
         }
     }
+    
+    public static double getDistnace(Double srcLattitude, Double srcLongitude, Double destLattitude,
+            Double destLongitude, int distance) {
+        if (srcLattitude == null || destLattitude == null || srcLongitude == null || destLongitude == null) {
+            return 0;
+        }
+        if ((srcLattitude == destLattitude) && (srcLongitude == destLongitude)) {
+            return 0;
+        } else {
+            double theta = srcLongitude - destLongitude;
+            double dist = Math.sin(Math.toRadians(srcLattitude)) * Math.sin(Math.toRadians(destLattitude))
+                    + Math.cos(Math.toRadians(srcLattitude)) * Math.cos(Math.toRadians(destLattitude))
+                            * Math.cos(Math.toRadians(theta));
+            dist = Math.acos(dist);
+            dist = Math.toDegrees(dist);
+            dist = dist * 60 * 1.1515;
+            return dist;
+        }
+    }
 }

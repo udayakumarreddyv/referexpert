@@ -309,6 +309,8 @@ public class MySQLServiceImpl implements MySQLService {
                 .filter(p -> DistanceCalculator.isDistanceInRange(lattitude, longitude, p.getLattitude(),
                         p.getLongitude(), distance))
                 .collect(Collectors.toCollection(() -> new ArrayList<UserRegistration>()));
+        finalList.parallelStream().forEach(x -> x.setDistance(DistanceCalculator.getDistnace(lattitude, longitude, x.getLattitude(),
+                x.getLongitude(), distance)));
         return finalList;
     }
 

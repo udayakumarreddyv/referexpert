@@ -37,6 +37,8 @@ public class UserRegistration {
 
     private Double longitude;
 
+    private Double distance;
+
     private String isActive;
 
     public String getUserId() {
@@ -167,12 +169,20 @@ public class UserRegistration {
         this.longitude = longitude;
     }
 
+    public Double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Double distance) {
+        this.distance = distance;
+    }
+
     @Override
     public String toString() {
         return "UserRegistration [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
                 + email + ", password=" + password + ", userType=" + userType + ", userSpeciality=" + userSpeciality
                 + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip + ", phone=" + phone
-                + ", fax=" + fax + ", lattitude=" + lattitude + ", longitude=" + longitude + ", isActive=" + isActive
-                + "]";
+                + ", fax=" + fax + ", lattitude=" + lattitude + ", longitude=" + longitude + ", distance=" + distance
+                + ", isActive=" + isActive + "]";
     }
 }
