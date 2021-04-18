@@ -21,4 +21,9 @@ public class GoogleAPIContext {
     public GeoApiContext geoApiContext() {
         return new GeoApiContext.Builder().apiKey(env.getProperty(Constants.GOOGLE_API_KEY)).build();
     }
+    
+    @PreDestroy
+    public void destroy() {
+        geoApiContext().shutdown();
+    }
 }
