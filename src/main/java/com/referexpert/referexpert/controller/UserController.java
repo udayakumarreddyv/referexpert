@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.maps.GeoApiContext;
+import com.referexpert.referexpert.beans.Coordinates;
 import com.referexpert.referexpert.beans.GenericResponse;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.constant.Constants;
 import com.referexpert.referexpert.service.MySQLService;
+import com.referexpert.referexpert.util.GeoUtils;
 
 @RestController
 @CrossOrigin()
@@ -30,6 +33,9 @@ public class UserController {
 
     @Autowired
     private MySQLService mySQLService;
+    
+    @Autowired
+    private GeoApiContext geoApiContext;
 
     @PostMapping(value = "/referexpert/deactiveuser")
     public ResponseEntity<GenericResponse> deactivateUserAccount(@RequestBody String emailString) {
@@ -155,6 +161,17 @@ public class UserController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String criteria = " email != '" + userDetails.getUsername() + "'";
         List<UserRegistration> users = mySQLService.selectActiveUsersByCoordinates(criteria, lattitude, longitude, distance);
+        return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
+    }
+    
+    @GetMapping(value = "/referexpert/users/distance/{address}/{distance}")
+    public ResponseEntity<List<UserRegistration>> selectUsersByAddress(@PathVariable("address") String address,
+            @PathVariable("distance") int distance) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Coordinates coordinates = GeoUtils.getCoordinates(address, geoApiContext);
+        String criteria = " email != '" + userDetails.getUsername() + "'";
+        List<UserRegistration> users = mySQLService.selectActiveUsersByCoordinates(criteria, coordinates.getLattitude(),
+                coordinates.getLongitude(), distance);
         return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
     }
 }

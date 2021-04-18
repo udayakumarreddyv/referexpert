@@ -11,14 +11,16 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import com.google.maps.GeoApiContext;
 import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.ConfirmationToken;
+import com.referexpert.referexpert.beans.Coordinates;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
 import com.referexpert.referexpert.repository.MySQLRepository;
 import com.referexpert.referexpert.service.MySQLService;
-import com.referexpert.referexpert.util.DistanceCalculator;
+import com.referexpert.referexpert.util.GeoUtils;
 
 @Service("mysqlService")
 public class MySQLServiceImpl implements MySQLService {
@@ -27,6 +29,9 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Autowired
     private MySQLRepository mysqlRepository;
+    
+    @Autowired
+    private GeoApiContext geoApiContext;
 
     @Override
     public List<UserType> selectAllUserTypes() {
@@ -69,11 +74,19 @@ public class MySQLServiceImpl implements MySQLService {
         }
         return userSpeciality;
     }
+    
+    private String getFullAddress(UserRegistration userRegistration) {
+        return userRegistration.getAddress() + " " + userRegistration.getCity() + " " + userRegistration.getState()
+                + " " + userRegistration.getZip();
+    }
 
     @Override
     public int insertUserProfile(UserRegistration userRegistration) {
         Integer userTypeId = selectUserTypeById(userRegistration.getUserType());
         Integer userSpecialityId = selectUserSpecialityById(userTypeId, userRegistration.getUserSpeciality());
+        Coordinates coordinates = GeoUtils.getCoordinates(getFullAddress(userRegistration), geoApiContext);
+        userRegistration.setLattitude(coordinates.getLattitude());
+        userRegistration.setLongitude(coordinates.getLongitude());
         int value = 0;
         try {
             value = mysqlRepository.insertUserProfile(userRegistration, userTypeId, userSpecialityId);
@@ -193,6 +206,9 @@ public class MySQLServiceImpl implements MySQLService {
         int value = 0;
         Integer userTypeId = selectUserTypeById(userRegistration.getUserType());
         Integer userSpecialityId = selectUserSpecialityById(userTypeId, userRegistration.getUserSpeciality());
+        Coordinates coordinates = GeoUtils.getCoordinates(getFullAddress(userRegistration), geoApiContext);
+        userRegistration.setLattitude(coordinates.getLattitude());
+        userRegistration.setLongitude(coordinates.getLongitude());
         try {
             value = mysqlRepository.updateUserProfile(userRegistration, userTypeId, userSpecialityId);
         }
@@ -306,10 +322,10 @@ public class MySQLServiceImpl implements MySQLService {
         List<UserRegistration> userRegistrations = mysqlRepository.selectActiveUsers(criteria);
         userRegistrations.parallelStream().forEach(x -> x.setPassword(null));
         List<UserRegistration> finalList = userRegistrations.parallelStream()
-                .filter(p -> DistanceCalculator.isDistanceInRange(lattitude, longitude, p.getLattitude(),
+                .filter(p -> GeoUtils.isDistanceInRange(lattitude, longitude, p.getLattitude(),
                         p.getLongitude(), distance))
                 .collect(Collectors.toCollection(() -> new ArrayList<UserRegistration>()));
-        finalList.parallelStream().forEach(x -> x.setDistance(DistanceCalculator.getDistnace(lattitude, longitude, x.getLattitude(),
+        finalList.parallelStream().forEach(x -> x.setDistance(GeoUtils.getDistnace(lattitude, longitude, x.getLattitude(),
                 x.getLongitude(), distance)));
         return finalList;
     }

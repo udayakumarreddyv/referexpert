@@ -43,6 +43,8 @@ public class Constants {
     public static String SERVICE = "SERVICE";
     
     public static String APPOINTMENT = "APPOINTMENT";
+    
+    public static String GOOGLE_API_KEY = "google.api.key";
 
 }
 

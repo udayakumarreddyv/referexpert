@@ -2,8 +2,15 @@ package com.referexpert.referexpert.util;
 
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.model.GeocodingResult;
+import com.referexpert.referexpert.beans.Coordinates;
+
 @Component
-public class DistanceCalculator {
+public class GeoUtils {
 
     public static boolean isDistanceInRange(Double srcLattitude, Double srcLongitude, Double destLattitude,
             Double destLongitude, int distance) {
@@ -40,6 +47,20 @@ public class DistanceCalculator {
             dist = Math.toDegrees(dist);
             dist = dist * 60 * 1.1515;
             return dist;
+        }
+    }
+    
+    public static Coordinates getCoordinates(String address, GeoApiContext geoApiContext) {
+        try {
+            GeocodingResult[] results = GeocodingApi.geocode(geoApiContext, address).await();
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Coordinates coordinates = new Coordinates();
+            coordinates.setLattitude(new Double(gson.toJson(results[0].geometry.location.lat)));
+            coordinates.setLongitude(new Double(gson.toJson(results[0].geometry.location.lng)));
+            return coordinates;
+        }
+        catch (Exception e) {
+            return new Coordinates(0.0, 0.0);
         }
     }
 }
