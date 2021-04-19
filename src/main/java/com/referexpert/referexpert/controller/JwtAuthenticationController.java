@@ -1,5 +1,7 @@
 package com.referexpert.referexpert.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +23,8 @@ import com.referexpert.referexpert.service.JwtUserDetailsService;
 @RestController
 @CrossOrigin
 public class JwtAuthenticationController {
+    
+    private final static Logger logger = LoggerFactory.getLogger(JwtAuthenticationController.class);
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -33,7 +37,7 @@ public class JwtAuthenticationController {
 
 	@RequestMapping(value = "/referexpert/validateuser", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
-
+	    logger.info("JwtAuthenticationController :: In createAuthenticationToken : " + authenticationRequest.getUsername());
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
@@ -45,6 +49,7 @@ public class JwtAuthenticationController {
 
 	private void authenticate(String username, String password) throws Exception {
 		try {
+		    logger.info("JwtAuthenticationController :: In authenticate : " + username);
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 		} catch (DisabledException e) {
 			throw new Exception("USER_DISABLED", e);

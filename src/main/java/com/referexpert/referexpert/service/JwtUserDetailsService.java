@@ -2,6 +2,8 @@ package com.referexpert.referexpert.service;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,6 +17,8 @@ import com.referexpert.referexpert.service.impl.MySQLServiceImpl;
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
     
+    private final static Logger logger = LoggerFactory.getLogger(JwtUserDetailsService.class);
+    
     @Autowired
     private MySQLServiceImpl mySQLService;
 
@@ -23,6 +27,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	    logger.info("JwtUserDetailsService :: In loadUserByUsername : " + username);
 	    String criteria = " email = '" + username +"'";
    	    UserRegistration userRegistration = mySQLService.selectUser(criteria);
 		if (userRegistration == null) {
@@ -33,6 +38,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 	}
 
 	public UserRegistration save(UserRegistration userRegistration) {
+	    logger.info("JwtUserDetailsService :: In loadUserByUsername : " + userRegistration.getEmail());
 	    userRegistration.setPassword(bcryptEncoder.encode(userRegistration.getPassword()));
 		return mySQLService.save(userRegistration);
 	}

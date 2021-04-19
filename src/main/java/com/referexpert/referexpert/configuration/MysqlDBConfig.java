@@ -1,6 +1,8 @@
 package com.referexpert.referexpert.configuration;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -14,6 +16,8 @@ import com.referexpert.referexpert.constant.Constants;
 
 @Configuration
 public class MysqlDBConfig {
+    
+    private final static Logger logger = LoggerFactory.getLogger(MysqlDBConfig.class);
 
 	@Autowired
 	Environment env;
@@ -22,6 +26,7 @@ public class MysqlDBConfig {
 	@Bean
 	@ConfigurationProperties(prefix = "mysql")
 	public DataSource mysqlDataSource() {
+	    logger.info("MysqlDBConfig :: Creating mysqlDataSource");
 		DataSource dataSource = (DataSource) DataSourceBuilder.create()
 				.driverClassName(env.getProperty(Constants.MYSQL_DATASOURCE_DRIVER))
 				.url(env.getProperty(Constants.MYSQL_DATASOURCE_URL))
@@ -49,6 +54,7 @@ public class MysqlDBConfig {
 
 	@Bean
 	public JdbcTemplate mysqlJdbcTemplate(DataSource mysqlDataSource) {
+	    logger.info("MysqlDBConfig :: Creating mysqlJdbcTemplate");
 		return new JdbcTemplate(mysqlDataSource);
 	}
 

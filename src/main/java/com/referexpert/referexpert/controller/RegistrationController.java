@@ -67,6 +67,7 @@ public class RegistrationController {
 
     @GetMapping(value = "/referexpert/usertypes")
     public ResponseEntity<List<UserType>> getUserTypes() {
+        logger.info("RegistrationController :: In getUserTypes");
         List<UserType> usertypes = mySQLService.selectAllUserTypes();
         ResponseEntity<List<UserType>> entity = new ResponseEntity<>(usertypes, HttpStatus.OK);
         return entity;
@@ -74,6 +75,7 @@ public class RegistrationController {
 
     @GetMapping(value = "/referexpert/usertype/{usertype}")
     public ResponseEntity<List<UserType>> getUserTypeByUserType(@PathVariable("usertype") String usertype) {
+        logger.info("RegistrationController :: In getUserTypeByUserType : " + usertype);
         List<UserType> usertypes = mySQLService
                 .selectUserTypeByUserType(usertype != null ? usertype.toUpperCase() : "");
         ResponseEntity<List<UserType>> entity = new ResponseEntity<>(usertypes, HttpStatus.OK);
@@ -82,6 +84,7 @@ public class RegistrationController {
 
     @GetMapping(value = "/referexpert/usertype/{usertype}/userspecialities")
     public ResponseEntity<UserSpeciality> getUserSpecialitiesByUserType(@PathVariable("usertype") String usertype) {
+        logger.info("RegistrationController :: In getUserSpecialitiesByUserType : " + usertype);
         UserSpeciality userSpeciality = mySQLService
                 .selectUserSpecialityByUserType(usertype != null ? usertype.toUpperCase() : "");
         ResponseEntity<UserSpeciality> entity = new ResponseEntity<>(userSpeciality, HttpStatus.OK);
@@ -96,6 +99,7 @@ public class RegistrationController {
         UserRegistration userRegistration = null;
         try {
             userRegistration = mapper.readValue(registration, UserRegistration.class);
+            logger.info("RegistrationController :: In registerUser : " + userRegistration.getEmail() + " referral : " + referralId);
         }
         catch (Exception e) {
             logger.error("Unable to parse the input :: " + registration);
@@ -138,6 +142,7 @@ public class RegistrationController {
     @GetMapping(value = "/referexpert/confirmaccount")
     public ResponseEntity<GenericResponse> confirmUserAccount(@RequestParam("token") String token,
             @RequestParam("user") String email) {
+        logger.info("RegistrationController :: In confirmUserAccount token : " + token + " email : " + email);
         ResponseEntity<GenericResponse> entity = null;
         // check for token present in database or not. If present active user status
         String criteria = " email = ?";
@@ -159,6 +164,7 @@ public class RegistrationController {
 
     @PostMapping(value = "/referexpert/referuser")
     public ResponseEntity<GenericResponse> referUser(@RequestBody String referString) {
+        logger.info("RegistrationController :: In referUser : " + referString);
         ObjectMapper mapper = new ObjectMapper();
         ResponseEntity<GenericResponse> entity = null;
         ReferUser referUser= null;
@@ -193,6 +199,7 @@ public class RegistrationController {
     }
 
     private ResponseEntity<GenericResponse> processReferral(String userEmail, String tokenizer) {
+        logger.info("RegistrationController :: In processReferral : " + userEmail + " : " +tokenizer);
         ResponseEntity<GenericResponse> entity = null;
         String referralId = UUID.randomUUID().toString();
         int value = mySQLService.insertUserReferral(referralId, userEmail, tokenizer, Constants.INACTIVE);
@@ -213,11 +220,13 @@ public class RegistrationController {
     
     @GetMapping(value = "/referexpert/users/{email}")
     public ResponseEntity<UserRegistration> selectUserProfile(@PathVariable("email") String email) {
+        logger.info("RegistrationController :: In selectUserProfile : " + email);
         UserRegistration userRegistration = getUserDetails(email);
         return new ResponseEntity<UserRegistration>(userRegistration, HttpStatus.OK);
     }
 
     private UserRegistration getUserDetails(String email) {
+        logger.info("RegistrationController :: In getUserDetails : " + email);
         String criteria = " email = '" + email + "'";
         UserRegistration userRegistration =  mySQLService.selectUser(criteria);
         userRegistration.setPassword(null);
@@ -226,6 +235,7 @@ public class RegistrationController {
     
     @GetMapping(value = "/referexpert/userdetails")
     public ResponseEntity<UserRegistration> selectUserDetails() {
+        logger.info("RegistrationController :: In selectUserDetails");
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         UserRegistration userRegistration = getUserDetails(userDetails.getUsername());
@@ -239,6 +249,7 @@ public class RegistrationController {
         UserRegistration userRegistration = null;
         try {
             userRegistration = mapper.readValue(registration, UserRegistration.class);
+            logger.info("RegistrationController :: In updateprofile : " + userRegistration.getEmail());
         }
         catch (Exception e) {
             logger.error("Unable to parse the input :: " + registration);
@@ -267,6 +278,7 @@ public class RegistrationController {
         UserRegistration userRegistration = null;
         try {
             userRegistration = mapper.readValue(registration, UserRegistration.class);
+            logger.info("RegistrationController :: In resetNotification : " + userRegistration.getEmail());
         }
         catch (Exception e) {
             logger.error("Unable to parse the input :: " + registration);
@@ -295,6 +307,7 @@ public class RegistrationController {
         UserRegistration userRegistration = null;
         try {
             userRegistration = mapper.readValue(registration, UserRegistration.class);
+            logger.info("RegistrationController :: In managePassword : " + userRegistration.getEmail());
         }
         catch (Exception e) {
             logger.error("Unable to parse the input :: " + registration);
@@ -320,6 +333,4 @@ public class RegistrationController {
         }
         return entity;
     }
-    
-    
 }

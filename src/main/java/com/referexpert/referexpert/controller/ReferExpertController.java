@@ -41,6 +41,7 @@ public class ReferExpertController {
 
     @PostMapping(value = "/referexpert/requestappointment")
     public ResponseEntity<GenericResponse> requestAppointment(@RequestBody String appointmentString) {
+        logger.info("ReferExpertController :: In requestAppointment : " + appointmentString);
         ObjectMapper mapper = new ObjectMapper();
         ResponseEntity<GenericResponse> entity = null;
         Appointment appointment = null;
@@ -70,23 +71,27 @@ public class ReferExpertController {
 
     @PostMapping(value = "/referexpert/rejectappointment")
     public ResponseEntity<GenericResponse> rejectAppointment(@RequestBody String appointmentString) {
+        logger.info("ReferExpertController :: In rejectAppointment : " + appointmentString);
         ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.INACTIVE, Constants.APPOINTMENT);
         return entity;
     }
     
     @PostMapping(value = "/referexpert/acceptappointment")
     public ResponseEntity<GenericResponse> acceptAppointment(@RequestBody String appointmentString) {
+        logger.info("ReferExpertController :: In acceptAppointment : " + appointmentString);
         ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.ACTIVE, Constants.APPOINTMENT);
         return entity;
     }
     
     @PostMapping(value = "/referexpert/finalizeappointment")
     public ResponseEntity<GenericResponse> finalizeAppointment(@RequestBody String appointmentString) {
+        logger.info("ReferExpertController :: In finalizeAppointment : " + appointmentString);
         ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.ACTIVE, Constants.SERVICE);
         return entity;
     }
     
     private void sendNotification(String toEmail) {
+        logger.info("ReferExpertController :: In sendNotification to : " + toEmail);
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(toEmail);
         mailMessage.setSubject("You got Appointment Notification");
@@ -96,6 +101,7 @@ public class ReferExpertController {
     }
     
     private ResponseEntity<GenericResponse> updateStatus(String appointmentString, String status, String type) {
+        logger.info("ReferExpertController :: In updateStatus  : " + appointmentString + " : " + status + " : " + type);
         ObjectMapper mapper = new ObjectMapper();
         ResponseEntity<GenericResponse> entity = null;
         Appointment appointment = null;
@@ -126,6 +132,7 @@ public class ReferExpertController {
     
     @GetMapping(value = "/referexpert/myreferrals/{useremail}")
     public ResponseEntity<List<Appointment>> getMyReferrals(@PathVariable("useremail") String userEmail) {
+        logger.info("ReferExpertController :: In getMyReferrals  : " + userEmail);
         String criteria = " f.email = '" + userEmail + "'";
         List<Appointment> appointments =  mySQLService.selectAppointments(criteria);
         return new ResponseEntity<List<Appointment>>(appointments, HttpStatus.OK);
@@ -133,6 +140,7 @@ public class ReferExpertController {
     
     @GetMapping(value = "/referexpert/myappointments/{useremail}")
     public ResponseEntity<List<Appointment>> getMyAppointments(@PathVariable("useremail") String userEmail) {
+        logger.info("ReferExpertController :: In getMyAppointments  : " + userEmail);
         String criteria = " t.email = '" + userEmail + "'";
         List<Appointment> appointments =  mySQLService.selectAppointments(criteria);
         return new ResponseEntity<List<Appointment>>(appointments, HttpStatus.OK);

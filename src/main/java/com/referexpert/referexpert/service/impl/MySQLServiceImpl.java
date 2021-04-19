@@ -35,6 +35,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public List<UserType> selectAllUserTypes() {
+        logger.info("MySQLServiceImpl :: In selectAllUserTypes");
         List<UserType> userTypes;
         try {
             userTypes = mysqlRepository.selectAllUserTypes();
@@ -49,6 +50,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public List<UserType> selectUserTypeByUserType(String userType) {
+        logger.info("MySQLServiceImpl :: In selectUserTypeByUserType");
         List<UserType> userTypes;
         try {
             userTypes = mysqlRepository.selectUserTypeByUserType(userType);
@@ -63,6 +65,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public UserSpeciality selectUserSpecialityByUserType(String userType) {
+        logger.info("MySQLServiceImpl :: In selectUserSpecialityByUserType");
         UserSpeciality userSpeciality;
         try {
             userSpeciality = mysqlRepository.selectUserSpecialityByUserType(userType);
@@ -76,12 +79,14 @@ public class MySQLServiceImpl implements MySQLService {
     }
     
     private String getFullAddress(UserRegistration userRegistration) {
+        logger.info("MySQLServiceImpl :: In getFullAddress");
         return userRegistration.getAddress() + " " + userRegistration.getCity() + " " + userRegistration.getState()
                 + " " + userRegistration.getZip();
     }
 
     @Override
     public int insertUserProfile(UserRegistration userRegistration) {
+        logger.info("MySQLServiceImpl :: In insertUserProfile");
         Integer userTypeId = selectUserTypeById(userRegistration.getUserType());
         Integer userSpecialityId = selectUserSpecialityById(userTypeId, userRegistration.getUserSpeciality());
         Coordinates coordinates = GeoUtils.getCoordinates(getFullAddress(userRegistration), geoApiContext);
@@ -111,6 +116,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public Integer selectUserTypeById(String userType) {
+        logger.info("MySQLServiceImpl :: In selectUserTypeById");
         Integer userTypeId = null;
         try {
             userTypeId = mysqlRepository.selectUserTypeById(userType);
@@ -125,6 +131,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public Integer selectUserSpecialityById(Integer userTypeId, String speciality) {
+        logger.info("MySQLServiceImpl :: In selectUserSpecialityById");
         Integer userSpecialityId = null;
         try {
             userSpecialityId = mysqlRepository.selectUserSpecialityById(userTypeId, speciality);
@@ -139,6 +146,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int insertConfirmationToken(ConfirmationToken confirmationToken) {
+        logger.info("MySQLServiceImpl :: In insertConfirmationToken");
         int value = 0;
         try {
             value = mysqlRepository.insertConfirmationToken(confirmationToken);
@@ -153,6 +161,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public boolean selectUserProfile(String email, String criteria) {
+        logger.info("MySQLServiceImpl :: In selectUserProfile");
         try {
             return mysqlRepository.selectUserProfile(email, criteria);
         }
@@ -165,6 +174,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public boolean selectConfirmationToken(String token) {
+        logger.info("MySQLServiceImpl :: In selectConfirmationToken");
         try {
             return mysqlRepository.selectConfirmationToken(token);
         }
@@ -177,6 +187,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int updateUserActivation(String email, String indicator) {
+        logger.info("MySQLServiceImpl :: In updateUserActivation");
         int value = 0;
         try {
             value = mysqlRepository.updateUserActivation(email, indicator);
@@ -190,6 +201,7 @@ public class MySQLServiceImpl implements MySQLService {
     }
 
     public int updateUserPassword(String email, String password) {
+        logger.info("MySQLServiceImpl :: In updateUserPassword");
         int value = 0;
         try {
             value = mysqlRepository.updateUserPassword(email, password);
@@ -203,6 +215,7 @@ public class MySQLServiceImpl implements MySQLService {
     }
 
     public int updateUserProfile(UserRegistration userRegistration) {
+        logger.info("MySQLServiceImpl :: In updateUserProfile");
         int value = 0;
         Integer userTypeId = selectUserTypeById(userRegistration.getUserType());
         Integer userSpecialityId = selectUserSpecialityById(userTypeId, userRegistration.getUserSpeciality());
@@ -222,6 +235,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int deleteConfirmationToken(String token) {
+        logger.info("MySQLServiceImpl :: In deleteConfirmationToken");
         int value = 0;
         try {
             value = mysqlRepository.deleteConfirmationToken(token);
@@ -236,6 +250,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int insertUserReferral(String referralId, String userEmail, String docEmail, String isRegistered) {
+        logger.info("MySQLServiceImpl :: In insertUserReferral");
         int value = 0;
         try {
             value = mysqlRepository.insertUserReferral(referralId, userEmail, docEmail, isRegistered);
@@ -250,6 +265,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public boolean selectUserReferral(String userReferralId) {
+        logger.info("MySQLServiceImpl :: In selectUserReferral");
         try {
             return mysqlRepository.selectUserReferral(userReferralId);
         }
@@ -262,6 +278,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int updateUserReferral(String email, String indicator) {
+        logger.info("MySQLServiceImpl :: In updateUserReferral");
         int value = 0;
         try {
             value = mysqlRepository.updateUserReferral(email, indicator);
@@ -276,6 +293,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public List<UserRegistration> selectActiveUsers(String criteria) {
+        logger.info("MySQLServiceImpl :: In selectActiveUsers");
         List<UserRegistration> userRegistrations = new ArrayList<UserRegistration>();
         try {
             userRegistrations = mysqlRepository.selectActiveUsers(criteria);
@@ -290,6 +308,7 @@ public class MySQLServiceImpl implements MySQLService {
     
     @Override
     public List<UserRegistration> selectActiveUsersByDistance(String criteria, int distance, String email) {
+        logger.info("MySQLServiceImpl :: In selectActiveUsersByDistance");
         UserRegistration userRegistration = selectUser(" email = '" + email + "'");
         List<UserRegistration> userRegistrations = new ArrayList<UserRegistration>();
         try {
@@ -306,6 +325,7 @@ public class MySQLServiceImpl implements MySQLService {
     @Override
     public List<UserRegistration> selectActiveUsersByCoordinates(String criteria, Double lattitude, Double longitude,
             int distance) {
+        logger.info("MySQLServiceImpl :: In selectActiveUsersByCoordinates");
         List<UserRegistration> userRegistrations = new ArrayList<UserRegistration>();
         try {
             userRegistrations = getUserRegistrations(criteria, distance, lattitude, longitude);
@@ -319,6 +339,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     private List<UserRegistration> getUserRegistrations(String criteria, int distance, Double lattitude,
             Double longitude) throws Exception {
+        logger.info("MySQLServiceImpl :: In getUserRegistrations");
         List<UserRegistration> userRegistrations = mysqlRepository.selectActiveUsers(criteria);
         userRegistrations.parallelStream().forEach(x -> x.setPassword(null));
         List<UserRegistration> finalList = userRegistrations.parallelStream()
@@ -332,6 +353,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int insertAppointment(Appointment appointment) {
+        logger.info("MySQLServiceImpl :: In insertAppointment");
         String referFrom = null;
         String referTo = null;
         String criteriaFrom = " email = '" + appointment.getAppointmentFrom() + "'";
@@ -368,6 +390,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int updateAppointmentAccepted(String appointmentId, String indicator) {
+        logger.info("MySQLServiceImpl :: In updateAppointmentAccepted");
         int value = 0;
         try {
             value = mysqlRepository.updateAppointmentAccepted(appointmentId, indicator);
@@ -382,6 +405,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int updateAppointmentServed(String appointmentId, String indicator) {
+        logger.info("MySQLServiceImpl :: In updateAppointmentServed");
         int value = 0;
         try {
             value = mysqlRepository.updateAppointmentServed(appointmentId, indicator);
@@ -396,6 +420,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public List<Appointment> selectAppointments(String criteria) {
+        logger.info("MySQLServiceImpl :: In selectAppointments");
         List<Appointment> appointments = new ArrayList<Appointment>();
         try {
             appointments = mysqlRepository.selectAppointments(criteria);
@@ -409,6 +434,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public UserRegistration selectUser(String criteria) {
+        logger.info("MySQLServiceImpl :: In selectUser");
         UserRegistration userRegistration = new UserRegistration();
         try {
             userRegistration = mysqlRepository.selectUser(criteria);
@@ -422,6 +448,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public UserRegistration save(UserRegistration userRegistration) {
+        logger.info("MySQLServiceImpl :: In save");
         try {
             insertUserProfile(userRegistration);
         }

@@ -1,5 +1,7 @@
 package com.referexpert.referexpert.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -11,9 +13,12 @@ import com.referexpert.referexpert.beans.Coordinates;
 
 @Component
 public class GeoUtils {
+    
+    private static final Logger logger = LoggerFactory.getLogger(GeoUtils.class);
 
     public static boolean isDistanceInRange(Double srcLattitude, Double srcLongitude, Double destLattitude,
             Double destLongitude, int distance) {
+        logger.info("GeoUtils :: In isDistanceInRange");
         if (srcLattitude == null || destLattitude == null || srcLongitude == null || destLongitude == null) {
             return false;
         }
@@ -33,6 +38,7 @@ public class GeoUtils {
     
     public static double getDistnace(Double srcLattitude, Double srcLongitude, Double destLattitude,
             Double destLongitude, int distance) {
+        logger.info("GeoUtils :: In getDistnace");
         if (srcLattitude == null || destLattitude == null || srcLongitude == null || destLongitude == null) {
             return 0;
         }
@@ -51,6 +57,7 @@ public class GeoUtils {
     }
     
     public static Coordinates getCoordinates(String address, GeoApiContext geoApiContext) {
+        logger.info("GeoUtils :: In getCoordinates from Google API");
         try {
             GeocodingResult[] results = GeocodingApi.geocode(geoApiContext, address).await();
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
