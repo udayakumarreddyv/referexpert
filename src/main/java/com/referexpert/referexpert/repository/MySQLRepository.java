@@ -218,7 +218,7 @@ public class MySQLRepository {
 
     public List<UserRegistration> selectActiveUsers(String criteria) throws Exception {
         logger.info("MySQLRepository :: In selectActiveUsers");
-        StringBuffer query = new StringBuffer(QueryConstants.SELECT_ACTIVE_USER).append(criteria);
+        StringBuffer query = new StringBuffer(QueryConstants.SELECT_ACTIVE_USERS).append(criteria);
         List<UserRegistration> userRegistrations = mysqlJdbcTemplate.query(query.toString(), new Object[] {},
                 (rs, rowNum) -> {
                     UserRegistration userRegistration = populateUser(rs);

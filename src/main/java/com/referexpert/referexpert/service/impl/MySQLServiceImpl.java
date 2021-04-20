@@ -354,21 +354,13 @@ public class MySQLServiceImpl implements MySQLService {
     @Override
     public int insertAppointment(Appointment appointment) {
         logger.info("MySQLServiceImpl :: In insertAppointment");
-        String referFrom = null;
-        String referTo = null;
         String criteriaFrom = " email = '" + appointment.getAppointmentFrom() + "'";
-        List<UserRegistration> fromUsers = selectActiveUsers(criteriaFrom);
-        if (fromUsers != null && fromUsers.size() > 0) {
-            referFrom = fromUsers.get(0).getUserId();
-        }
+        UserRegistration fromUser = selectUser(criteriaFrom);
         String criteriaTo = " email = '" + appointment.getAppointmentTo() + "'";
-        List<UserRegistration> toUsers = selectActiveUsers(criteriaTo);
-        if (toUsers != null && toUsers.size() > 0) {
-            referTo = toUsers.get(0).getUserId();
-        }
+        UserRegistration toUser = selectUser(criteriaTo);
         int value = 0;
         try {
-            value = mysqlRepository.insertAppointment(appointment, referFrom, referTo);
+            value = mysqlRepository.insertAppointment(appointment, fromUser.getUserId(), toUser.getUserId());
         }
         catch (DuplicateKeyException e) {
             logger.error("Exception while inserting data into appointment");
