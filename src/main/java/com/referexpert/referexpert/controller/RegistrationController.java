@@ -99,7 +99,8 @@ public class RegistrationController {
         UserRegistration userRegistration = null;
         try {
             userRegistration = mapper.readValue(registration, UserRegistration.class);
-            logger.info("RegistrationController :: In registerUser : " + userRegistration.getEmail() + " referral : " + referralId);
+            logger.info("RegistrationController :: In registerUser : " + userRegistration.getEmail() + " referral : "
+                    + referralId);
         }
         catch (Exception e) {
             logger.error("Unable to parse the input :: " + registration);
@@ -125,7 +126,8 @@ public class RegistrationController {
                 mailMessage.setTo(userRegistration.getEmail());
                 mailMessage.setSubject("Complete Registration!");
                 mailMessage.setFrom(env.getProperty("spring.mail.username"));
-                mailMessage.setText("To confirm your account, please click here : " + env.getProperty("referexpert.confirm.account.url")
+                mailMessage.setText("To confirm your account, please click here : "
+                        + env.getProperty("referexpert.confirm.account.url") + "?email=" + userRegistration.getEmail()
                         + "and provide your email and token :: " + confirmationToken.getConfirmationToken());
                 emailSenderService.sendEmail(mailMessage);
                 // Once registered mark record as registered
@@ -208,7 +210,7 @@ public class RegistrationController {
             mailMessage.setSubject("You Referred to registered in ReferExpert Network");
             mailMessage.setFrom(env.getProperty("spring.mail.username"));
             mailMessage.setText("Congratulations!! Please register with ReferExpert using link :: "
-                    + env.getProperty("referexpert.register.url") + " User Referral id :: " + referralId);
+                    + env.getProperty("referexpert.register.url") + "?email=" + userEmail + " User Referral id :: " + referralId);
             emailSenderService.sendEmail(mailMessage);
         } else {
             entity = new ResponseEntity<>(new GenericResponse("Referral not Successful"), HttpStatus.BAD_REQUEST);
