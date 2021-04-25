@@ -96,7 +96,7 @@ public class ReferExpertController {
         mailMessage.setTo(toEmail);
         mailMessage.setSubject("You got Appointment Notification");
         mailMessage.setFrom(env.getProperty("spring.mail.username"));
-        mailMessage.setText("Please login to Refer Expert and perform action.");
+        mailMessage.setText("Please login to Refer Expert and perform required action." + env.getProperty("referexpert.signin.url"));
         emailSenderService.sendEmail(mailMessage);
     }
     

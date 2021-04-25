@@ -125,9 +125,8 @@ public class RegistrationController {
                 mailMessage.setTo(userRegistration.getEmail());
                 mailMessage.setSubject("Complete Registration!");
                 mailMessage.setFrom(env.getProperty("spring.mail.username"));
-                mailMessage.setText("To confirm your account, please click here : " + env.getProperty("application.url")
-                        + "referexpert/confirmaccount?token=" + confirmationToken.getConfirmationToken() + "&user="
-                        + userRegistration.getEmail());
+                mailMessage.setText("To confirm your account, please click here : " + env.getProperty("referexpert.confirm.account.url")
+                        + "and provide your email and token :: " + confirmationToken.getConfirmationToken());
                 emailSenderService.sendEmail(mailMessage);
                 // Once registered mark record as registered
                 mySQLService.updateUserReferral(userRegistration.getEmail(), Constants.ACTIVE);
@@ -199,7 +198,7 @@ public class RegistrationController {
     }
 
     private ResponseEntity<GenericResponse> processReferral(String userEmail, String tokenizer) {
-        logger.info("RegistrationController :: In processReferral : " + userEmail + " : " +tokenizer);
+        logger.info("RegistrationController :: In processReferral : " + userEmail + " : " + tokenizer);
         ResponseEntity<GenericResponse> entity = null;
         String referralId = UUID.randomUUID().toString();
         int value = mySQLService.insertUserReferral(referralId, userEmail, tokenizer, Constants.INACTIVE);
@@ -208,9 +207,8 @@ public class RegistrationController {
             mailMessage.setTo(tokenizer);
             mailMessage.setSubject("You Referred to registered in ReferExpert Network");
             mailMessage.setFrom(env.getProperty("spring.mail.username"));
-            mailMessage.setText(
-                    "Congratulations!! Please register with ReferExpert using the below link :: <Link to registration page of website>"
-                            + " Referral id :: " + referralId);
+            mailMessage.setText("Congratulations!! Please register with ReferExpert using link :: "
+                    + env.getProperty("referexpert.register.url") + " User Referral id :: " + referralId);
             emailSenderService.sendEmail(mailMessage);
         } else {
             entity = new ResponseEntity<>(new GenericResponse("Referral not Successful"), HttpStatus.BAD_REQUEST);
@@ -286,19 +284,34 @@ public class RegistrationController {
             return new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
         }
         logger.info("JSON to Object Conversion :: " + userRegistration != null ? userRegistration.toString() : null);
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(userRegistration.getEmail());
-        mailMessage.setSubject("Password rest request");
-        mailMessage.setFrom(env.getProperty("spring.mail.username"));
-        mailMessage.setText(
-                "Please click on below link to reset your password :: <Link to registration page of website>");
-        emailSenderService.sendEmail(mailMessage);
-        return new ResponseEntity<>(new GenericResponse("Email sent successful"), HttpStatus.OK);
+        UserRegistration user = getUserDetails(userRegistration.getEmail());
+        if (user.getUserId() != null) {
+            ConfirmationToken confirmationToken = new ConfirmationToken(user);
+            mySQLService.insertConfirmationToken(confirmationToken);
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setTo(user.getEmail());
+            mailMessage.setSubject("Password rest request");
+            mailMessage.setFrom(env.getProperty("spring.mail.username"));
+            mailMessage.setText(
+                    "Please click on below link to reset your password :: " + env.getProperty("referexpert.resetpass.url")
+                            + " with following confirmation token : " + confirmationToken.getConfirmationToken());
+            emailSenderService.sendEmail(mailMessage);
+            return new ResponseEntity<>(new GenericResponse("Email sent successful"), HttpStatus.OK);
+        } else {
+            logger.error("User not exists to send reset notification");
+            return new ResponseEntity<>(new GenericResponse("User doesn't exist in system"), HttpStatus.BAD_REQUEST);
+        }
     }
     
     @PostMapping(value = "/referexpert/resetpassword")
-    public ResponseEntity<GenericResponse> resetPassword(@RequestBody String registration) {
-       return managePassword(registration,"reset");
+    public ResponseEntity<GenericResponse> resetPassword(@RequestBody String registration,
+            @RequestParam("token") String token) {
+        if (mySQLService.selectConfirmationToken(token)) {
+            mySQLService.deleteConfirmationToken(token);
+            return managePassword(registration, "reset");
+        } else {
+            return new ResponseEntity<>(new GenericResponse("The link is invalid or broken!"), HttpStatus.NOT_FOUND);
+        }
     }
 
     private ResponseEntity<GenericResponse> managePassword(String registration, String action) {
@@ -315,19 +328,20 @@ public class RegistrationController {
             entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
         }
         logger.info("JSON to Object Conversion :: " + userRegistration != null ? userRegistration.toString() : null);
-        int value = mySQLService.updateUserPassword(userRegistration.getEmail(), bcryptEncoder.encode(userRegistration.getPassword()));
+        int value = mySQLService.updateUserPassword(userRegistration.getEmail(),
+                bcryptEncoder.encode(userRegistration.getPassword()));
         if (value == 0) {
             entity = new ResponseEntity<>(new GenericResponse("Issue in updating user profile"),
                     HttpStatus.BAD_REQUEST);
         } else {
-            if("reset".equals(action)) {
+            if ("reset".equals(action)) {
                 SimpleMailMessage mailMessage = new SimpleMailMessage();
                 mailMessage.setTo(userRegistration.getEmail());
                 mailMessage.setSubject("Password rest successful");
                 mailMessage.setFrom(env.getProperty("spring.mail.username"));
-                mailMessage.setText(
-                        "Your pasword reset succesful, please login here <link to login page> with your new password");
-                emailSenderService.sendEmail(mailMessage);                
+                mailMessage.setText("Your pasword reset succesful, please login here "
+                        + env.getProperty("referexpert.signin.url") + " with your new password");
+                emailSenderService.sendEmail(mailMessage);
             }
             entity = new ResponseEntity<>(new GenericResponse("Password updated Successfully"), HttpStatus.OK);
         }
