@@ -292,9 +292,9 @@ public class RegistrationController {
             mailMessage.setTo(user.getEmail());
             mailMessage.setSubject("Password rest request");
             mailMessage.setFrom(env.getProperty("spring.mail.username"));
-            mailMessage.setText(
-                    "Please click on below link to reset your password :: " + env.getProperty("referexpert.resetpass.url")
-                            + " with following confirmation token : " + confirmationToken.getConfirmationToken());
+            mailMessage.setText("Please click on below link to reset your password :: "
+                    + env.getProperty("referexpert.resetpass.url") + "?email=" + userRegistration.getEmail()
+                    + " with following confirmation token : " + confirmationToken.getConfirmationToken());
             emailSenderService.sendEmail(mailMessage);
             return new ResponseEntity<>(new GenericResponse("Email sent successful"), HttpStatus.OK);
         } else {
