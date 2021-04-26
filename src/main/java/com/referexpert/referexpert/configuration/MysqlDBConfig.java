@@ -55,7 +55,9 @@ public class MysqlDBConfig {
 	@Bean
 	public JdbcTemplate mysqlJdbcTemplate(DataSource mysqlDataSource) {
 	    logger.info("MysqlDBConfig :: Creating mysqlJdbcTemplate");
-		return new JdbcTemplate(mysqlDataSource);
+	    JdbcTemplate mysqlJdbcTemplate = new JdbcTemplate(mysqlDataSource);
+	    mysqlJdbcTemplate.setFetchSize(new Integer(env.getProperty(Constants.DATABASE_FETCH_SIZE)).intValue());
+		return mysqlJdbcTemplate;
 	}
 
 }

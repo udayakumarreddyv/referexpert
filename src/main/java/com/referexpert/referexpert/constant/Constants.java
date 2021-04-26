@@ -34,6 +34,8 @@ public class Constants {
     
     public static String MYSQL_DATASOURCE_MAX_WAIT= "mysql.datasource.max-wait";
     
+    public static String DATABASE_FETCH_SIZE= "database.fetch.size";
+    
     public static String ACTIVE = "Y";
     
     public static String INACTIVE = "N";

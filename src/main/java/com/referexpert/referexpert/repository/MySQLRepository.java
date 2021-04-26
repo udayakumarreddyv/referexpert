@@ -27,7 +27,7 @@ public class MySQLRepository {
 
     @Autowired
     private JdbcTemplate mysqlJdbcTemplate;
-
+  
     public List<UserType> selectAllUserTypes() throws Exception {
         logger.info("MySQLRepository :: In selectAllUserTypes");
         List<UserType> userTypes = mysqlJdbcTemplate.query(QueryConstants.SELECT_USER_TYPE, new Object[] {},

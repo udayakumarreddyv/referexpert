@@ -99,22 +99,22 @@ public class UserController {
         boolean isCriteriaPresent = false;
         if (!StringUtils.isEmpty(firstname)) {
             logger.info("UserController :: In selectUsersByParams firstname: " + firstname);
-            criteria.append(" and first_name like '%" + firstname + "%'");
+            criteria.append(" and first_name like '" + firstname + "%'");
             isCriteriaPresent = true;
         }
         if (!StringUtils.isEmpty(lastname)) {
             logger.info("UserController :: In selectUsersByParams lastname: " + lastname);
-            criteria.append(" and last_name like '%" + lastname + "%'");
+            criteria.append(" and last_name like '" + lastname + "%'");
             isCriteriaPresent = true;
         }
         if (!StringUtils.isEmpty(city)) {
             logger.info("UserController :: In selectUsersByParams city: " + city);
-            criteria.append(" and city like '%" + city + "%'");
+            criteria.append(" and city like '" + city + "%'");
             isCriteriaPresent = true;
         }
         if (!StringUtils.isEmpty(state)) {
             logger.info("UserController :: In selectUsersByParams state: " + state);
-            criteria.append(" and state like '%" + state + "%'");
+            criteria.append(" and state like '" + state + "%'");
             isCriteriaPresent = true;
         }
         if (!StringUtils.isEmpty(zip)) {
@@ -124,12 +124,12 @@ public class UserController {
         }
         if (!StringUtils.isEmpty(type)) {
             logger.info("UserController :: In selectUsersByParams type: " + type);
-            criteria.append(" and user_type like '%" + type + "%'");
+            criteria.append(" and user_type like '" + type + "%'");
             isCriteriaPresent = true;
         }
         if (!StringUtils.isEmpty(speciality)) {
             logger.info("UserController :: In selectUsersByParams speciality: " + speciality);
-            criteria.append(" and user_speciality like '%" + speciality + "%'");
+            criteria.append(" and user_speciality like '" + speciality + "%'");
             isCriteriaPresent = true;
         }
         
@@ -150,12 +150,12 @@ public class UserController {
         boolean isCriteriaPresent = false;
         if (!StringUtils.isEmpty(type)) {
             logger.info("UserController :: In selectUsersByDistance type: " + type);
-            criteria.append(" and user_type like '%" + type + "%'");
+            criteria.append(" and user_type like '" + type + "%'");
             isCriteriaPresent = true;
         }
         if (!StringUtils.isEmpty(speciality)) {
             logger.info("UserController :: In selectUsersByDistance speciality: " + speciality);
-            criteria.append(" and user_speciality like '%" + speciality + "%'");
+            criteria.append(" and user_speciality like '" + speciality + "%'");
             isCriteriaPresent = true;
         }
         if (isCriteriaPresent) {
@@ -177,12 +177,12 @@ public class UserController {
         boolean isCriteriaPresent = false;
         if (!StringUtils.isEmpty(type)) {
             logger.info("UserController :: In selectUsersByCoordinates type: " + type);
-            criteria.append(" and user_type like '%" + type + "%'");
+            criteria.append(" and user_type like '" + type + "%'");
             isCriteriaPresent = true;
         }
         if (!StringUtils.isEmpty(speciality)) {
             logger.info("UserController :: In selectUsersByCoordinates speciality: " + speciality);
-            criteria.append(" and user_speciality like '%" + speciality + "%'");
+            criteria.append(" and user_speciality like '" + speciality + "%'");
             isCriteriaPresent = true;
         }
         if (isCriteriaPresent) {
@@ -205,12 +205,12 @@ public class UserController {
         boolean isCriteriaPresent = false;
         if (!StringUtils.isEmpty(type)) {
             logger.info("UserController :: In selectUsersByAddress type: " + type);
-            criteria.append(" and user_type like '%" + type + "%'");
+            criteria.append(" and user_type like '" + type + "%'");
             isCriteriaPresent = true;
         }
         if (!StringUtils.isEmpty(speciality)) {
             logger.info("UserController :: In selectUsersByAddress speciality: " + speciality);
-            criteria.append(" and user_speciality like '%" + speciality + "%'");
+            criteria.append(" and user_speciality like '" + speciality + "%'");
             isCriteriaPresent = true;
         }
         if (isCriteriaPresent) {

@@ -128,7 +128,7 @@ public class RegistrationController {
                 mailMessage.setFrom(env.getProperty("spring.mail.username"));
                 mailMessage.setText("To confirm your account, please click here : "
                         + env.getProperty("referexpert.confirm.account.url") + "?email=" + userRegistration.getEmail()
-                        + "and provide your email and token :: " + confirmationToken.getConfirmationToken());
+                        + " and provide your email and token :: " + confirmationToken.getConfirmationToken());
                 emailSenderService.sendEmail(mailMessage);
                 // Once registered mark record as registered
                 mySQLService.updateUserReferral(userRegistration.getEmail(), Constants.ACTIVE);
