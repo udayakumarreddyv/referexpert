@@ -128,7 +128,7 @@ public class RegistrationController {
                 mailMessage.setFrom(env.getProperty("spring.mail.username"));
                 mailMessage.setText("To confirm your account, please click here : "
                         + env.getProperty("referexpert.confirm.account.url") + "?email=" + userRegistration.getEmail()
-                        + " and provide your email and token :: " + confirmationToken.getConfirmationToken());
+                        + "&token=" + confirmationToken.getConfirmationToken());
                 emailSenderService.sendEmail(mailMessage);
                 // Once registered mark record as registered
                 mySQLService.updateUserReferral(userRegistration.getEmail(), Constants.ACTIVE);
@@ -210,7 +210,7 @@ public class RegistrationController {
             mailMessage.setSubject("You Referred to registered in ReferExpert Network");
             mailMessage.setFrom(env.getProperty("spring.mail.username"));
             mailMessage.setText("Congratulations!! Please register with ReferExpert using link :: "
-                    + env.getProperty("referexpert.register.url") + "?email=" + userEmail + " User Referral id :: " + referralId);
+                    + env.getProperty("referexpert.register.url") + "?email=" + userEmail + "&token=" + referralId);
             emailSenderService.sendEmail(mailMessage);
         } else {
             entity = new ResponseEntity<>(new GenericResponse("Referral not Successful"), HttpStatus.BAD_REQUEST);
@@ -296,7 +296,7 @@ public class RegistrationController {
             mailMessage.setFrom(env.getProperty("spring.mail.username"));
             mailMessage.setText("Please click on below link to reset your password :: "
                     + env.getProperty("referexpert.resetpass.url") + "?email=" + userRegistration.getEmail()
-                    + " with following confirmation token : " + confirmationToken.getConfirmationToken());
+                    + "&token=" + confirmationToken.getConfirmationToken());
             emailSenderService.sendEmail(mailMessage);
             return new ResponseEntity<>(new GenericResponse("Email sent successful"), HttpStatus.OK);
         } else {
