@@ -2,7 +2,7 @@ package com.referexpert.referexpert.constant;
 
 public class QueryConstants {
 
-    public static String SELECT_USER_TYPE = "select user_type from user_type order by user_type";
+    public static String SELECT_USER_TYPE = "select user_type from user_type where user_type <> 'ADMIN' order by user_type";
 
     public static String SELECT_USER_TYPE_BY_USER_TYPE = "select user_type from user_type where user_type = ?";
 
@@ -10,13 +10,13 @@ public class QueryConstants {
 
     public static String SELECT_USER_SPL_ID = "select us.user_speciality_id user_speciality_id "
             + " from user_speciality us, user_type ut " + "where us.user_type_id = ut.user_type_id "
-            + "and ut.user_type_id = ? and us.user_speciality = ? order by us.user_speciality";
+            + " and ut.user_type <> 'ADMIN' and ut.user_type_id = ? and us.user_speciality = ? order by us.user_speciality";
 
     public static String SELECT_USER_SPECIALITY_BY_USER_TYPE = "select us.user_speciality user_speciality "
             + " from user_speciality us, user_type ut " + "where us.user_type_id = ut.user_type_id "
-            + "and ut.user_type = ? order by us.user_speciality";
+            + " and ut.user_type <> 'ADMIN' and ut.user_type = ? order by us.user_speciality";
 
-    public static String SELECT_USER_SPECIALITY = "select user_type from user_type";
+    public static String SELECT_USER_SPECIALITY = "select user_type from user_type where user_type <> 'ADMIN'";
 
     public static String INSERT_USER_PROFILE = "insert into user_profile (user_id, first_name, last_name, email, password, user_type_id, "
             + "user_speciality_id, address, city, state, zip, phone, fax, is_active, lattitude, longitude, created_timestamp, updated_timestamp) "
