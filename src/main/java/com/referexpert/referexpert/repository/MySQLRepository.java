@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.ConfirmationToken;
+import com.referexpert.referexpert.beans.RefreshToken;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
@@ -317,5 +318,64 @@ public class MySQLRepository {
         } else {
             return new ArrayList<Appointment>();
         }
+    }
+    
+	public RefreshToken findByRequestTokenId(String refreshTokenId) {
+		logger.info("MySQLRepository :: In findByRequestTokenId");
+		StringBuffer query = new StringBuffer(QueryConstants.SELECT_REFRESH_TOKEN)
+				.append("refresh_token_id = '" + refreshTokenId + "'");
+		List<RefreshToken> refreshTokens = mysqlJdbcTemplate.query(query.toString(), new Object[] {}, (rs, rowNum) -> {
+			RefreshToken refreshToken = populateRefreshToken(rs);
+			return refreshToken;
+		});
+		if (refreshTokens != null && refreshTokens.size() > 0) {
+			return refreshTokens.get(0);
+		} else {
+			return new RefreshToken();
+		}
+	}
+
+	public RefreshToken findByRequestToken(String token) {
+		logger.info("MySQLRepository :: In findByRequestToken");
+		StringBuffer query = new StringBuffer(QueryConstants.SELECT_REFRESH_TOKEN).append("token = '" + token + "'");
+		List<RefreshToken> refreshTokens = mysqlJdbcTemplate.query(query.toString(), new Object[] {}, (rs, rowNum) -> {
+			RefreshToken refreshToken = populateRefreshToken(rs);
+			return refreshToken;
+		});
+		if (refreshTokens != null && refreshTokens.size() > 0) {
+			return refreshTokens.get(0);
+		} else {
+			return new RefreshToken();
+		}
+	}
+
+	private RefreshToken populateRefreshToken(ResultSet rs) throws SQLException {
+		int i = 0;
+		RefreshToken refreshToken = new RefreshToken();
+		refreshToken.setRefreshTokenId(rs.getString(++i));
+		refreshToken.setUserId(rs.getString(++i));
+		refreshToken.setToken(rs.getString(++i));
+		refreshToken.setExpiryDate(rs.getTimestamp(++i));
+		return refreshToken;
+	}
+	
+	public int insertRefreshToken(RefreshToken refreshToken) throws Exception {
+		logger.info("MySQLRepository :: In insertRefreshToken");
+		int value = mysqlJdbcTemplate.update(QueryConstants.INSERT_REFRESH_TOKEN,
+				new Object[] { refreshToken.getRefreshTokenId(), refreshToken.getUserId(), refreshToken.getToken(),
+						refreshToken.getExpiryDate() });
+		return value;
+	}
+	
+	public int deleteRefreshToken(String token) throws Exception {
+        logger.info("MySQLRepository :: In deleteRefreshToken");
+        int value = mysqlJdbcTemplate.update(QueryConstants.DELETE_REFRESH_TOKEN, new Object[] { token });
+        return value;
+    }
+	
+	public int deleteRefreshTokenByUser(String userId) throws Exception {
+        logger.info("MySQLRepository :: In deleteRefreshTokenByUser");
+        int value = mysqlJdbcTemplate.update(QueryConstants.DELETE_REFRESH_TOKEN_BYUSER, new Object[] { userId });
+        return value;
     }
 }

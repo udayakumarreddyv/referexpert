@@ -54,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/authenticate", "/register", "/referexpert/referuser", "/health",
                         "/referexpert/usertype*", "/referexpert/confirmaccount", "/referexpert/usertype/**",
                         "/referexpert/registeruser", "/referexpert/validateuser", "/referexpert/resetpassword",
-                        "/referexpert/resetnotification")
+                        "/referexpert/resetnotification","/referexpert/refreshtoken", "/referexpert/logout")
                 .permitAll().anyRequest().authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

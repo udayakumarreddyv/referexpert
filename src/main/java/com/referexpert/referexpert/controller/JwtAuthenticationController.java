@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +14,21 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.referexpert.referexpert.beans.JwtRequest;
 import com.referexpert.referexpert.beans.JwtResponse;
+import com.referexpert.referexpert.beans.RefreshToken;
+import com.referexpert.referexpert.beans.TokenRefreshRequest;
+import com.referexpert.referexpert.beans.UserRegistration;
+import com.referexpert.referexpert.exception.TokenRefreshException;
 import com.referexpert.referexpert.security.JwtTokenUtil;
 import com.referexpert.referexpert.service.JwtUserDetailsService;
+import com.referexpert.referexpert.service.MySQLService;
+import com.referexpert.referexpert.service.impl.RefreshTokenService;
 
 import io.jsonwebtoken.impl.DefaultClaims;
 
@@ -42,8 +46,14 @@ public class JwtAuthenticationController {
 
 	@Autowired
 	private JwtUserDetailsService userDetailsService;
+	
+	@Autowired
+	RefreshTokenService refreshTokenService;
+	
+	@Autowired
+    private MySQLService mySQLService;
 
-	@RequestMapping(value = "/referexpert/validateuser", method = RequestMethod.POST)
+	@PostMapping("/referexpert/validateuser")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 	    logger.info("JwtAuthenticationController :: In createAuthenticationToken : " + authenticationRequest.getUsername());
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -51,8 +61,20 @@ public class JwtAuthenticationController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
+		
+		String criteria = " email = '" + authenticationRequest.getUsername() + "'";
+        UserRegistration userRegistration =  mySQLService.selectUser(criteria);
+                
+		RefreshToken refreshToken = refreshTokenService.createRefreshToken(userRegistration.getUserId());
 
-		return ResponseEntity.ok(new JwtResponse(token));
+		return ResponseEntity.ok(new JwtResponse(token, refreshToken.getToken()));
+	}
+	
+	@PostMapping("/referexpert/logout")
+	public ResponseEntity<?> logoutUser(@RequestBody TokenRefreshRequest request) {
+		String token = request.getRefreshToken();
+		refreshTokenService.deleteByToken(token);
+		return ResponseEntity.ok("Log out successful!");
 	}
 
 	private void authenticate(String username, String password) throws Exception {
@@ -66,14 +88,22 @@ public class JwtAuthenticationController {
 		}
 	}
 	
-	@RequestMapping(value = "/referexpert/refreshtoken", method = RequestMethod.GET)
-	public ResponseEntity<?> refreshtoken(HttpServletRequest request) throws Exception {
-		// From the HttpRequest get the claims
-		DefaultClaims claims = (io.jsonwebtoken.impl.DefaultClaims) request.getAttribute("claims");
+	@GetMapping("/referexpert/refreshtoken")
+	public ResponseEntity<?> refreshtoken(@RequestBody TokenRefreshRequest request) throws Exception {
+		String refreshToken = request.getRefreshToken();
 
-		Map<String, Object> expectedMap = getMapFromIoJsonwebtokenClaims(claims);
-		String token = jwtTokenUtil.doGenerateRefreshToken(expectedMap, expectedMap.get("sub").toString());
-		return ResponseEntity.ok(new JwtResponse(token));
+		try {
+			RefreshToken rTwo = refreshTokenService.verifyExpiration(refreshTokenService.findByToken(refreshToken));
+			String criteria = " user_id = '" + rTwo.getUserId() + "'";
+			UserRegistration userRegistration = mySQLService.selectUser(criteria);
+
+			String token = jwtTokenUtil.generateTokenFromUsername(userRegistration.getEmail());
+
+			return ResponseEntity.ok(new JwtResponse(token, refreshToken));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TokenRefreshException(refreshToken, "Refresh token is not in database!");
+		}
 	}
 	
 	public Map<String, Object> getMapFromIoJsonwebtokenClaims(DefaultClaims claims) {

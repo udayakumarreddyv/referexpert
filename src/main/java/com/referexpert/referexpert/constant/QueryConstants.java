@@ -67,4 +67,12 @@ public class QueryConstants {
     public static String SELECT_APPOINTMENT = "select re.appointment_id, f.email, f.first_name, f.last_name, t.email, t.first_name, t.last_name, "
             + "re.date_time, re.is_accepted, re.is_served, re.subject, re.reason from appointment re, user_profile f, user_profile t "
             + "where re.appointment_from = f.user_id and re.appointment_to = t.user_id and ";
+    
+    public static String SELECT_REFRESH_TOKEN = "select refresh_token_id, user_id, token, expiry_date from refresh_token where ";
+    
+    public static String INSERT_REFRESH_TOKEN = "insert into refresh_token (refresh_token_id, user_id, token, expiry_date) values (?,?,?,?)";
+    
+    public static String DELETE_REFRESH_TOKEN = "delete from refresh_token where token = ?";
+    
+    public static String DELETE_REFRESH_TOKEN_BYUSER = "delete from refresh_token where user_id = ?";
 }
