@@ -88,7 +88,7 @@ public class JwtAuthenticationController {
 		}
 	}
 	
-	@GetMapping("/referexpert/refreshtoken")
+	@PostMapping("/referexpert/refreshtoken")
 	public ResponseEntity<?> refreshtoken(@RequestBody TokenRefreshRequest request) throws Exception {
 		String refreshToken = request.getRefreshToken();
 
