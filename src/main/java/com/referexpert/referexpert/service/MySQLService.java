@@ -38,7 +38,7 @@ public interface MySQLService {
 
     public int insertUserReferral(String referralId, String userEmail, String docEmail, String isRegistered);
 
-    public boolean selectUserReferral(String userReferralId);
+    public boolean selectUserReferral(String userReferralId, String docEmail);
 
     public int updateUserReferral(String email, String indicator);
 

@@ -108,7 +108,7 @@ public class RegistrationController {
             entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
         }
         logger.info("JSON to Object Conversion :: " + userRegistration != null ? userRegistration.toString() : null);
-        if (mySQLService.selectUserReferral(referralId)) {
+        if (mySQLService.selectUserReferral(referralId, userRegistration.getEmail())) {
             userRegistration.setUserId(UUID.randomUUID().toString());
             userRegistration.setPassword(bcryptEncoder.encode(userRegistration.getPassword()));
             int value = mySQLService.insertUserProfile(userRegistration);

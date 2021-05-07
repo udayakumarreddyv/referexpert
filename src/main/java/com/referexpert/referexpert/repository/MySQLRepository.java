@@ -197,10 +197,10 @@ public class MySQLRepository {
         return value;
     }
 
-    public boolean selectUserReferral(String userReferralId) throws Exception {
+    public boolean selectUserReferral(String userReferralId, String docEmail) throws Exception {
         logger.info("MySQLRepository :: In selectUserReferral");
         List<String> referrals = mysqlJdbcTemplate.query(QueryConstants.SELECT_USER_REFERRAL,
-                new Object[] { userReferralId }, (rs, rowNum) -> {
+                new Object[] { userReferralId, docEmail }, (rs, rowNum) -> {
                     return rs.getString(1);
                 });
         if (referrals != null && referrals.size() > 0) {

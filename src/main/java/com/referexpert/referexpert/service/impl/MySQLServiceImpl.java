@@ -264,10 +264,10 @@ public class MySQLServiceImpl implements MySQLService {
     }
 
     @Override
-    public boolean selectUserReferral(String userReferralId) {
+    public boolean selectUserReferral(String userReferralId, String docEmail) {
         logger.info("MySQLServiceImpl :: In selectUserReferral");
         try {
-            return mysqlRepository.selectUserReferral(userReferralId);
+            return mysqlRepository.selectUserReferral(userReferralId, docEmail);
         }
         catch (Exception e) {
             logger.error("Exception while fetching data for user_referral");

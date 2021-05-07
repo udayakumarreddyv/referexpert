@@ -89,58 +89,63 @@ public class UserController {
         return entity;
     }
     
-    @GetMapping(value = "/referexpert/users")
-    public ResponseEntity<List<UserRegistration>> selectUsersByParams(@RequestParam(required = false) String firstname,
-            @RequestParam(required = false) String lastname, @RequestParam(required = false) String city,
-            @RequestParam(required = false) String state, @RequestParam(required = false) String zip,
-            @RequestParam(required = false) String type, @RequestParam(required = false) String speciality) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
-        boolean isCriteriaPresent = false;
-        if (!StringUtils.isEmpty(firstname)) {
-            logger.info("UserController :: In selectUsersByParams firstname: " + firstname);
-            criteria.append(" and first_name like '" + firstname + "%'");
-            isCriteriaPresent = true;
-        }
-        if (!StringUtils.isEmpty(lastname)) {
-            logger.info("UserController :: In selectUsersByParams lastname: " + lastname);
-            criteria.append(" and last_name like '" + lastname + "%'");
-            isCriteriaPresent = true;
-        }
-        if (!StringUtils.isEmpty(city)) {
-            logger.info("UserController :: In selectUsersByParams city: " + city);
-            criteria.append(" and city like '" + city + "%'");
-            isCriteriaPresent = true;
-        }
-        if (!StringUtils.isEmpty(state)) {
-            logger.info("UserController :: In selectUsersByParams state: " + state);
-            criteria.append(" and state like '" + state + "%'");
-            isCriteriaPresent = true;
-        }
-        if (!StringUtils.isEmpty(zip)) {
-            logger.info("UserController :: In selectUsersByParams zip: " + zip);
-            criteria.append(" and zip = '" + zip + "'");
-            isCriteriaPresent = true;
-        }
-        if (!StringUtils.isEmpty(type)) {
-            logger.info("UserController :: In selectUsersByParams type: " + type);
-            criteria.append(" and user_type like '" + type + "%'");
-            isCriteriaPresent = true;
-        }
-        if (!StringUtils.isEmpty(speciality)) {
-            logger.info("UserController :: In selectUsersByParams speciality: " + speciality);
-            criteria.append(" and user_speciality like '" + speciality + "%'");
-            isCriteriaPresent = true;
-        }
-        
-        if (isCriteriaPresent) {
-            List<UserRegistration> users = mySQLService.selectActiveUsers(criteria.toString());
-            return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
-        } else {
-            logger.info("UserController :: In selectUsersByParams returning empty as no criteiria passed");
-            return new ResponseEntity<List<UserRegistration>>(new ArrayList<UserRegistration>(), HttpStatus.OK);
-        }
-    }
+	@GetMapping(value = "/referexpert/users")
+	public ResponseEntity<List<UserRegistration>> selectUsersByParams(@RequestParam(required = false) String firstname,
+			@RequestParam(required = false) String lastname, @RequestParam(required = false) String city,
+			@RequestParam(required = false) String state, @RequestParam(required = false) String zip,
+			@RequestParam(required = false) String type, @RequestParam(required = false) String speciality,
+			@RequestParam(required = false) String active) {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
+		boolean isCriteriaPresent = false;
+		if (!StringUtils.isEmpty(firstname)) {
+			logger.info("UserController :: In selectUsersByParams firstname: " + firstname);
+			criteria.append(" and first_name like '" + firstname + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(lastname)) {
+			logger.info("UserController :: In selectUsersByParams lastname: " + lastname);
+			criteria.append(" and last_name like '" + lastname + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(city)) {
+			logger.info("UserController :: In selectUsersByParams city: " + city);
+			criteria.append(" and city like '" + city + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(state)) {
+			logger.info("UserController :: In selectUsersByParams state: " + state);
+			criteria.append(" and state like '" + state + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(zip)) {
+			logger.info("UserController :: In selectUsersByParams zip: " + zip);
+			criteria.append(" and zip = '" + zip + "'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(type)) {
+			logger.info("UserController :: In selectUsersByParams type: " + type);
+			criteria.append(" and user_type like '" + type + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(speciality)) {
+			logger.info("UserController :: In selectUsersByParams speciality: " + speciality);
+			criteria.append(" and user_speciality like '" + speciality + "%'");
+			isCriteriaPresent = true;
+		}
+		if (StringUtils.isEmpty(active)) {
+			logger.info("UserController :: In selectUsersByParams active: " + active);
+			criteria.append(" and is_active = 'Y'");
+		}
+		
+		if (isCriteriaPresent) {
+			List<UserRegistration> users = mySQLService.selectActiveUsers(criteria.toString());
+			return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
+		} else {
+			logger.info("UserController :: In selectUsersByParams returning empty as no criteiria passed");
+			return new ResponseEntity<List<UserRegistration>>(new ArrayList<UserRegistration>(), HttpStatus.OK);
+		}
+	}
     
     @GetMapping(value = "/referexpert/users/distance/{distance}")
     public ResponseEntity<List<UserRegistration>> selectUsersByDistance(@PathVariable("distance") int distance,

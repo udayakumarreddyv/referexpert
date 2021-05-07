@@ -45,7 +45,7 @@ public class QueryConstants {
             + "created_timestamp, updated_timestamp) values (?,?,?,?,?,?)";
 
     public static String SELECT_USER_REFERRAL = "select user_referral_id, user_email, doc_email, is_registered,created_timestamp, updated_timestamp "
-            + " from user_referral where user_referral_id = ?";
+            + " from user_referral where user_referral_id = ? and doc_email = ?";
 
     public static String UPDATE_USER_REFERRAL = "update user_referral set is_registered = ?, updated_timestamp = ? where doc_email = ?";
 
@@ -55,7 +55,7 @@ public class QueryConstants {
     
     public static String SELECT_ACTIVE_USERS = "select up.user_id, up.first_name, up.last_name, up.email, ut.user_type, us.user_speciality, up.address, "
             + "up.city, up.state, up.zip, up.phone, up.fax, up.is_active, up.password, up.lattitude, up.longitude from user_profile up, user_type ut, user_speciality us "
-            + "where up.user_type_id = ut.user_type_id and up.user_speciality_id = us.user_speciality_id and up.is_active = 'Y' and user_type <> 'ADMIN' and ";
+            + "where up.user_type_id = ut.user_type_id and up.user_speciality_id = us.user_speciality_id and user_type <> 'ADMIN' and ";
 
     public static String INSERT_APPOINTMENT = "insert into appointment (appointment_id, appointment_from, appointment_to, date_time, subject, reason, "
             + "is_accepted, is_served, created_timestamp, updated_timestamp) values (?,?,?,?,?,?,?,?,?,?)";
