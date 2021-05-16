@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.maps.GeoApiContext;
 import com.referexpert.referexpert.beans.Coordinates;
 import com.referexpert.referexpert.beans.GenericResponse;
+import com.referexpert.referexpert.beans.UserCount;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.constant.Constants;
 import com.referexpert.referexpert.service.MySQLService;
@@ -226,5 +227,15 @@ public class UserController {
             logger.info("UserController :: In selectUsersByAddress returning empty as no criteiria passed");
             return new ResponseEntity<List<UserRegistration>>(new ArrayList<UserRegistration>(), HttpStatus.OK);
         }
+    }
+    
+    @GetMapping(value = "/referexpert/users/count")
+    public ResponseEntity<UserCount> selectUserCounts() {
+    	UserCount userCount = new UserCount();
+    	userCount.setActive(mySQLService.getUserCountByStatus(Constants.ACTIVE));
+    	userCount.setPending(mySQLService.getUserCountByStatus(Constants.PENDING));
+    	userCount.setDisabled(mySQLService.getUserCountByStatus(Constants.INACTIVE));
+    	userCount.setTotal(userCount.getActive()+userCount.getPending()+userCount.getDisabled());
+    	return new ResponseEntity<UserCount>(userCount, HttpStatus.OK);
     }
 }

@@ -116,7 +116,7 @@ public class MySQLRepository {
                         userRegistration.getLastName(), userRegistration.getEmail(), userRegistration.getPassword(),
                         userTypeId, userSpecialityId, userRegistration.getAddress(), userRegistration.getCity(),
                         userRegistration.getState(), userRegistration.getZip(), userRegistration.getPhone(),
-                        userRegistration.getFax(), Constants.INACTIVE, userRegistration.getLattitude(),
+                        userRegistration.getFax(), Constants.PENDING, userRegistration.getLattitude(),
                         userRegistration.getLongitude(), new Timestamp(System.currentTimeMillis()),
                         new Timestamp(System.currentTimeMillis()) });
         return value;
@@ -378,4 +378,16 @@ public class MySQLRepository {
         int value = mysqlJdbcTemplate.update(QueryConstants.DELETE_REFRESH_TOKEN_BYUSER, new Object[] { userId });
         return value;
     }
+	
+	public int getUserCountByStatus(String activeFlag) {
+		logger.info("MySQLRepository :: In getUserCountByStatus");
+		List<Integer> counts = mysqlJdbcTemplate.query(QueryConstants.SELECT_USER_COUNTS, new Object[] { activeFlag }, (rs, rowNum) -> {
+            return rs.getInt(1);
+        });
+        if (counts != null && counts.size() > 0) {
+            return counts.get(0);
+        } else {
+            return 0;
+        }
+	}
 }

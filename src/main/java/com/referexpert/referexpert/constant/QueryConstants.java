@@ -75,4 +75,6 @@ public class QueryConstants {
     public static String DELETE_REFRESH_TOKEN = "delete from refresh_token where token = ?";
     
     public static String DELETE_REFRESH_TOKEN_BYUSER = "delete from refresh_token where user_id = ?";
+    
+    public static String SELECT_USER_COUNTS = "select count(0) from user_profile where is_active = ? and user_type_id <> 1";
 }

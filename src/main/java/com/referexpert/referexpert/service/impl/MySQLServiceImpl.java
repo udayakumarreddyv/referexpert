@@ -450,4 +450,17 @@ public class MySQLServiceImpl implements MySQLService {
         }
         return userRegistration;
     }
+    
+    @Override
+    public int getUserCountByStatus(String activeFlag) {
+    	logger.info("MySQLServiceImpl :: In getUserCountByStatus");
+        try {
+            return mysqlRepository.getUserCountByStatus(activeFlag);
+        }
+        catch (Exception e) {
+            logger.error("Exception while fetching data from User profile");
+            logger.error("Exception details :: " + e);
+            return 0;
+        }	
+    }
 }

@@ -59,4 +59,6 @@ public interface MySQLService {
     public UserRegistration selectUser(String criteria);
     
     public UserRegistration save(UserRegistration userRegistration);
+    
+    public int getUserCountByStatus(String activeFlag);
 }
