@@ -119,6 +119,9 @@ public class ReferExpertController {
         if (Constants.SERVICE.equals(type)) {
             value = mySQLService.updateAppointmentServed(appointmentId, status);
         } else {
+        	if(Constants.INACTIVE.equals(status)) {
+        		mySQLService.updateAppointmentServed(appointmentId, Constants.INACTIVE);
+        	}
             value = mySQLService.updateAppointmentAccepted(appointmentId, status);
         }
         if (value == 0) {

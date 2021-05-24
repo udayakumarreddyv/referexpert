@@ -210,7 +210,7 @@ public class RegistrationController {
             mailMessage.setSubject("You Referred to registered in ReferExpert Network");
             mailMessage.setFrom(env.getProperty("spring.mail.username"));
             mailMessage.setText("Congratulations!! Please register with ReferExpert using link :: "
-                    + env.getProperty("referexpert.register.url") + "?email=" + userEmail + "&token=" + referralId);
+                    + env.getProperty("referexpert.register.url") + "?email=" + tokenizer + "&token=" + referralId);
             emailSenderService.sendEmail(mailMessage);
         } else {
             entity = new ResponseEntity<>(new GenericResponse("Referral not Successful"), HttpStatus.BAD_REQUEST);

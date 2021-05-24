@@ -91,22 +91,22 @@ public class UserController {
     }
     
 	@GetMapping(value = "/referexpert/users")
-	public ResponseEntity<List<UserRegistration>> selectUsersByParams(@RequestParam(required = false) String firstname,
-			@RequestParam(required = false) String lastname, @RequestParam(required = false) String city,
+	public ResponseEntity<List<UserRegistration>> selectUsersByParams(@RequestParam(required = false) String firstName,
+			@RequestParam(required = false) String lastName, @RequestParam(required = false) String city,
 			@RequestParam(required = false) String state, @RequestParam(required = false) String zip,
 			@RequestParam(required = false) String type, @RequestParam(required = false) String speciality,
 			@RequestParam(required = false) String active) {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
 		boolean isCriteriaPresent = false;
-		if (!StringUtils.isEmpty(firstname)) {
-			logger.info("UserController :: In selectUsersByParams firstname: " + firstname);
-			criteria.append(" and first_name like '" + firstname + "%'");
+		if (!StringUtils.isEmpty(firstName)) {
+			logger.info("UserController :: In selectUsersByParams firstname: " + firstName);
+			criteria.append(" and first_name like '" + firstName + "%'");
 			isCriteriaPresent = true;
 		}
-		if (!StringUtils.isEmpty(lastname)) {
-			logger.info("UserController :: In selectUsersByParams lastname: " + lastname);
-			criteria.append(" and last_name like '" + lastname + "%'");
+		if (!StringUtils.isEmpty(lastName)) {
+			logger.info("UserController :: In selectUsersByParams lastname: " + lastName);
+			criteria.append(" and last_name like '" + lastName + "%'");
 			isCriteriaPresent = true;
 		}
 		if (!StringUtils.isEmpty(city)) {
@@ -149,57 +149,79 @@ public class UserController {
 	}
     
     @GetMapping(value = "/referexpert/users/distance/{distance}")
-    public ResponseEntity<List<UserRegistration>> selectUsersByDistance(@PathVariable("distance") int distance,
-            @RequestParam(required = false) String type, @RequestParam(required = false) String speciality) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
-        boolean isCriteriaPresent = false;
-        if (!StringUtils.isEmpty(type)) {
-            logger.info("UserController :: In selectUsersByDistance type: " + type);
-            criteria.append(" and user_type like '" + type + "%'");
-            isCriteriaPresent = true;
-        }
-        if (!StringUtils.isEmpty(speciality)) {
-            logger.info("UserController :: In selectUsersByDistance speciality: " + speciality);
-            criteria.append(" and user_speciality like '" + speciality + "%'");
-            isCriteriaPresent = true;
-        }
-        if (isCriteriaPresent) {
-            List<UserRegistration> users = mySQLService.selectActiveUsersByDistance(criteria.toString(), distance,
-                    userDetails.getUsername());
-            return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
-        } else {
-            logger.info("UserController :: In selectUsersByDistance returning empty as no criteiria passed");
-            return new ResponseEntity<List<UserRegistration>>(new ArrayList<UserRegistration>(), HttpStatus.OK);
-        }
-    }
+	public ResponseEntity<List<UserRegistration>> selectUsersByDistance(@PathVariable("distance") int distance,
+			@RequestParam(required = false) String type, @RequestParam(required = false) String speciality,
+			@RequestParam(required = false) String firstName, @RequestParam(required = false) String lastName) {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
+		boolean isCriteriaPresent = false;
+		if (!StringUtils.isEmpty(firstName)) {
+			logger.info("UserController :: In selectUsersByDistance firstname: " + firstName);
+			criteria.append(" and first_name like '" + firstName + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(lastName)) {
+			logger.info("UserController :: In selectUsersByDistance lastname: " + lastName);
+			criteria.append(" and last_name like '" + lastName + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(type)) {
+			logger.info("UserController :: In selectUsersByDistance type: " + type);
+			criteria.append(" and user_type like '" + type + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(speciality)) {
+			logger.info("UserController :: In selectUsersByDistance speciality: " + speciality);
+			criteria.append(" and user_speciality like '" + speciality + "%'");
+			isCriteriaPresent = true;
+		}
+		if (isCriteriaPresent) {
+			List<UserRegistration> users = mySQLService.selectActiveUsersByDistance(criteria.toString(), distance,
+					userDetails.getUsername());
+			return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
+		} else {
+			logger.info("UserController :: In selectUsersByDistance returning empty as no criteiria passed");
+			return new ResponseEntity<List<UserRegistration>>(new ArrayList<UserRegistration>(), HttpStatus.OK);
+		}
+	}
 
     @GetMapping(value = "/referexpert/users/distance/{lattitude}/{longitude}/{distance}")
-    public ResponseEntity<List<UserRegistration>> selectUsersByCoordinates(@PathVariable("lattitude") Double lattitude,
-            @PathVariable("longitude") Double longitude, @PathVariable("distance") int distance,
-            @RequestParam(required = false) String type, @RequestParam(required = false) String speciality) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
-        boolean isCriteriaPresent = false;
-        if (!StringUtils.isEmpty(type)) {
-            logger.info("UserController :: In selectUsersByCoordinates type: " + type);
-            criteria.append(" and user_type like '" + type + "%'");
-            isCriteriaPresent = true;
-        }
-        if (!StringUtils.isEmpty(speciality)) {
-            logger.info("UserController :: In selectUsersByCoordinates speciality: " + speciality);
-            criteria.append(" and user_speciality like '" + speciality + "%'");
-            isCriteriaPresent = true;
-        }
-        if (isCriteriaPresent) {
-            List<UserRegistration> users = mySQLService.selectActiveUsersByCoordinates(criteria.toString(), lattitude,
-                    longitude, distance);
-            return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
-        } else {
-            logger.info("UserController :: In selectUsersByCoordinates returning empty as no criteiria passed");
-            return new ResponseEntity<List<UserRegistration>>(new ArrayList<UserRegistration>(), HttpStatus.OK);
-        }
-    }
+	public ResponseEntity<List<UserRegistration>> selectUsersByCoordinates(@PathVariable("lattitude") Double lattitude,
+			@PathVariable("longitude") Double longitude, @PathVariable("distance") int distance,
+			@RequestParam(required = false) String type, @RequestParam(required = false) String speciality,
+			@RequestParam(required = false) String firstName, @RequestParam(required = false) String lastName) {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
+		boolean isCriteriaPresent = false;
+		if (!StringUtils.isEmpty(firstName)) {
+			logger.info("UserController :: In selectUsersByCoordinates firstname: " + firstName);
+			criteria.append(" and first_name like '" + firstName + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(lastName)) {
+			logger.info("UserController :: In selectUsersByCoordinates lastname: " + lastName);
+			criteria.append(" and last_name like '" + lastName + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(type)) {
+			logger.info("UserController :: In selectUsersByCoordinates type: " + type);
+			criteria.append(" and user_type like '" + type + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(speciality)) {
+			logger.info("UserController :: In selectUsersByCoordinates speciality: " + speciality);
+			criteria.append(" and user_speciality like '" + speciality + "%'");
+			isCriteriaPresent = true;
+		}
+		if (isCriteriaPresent) {
+			List<UserRegistration> users = mySQLService.selectActiveUsersByCoordinates(criteria.toString(), lattitude,
+					longitude, distance);
+			return new ResponseEntity<List<UserRegistration>>(users, HttpStatus.OK);
+		} else {
+			logger.info("UserController :: In selectUsersByCoordinates returning empty as no criteiria passed");
+			return new ResponseEntity<List<UserRegistration>>(new ArrayList<UserRegistration>(), HttpStatus.OK);
+		}
+	}
 
     @GetMapping(value = "/referexpert/users/distance/{address}/{distance}")
     public ResponseEntity<List<UserRegistration>> selectUsersByAddress(@PathVariable("address") String address,
