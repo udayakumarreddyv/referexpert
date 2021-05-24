@@ -63,7 +63,8 @@ public class ReferExpertController {
         } else if (value == 0) {
             entity = new ResponseEntity<>(new GenericResponse("Issue in request appointment"), HttpStatus.BAD_REQUEST);
         } else {
-            sendNotification(appointment.getAppointmentTo());
+        	sendNotification(appointment.getAppointmentTo(), Constants.APPOINTMENT_SUBJECT, 
+        			Constants.APPOINTMENT_LOGIN_BODY + env.getProperty("referexpert.signin.url"));
             entity = new ResponseEntity<>(new GenericResponse("Appointment Request Successful"), HttpStatus.OK);
         }
         return entity;
@@ -90,48 +91,63 @@ public class ReferExpertController {
         return entity;
     }
     
-    private void sendNotification(String toEmail) {
+    private void sendNotification(String toEmail, String subject, String body) {
         logger.info("ReferExpertController :: In sendNotification to : " + toEmail);
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(toEmail);
-        mailMessage.setSubject("You got Appointment Notification");
+        mailMessage.setSubject(subject);
         mailMessage.setFrom(env.getProperty("spring.mail.username"));
-        mailMessage.setText("Please login to Refer Expert and perform required action." + env.getProperty("referexpert.signin.url"));
+        mailMessage.setText(body);
         emailSenderService.sendEmail(mailMessage);
     }
     
-    private ResponseEntity<GenericResponse> updateStatus(String appointmentString, String status, String type) {
-        logger.info("ReferExpertController :: In updateStatus  : " + appointmentString + " : " + status + " : " + type);
-        ObjectMapper mapper = new ObjectMapper();
-        ResponseEntity<GenericResponse> entity = null;
-        Appointment appointment = null;
-        try {
-            appointment = mapper.readValue(appointmentString, Appointment.class);
-        }
-        catch (Exception e) {
-            logger.error("Unable to parse the input :: " + appointmentString);
-            logger.error("Exception as follows :: " + e);
-            entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
-        }
-        logger.info("JSON to Object Conversion :: " + appointment != null ? appointment.toString() : null);
-        String appointmentId = appointment.getAppointmentId();
-        int value = 0;
-        if (Constants.SERVICE.equals(type)) {
-            value = mySQLService.updateAppointmentServed(appointmentId, status);
-        } else {
-        	if(Constants.INACTIVE.equals(status)) {
-        		mySQLService.updateAppointmentServed(appointmentId, Constants.INACTIVE);
-        	}
-            value = mySQLService.updateAppointmentAccepted(appointmentId, status);
-        }
-        if (value == 0) {
-            entity = new ResponseEntity<>(new GenericResponse("Issue while updating refer expert"),
-                    HttpStatus.BAD_REQUEST);
-        } else {
-            entity = new ResponseEntity<>(new GenericResponse("Updated Successfully"), HttpStatus.OK);
-        }
-        return entity;
-    }
+	private ResponseEntity<GenericResponse> updateStatus(String appointmentString, String status, String type) {
+		logger.info("ReferExpertController :: In updateStatus  : " + appointmentString + " : " + status + " : " + type);
+		ObjectMapper mapper = new ObjectMapper();
+		ResponseEntity<GenericResponse> entity = null;
+		Appointment appointment = null;
+		try {
+			appointment = mapper.readValue(appointmentString, Appointment.class);
+		} catch (Exception e) {
+			logger.error("Unable to parse the input :: " + appointmentString);
+			logger.error("Exception as follows :: " + e);
+			entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
+		}
+		logger.info("JSON to Object Conversion :: " + appointment != null ? appointment.toString() : null);
+		String appointmentId = appointment.getAppointmentId();
+		String criteria = " appointment_id = '" + appointmentId + "'";
+		Appointment appointmentFromDB = mySQLService.selectAppointmentById(criteria);
+		int value = 0;
+		if (Constants.SERVICE.equals(type)) {
+			value = mySQLService.updateAppointmentServed(appointmentId, status);
+			sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
+					Constants.APPOINTMENT_COMPLETED.replaceAll("DATEANDTIMESTAMP",
+							appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
+							+ env.getProperty("referexpert.signin.url"));
+		} else {
+			if (Constants.INACTIVE.equals(status)) {
+				mySQLService.updateAppointmentServed(appointmentId, Constants.INACTIVE);
+				value = mySQLService.updateAppointmentAccepted(appointmentId, status);
+				sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
+						Constants.APPOINTMENT_REJECTED.replaceAll("DATEANDTIMESTAMP",
+								appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
+								+ env.getProperty("referexpert.signin.url"));
+			} else {
+				value = mySQLService.updateAppointmentAccepted(appointmentId, status);
+				sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
+						Constants.APPOINTMENT_ACCEPTED.replaceAll("DATEANDTIMESTAMP",
+								appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
+								+ env.getProperty("referexpert.signin.url"));
+			}
+		}
+		if (value == 0) {
+			entity = new ResponseEntity<>(new GenericResponse("Issue while updating refer expert"),
+					HttpStatus.BAD_REQUEST);
+		} else {
+			entity = new ResponseEntity<>(new GenericResponse("Updated Successfully"), HttpStatus.OK);
+		}
+		return entity;
+	}
     
     @GetMapping(value = "/referexpert/myreferrals/{useremail}")
     public ResponseEntity<List<Appointment>> getMyReferrals(@PathVariable("useremail") String userEmail) {

@@ -47,6 +47,16 @@ public class Constants {
     public static String APPOINTMENT = "APPOINTMENT";
     
     public static String GOOGLE_API_KEY = "google.api.key";
+    
+    public static String APPOINTMENT_SUBJECT = "ReferExpert : Appointment Notification";
+    
+    public static String APPOINTMENT_LOGIN_BODY = "\n Please login to Refer Expert and perform required action as necessary.";
+    
+    public static String APPOINTMENT_ACCEPTED = "Your requested appointment on DATEANDTIMESTAMP is accepted.";
+
+    public static String APPOINTMENT_REJECTED = "Your requested appointment on DATEANDTIMESTAMP is rejected.";
+
+    public static String APPOINTMENT_COMPLETED = "Your requested appointment on DATEANDTIMESTAMP is completed.";
 
 }
 

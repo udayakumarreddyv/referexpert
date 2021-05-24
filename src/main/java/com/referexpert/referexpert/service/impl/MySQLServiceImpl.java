@@ -423,6 +423,23 @@ public class MySQLServiceImpl implements MySQLService {
         }
         return appointments;
     }
+    
+    @Override
+    public Appointment selectAppointmentById(String criteria) {
+        logger.info("MySQLServiceImpl :: In selectAppointments");
+        List<Appointment> appointments = new ArrayList<Appointment>();
+        try {
+            appointments = mysqlRepository.selectAppointments(criteria);
+        }
+        catch (Exception e) {
+            logger.error("Exception while fetching data into appointment");
+            logger.error("Exception details :: " + e);
+        }
+        if(appointments.size() > 0) {
+        	return appointments.get(0);
+        }
+        return new Appointment();
+    }
 
     @Override
     public UserRegistration selectUser(String criteria) {
