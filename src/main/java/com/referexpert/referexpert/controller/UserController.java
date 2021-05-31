@@ -175,6 +175,7 @@ public class UserController {
 			criteria.append(" and user_speciality like '" + speciality + "%'");
 			isCriteriaPresent = true;
 		}
+		criteria.append(" and is_active = 'Y'");
 		if (isCriteriaPresent) {
 			List<UserRegistration> users = mySQLService.selectActiveUsersByDistance(criteria.toString(), distance,
 					userDetails.getUsername());
@@ -213,6 +214,7 @@ public class UserController {
 			criteria.append(" and user_speciality like '" + speciality + "%'");
 			isCriteriaPresent = true;
 		}
+		criteria.append(" and is_active = 'Y'");
 		if (isCriteriaPresent) {
 			List<UserRegistration> users = mySQLService.selectActiveUsersByCoordinates(criteria.toString(), lattitude,
 					longitude, distance);
@@ -241,6 +243,7 @@ public class UserController {
             criteria.append(" and user_speciality like '" + speciality + "%'");
             isCriteriaPresent = true;
         }
+        criteria.append(" and is_active = 'Y'");
         if (isCriteriaPresent) {
             List<UserRegistration> users = mySQLService.selectActiveUsersByCoordinates(criteria.toString(),
                     coordinates.getLattitude(), coordinates.getLongitude(), distance);
