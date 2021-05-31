@@ -180,7 +180,7 @@ public class UserRegistration {
     @Override
     public String toString() {
         return "UserRegistration [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
-                + email + ", password=" + password + ", userType=" + userType + ", userSpeciality=" + userSpeciality
+                + email + ", userType=" + userType + ", userSpeciality=" + userSpeciality
                 + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip + ", phone=" + phone
                 + ", fax=" + fax + ", lattitude=" + lattitude + ", longitude=" + longitude + ", distance=" + distance
                 + ", isActive=" + isActive + "]";
