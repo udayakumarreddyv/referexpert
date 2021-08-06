@@ -51,10 +51,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable().authorizeRequests()
-                .antMatchers("/authenticate", "/register", "/referexpert/referuser", "/health",
-                        "/referexpert/usertype*", "/referexpert/confirmaccount", "/referexpert/usertype/**",
-                        "/referexpert/registeruser", "/referexpert/validateuser", "/referexpert/resetpassword",
-                        "/referexpert/resetnotification","/referexpert/refreshtoken", "/referexpert/logout")
+                .antMatchers("/authenticate", "/register", "/referuser", "/health",
+                        "/usertype*", "/confirmaccount", "/usertype/**",
+                        "/registeruser", "/validateuser", "/resetpassword",
+                        "/resetnotification","/refreshtoken", "/logout")
                 .permitAll().anyRequest().authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

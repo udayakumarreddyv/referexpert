@@ -14,7 +14,6 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,7 +52,7 @@ public class JwtAuthenticationController {
 	@Autowired
     private MySQLService mySQLService;
 
-	@PostMapping("/referexpert/validateuser")
+	@PostMapping("/validateuser")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 	    logger.info("JwtAuthenticationController :: In createAuthenticationToken : " + authenticationRequest.getUsername());
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -70,7 +69,7 @@ public class JwtAuthenticationController {
 		return ResponseEntity.ok(new JwtResponse(token, refreshToken.getToken()));
 	}
 	
-	@PostMapping("/referexpert/logout")
+	@PostMapping("/logout")
 	public ResponseEntity<?> logoutUser(@RequestBody TokenRefreshRequest request) {
 		String token = request.getRefreshToken();
 		refreshTokenService.deleteByToken(token);
@@ -88,7 +87,7 @@ public class JwtAuthenticationController {
 		}
 	}
 	
-	@PostMapping("/referexpert/refreshtoken")
+	@PostMapping("/refreshtoken")
 	public ResponseEntity<?> refreshtoken(@RequestBody TokenRefreshRequest request) throws Exception {
 		String refreshToken = request.getRefreshToken();
 

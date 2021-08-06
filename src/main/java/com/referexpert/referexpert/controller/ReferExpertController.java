@@ -39,7 +39,7 @@ public class ReferExpertController {
     @Autowired
     private EmailSenderService emailSenderService;
 
-    @PostMapping(value = "/referexpert/requestappointment")
+    @PostMapping(value = "/requestappointment")
     public ResponseEntity<GenericResponse> requestAppointment(@RequestBody String appointmentString) {
         logger.info("ReferExpertController :: In requestAppointment : " + appointmentString);
         ObjectMapper mapper = new ObjectMapper();
@@ -70,21 +70,21 @@ public class ReferExpertController {
         return entity;
     }
 
-    @PostMapping(value = "/referexpert/rejectappointment")
+    @PostMapping(value = "/rejectappointment")
     public ResponseEntity<GenericResponse> rejectAppointment(@RequestBody String appointmentString) {
         logger.info("ReferExpertController :: In rejectAppointment : " + appointmentString);
         ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.INACTIVE, Constants.APPOINTMENT);
         return entity;
     }
     
-    @PostMapping(value = "/referexpert/acceptappointment")
+    @PostMapping(value = "/acceptappointment")
     public ResponseEntity<GenericResponse> acceptAppointment(@RequestBody String appointmentString) {
         logger.info("ReferExpertController :: In acceptAppointment : " + appointmentString);
         ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.ACTIVE, Constants.APPOINTMENT);
         return entity;
     }
     
-    @PostMapping(value = "/referexpert/finalizeappointment")
+    @PostMapping(value = "/finalizeappointment")
     public ResponseEntity<GenericResponse> finalizeAppointment(@RequestBody String appointmentString) {
         logger.info("ReferExpertController :: In finalizeAppointment : " + appointmentString);
         ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.ACTIVE, Constants.SERVICE);
@@ -97,6 +97,7 @@ public class ReferExpertController {
         mailMessage.setTo(toEmail);
         mailMessage.setSubject(subject);
         mailMessage.setFrom(env.getProperty("spring.mail.username"));
+        mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
         mailMessage.setText(body);
         emailSenderService.sendEmail(mailMessage);
     }
@@ -149,7 +150,7 @@ public class ReferExpertController {
 		return entity;
 	}
     
-    @GetMapping(value = "/referexpert/myreferrals/{useremail}")
+    @GetMapping(value = "/myreferrals/{useremail}")
     public ResponseEntity<List<Appointment>> getMyReferrals(@PathVariable("useremail") String userEmail) {
         logger.info("ReferExpertController :: In getMyReferrals  : " + userEmail);
         String criteria = " f.email = '" + userEmail + "'";
@@ -157,7 +158,7 @@ public class ReferExpertController {
         return new ResponseEntity<List<Appointment>>(appointments, HttpStatus.OK);
     }
     
-    @GetMapping(value = "/referexpert/myappointments/{useremail}")
+    @GetMapping(value = "/myappointments/{useremail}")
     public ResponseEntity<List<Appointment>> getMyAppointments(@PathVariable("useremail") String userEmail) {
         logger.info("ReferExpertController :: In getMyAppointments  : " + userEmail);
         String criteria = " t.email = '" + userEmail + "'";

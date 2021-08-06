@@ -41,14 +41,14 @@ public class UserController {
     @Autowired
     private GeoApiContext geoApiContext;
 
-    @PostMapping(value = "/referexpert/deactiveuser")
+    @PostMapping(value = "/deactiveuser")
     public ResponseEntity<GenericResponse> deactivateUserAccount(@RequestBody String emailString) {
         logger.info("UserController :: In deactivateUserAccount : " + emailString);
         ResponseEntity<GenericResponse> entity = updateUserStatus(emailString, Constants.INACTIVE);
         return entity;
     }
 
-    @PostMapping(value = "/referexpert/activeuser")
+    @PostMapping(value = "/activeuser")
     public ResponseEntity<GenericResponse> activateUserAccount(@RequestBody String emailString) {
         logger.info("UserController :: In activateUserAccount : " + emailString);
         ResponseEntity<GenericResponse> entity = updateUserStatus(emailString, Constants.ACTIVE);
@@ -90,7 +90,7 @@ public class UserController {
         return entity;
     }
     
-	@GetMapping(value = "/referexpert/users")
+	@GetMapping(value = "/users")
 	public ResponseEntity<List<UserRegistration>> selectUsersByParams(@RequestParam(required = false) String firstName,
 			@RequestParam(required = false) String lastName, @RequestParam(required = false) String city,
 			@RequestParam(required = false) String state, @RequestParam(required = false) String zip,
@@ -148,7 +148,7 @@ public class UserController {
 		}
 	}
     
-    @GetMapping(value = "/referexpert/users/distance/{distance}")
+    @GetMapping(value = "/users/distance/{distance}")
 	public ResponseEntity<List<UserRegistration>> selectUsersByDistance(@PathVariable("distance") int distance,
 			@RequestParam(required = false) String type, @RequestParam(required = false) String speciality,
 			@RequestParam(required = false) String firstName, @RequestParam(required = false) String lastName) {
@@ -186,7 +186,7 @@ public class UserController {
 		}
 	}
 
-    @GetMapping(value = "/referexpert/users/distance/{lattitude}/{longitude}/{distance}")
+    @GetMapping(value = "/users/distance/{lattitude}/{longitude}/{distance}")
 	public ResponseEntity<List<UserRegistration>> selectUsersByCoordinates(@PathVariable("lattitude") Double lattitude,
 			@PathVariable("longitude") Double longitude, @PathVariable("distance") int distance,
 			@RequestParam(required = false) String type, @RequestParam(required = false) String speciality,
@@ -225,7 +225,7 @@ public class UserController {
 		}
 	}
 
-    @GetMapping(value = "/referexpert/users/distance/{address}/{distance}")
+    @GetMapping(value = "/users/distance/{address}/{distance}")
     public ResponseEntity<List<UserRegistration>> selectUsersByAddress(@PathVariable("address") String address,
             @PathVariable("distance") int distance, @RequestParam(required = false) String type,
             @RequestParam(required = false) String speciality) {
@@ -254,7 +254,7 @@ public class UserController {
         }
     }
     
-    @GetMapping(value = "/referexpert/users/count")
+    @GetMapping(value = "/users/count")
     public ResponseEntity<UserCount> selectUserCounts() {
     	UserCount userCount = new UserCount();
     	userCount.setActive(mySQLService.getUserCountByStatus(Constants.ACTIVE));

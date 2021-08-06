@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration monitorInterval="60">
     <Properties>
-        <Property name="log-path">logs</Property>
+        <Property name="log-path">/var/log/tomcat9</Property>
         <Property name="archive">${log-path}</Property>
     </Properties>
     <Appenders>
@@ -12,7 +12,7 @@
                 </pattern>>
             </PatternLayout>
         </Console>
-        <File name="File-Appender" fileName="${log-path}/xmlfilelog.log" >
+        <File name="File-Appender" fileName="/var/log/tomcat9/xmlfilelog.log" >
             <PatternLayout>
                 <pattern>
                     [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
@@ -20,8 +20,8 @@
             </PatternLayout>
         </File>
             <RollingFile name="RollingFile-Appender"
-                     fileName="${log-path}/referexpert.log"
-                     filePattern="${archive}/archive-referexpert.log.%d{yyyy-MM-dd-hh-mm}.gz">
+                     fileName="/var/log/tomcat9/referexpert.log"
+                     filePattern="/var/log/tomcat9/archive-referexpert.log.%d{yyyy-MM-dd-hh-mm}.gz">
             <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"/>
                 <Policies>
                      <SizeBasedTriggeringPolicy size="25 MB"/>

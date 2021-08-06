@@ -65,7 +65,7 @@ public class RegistrationController {
         return entity;
     }
 
-    @GetMapping(value = "/referexpert/usertypes")
+    @GetMapping(value = "/usertypes")
     public ResponseEntity<List<UserType>> getUserTypes() {
         logger.info("RegistrationController :: In getUserTypes");
         List<UserType> usertypes = mySQLService.selectAllUserTypes();
@@ -73,7 +73,7 @@ public class RegistrationController {
         return entity;
     }
 
-    @GetMapping(value = "/referexpert/usertype/{usertype}")
+    @GetMapping(value = "/usertype/{usertype}")
     public ResponseEntity<List<UserType>> getUserTypeByUserType(@PathVariable("usertype") String usertype) {
         logger.info("RegistrationController :: In getUserTypeByUserType : " + usertype);
         List<UserType> usertypes = mySQLService
@@ -82,7 +82,7 @@ public class RegistrationController {
         return entity;
     }
 
-    @GetMapping(value = "/referexpert/usertype/{usertype}/userspecialities")
+    @GetMapping(value = "/usertype/{usertype}/userspecialities")
     public ResponseEntity<UserSpeciality> getUserSpecialitiesByUserType(@PathVariable("usertype") String usertype) {
         logger.info("RegistrationController :: In getUserSpecialitiesByUserType : " + usertype);
         UserSpeciality userSpeciality = mySQLService
@@ -91,7 +91,7 @@ public class RegistrationController {
         return entity;
     }
     
-    @PostMapping(value = "/referexpert/registeruser")
+    @PostMapping(value = "/registeruser")
     public ResponseEntity<GenericResponse> registerUser(@RequestBody String registration,
             @RequestParam("referralid") String referralId) {
         ObjectMapper mapper = new ObjectMapper();
@@ -126,6 +126,7 @@ public class RegistrationController {
                 mailMessage.setTo(userRegistration.getEmail());
                 mailMessage.setSubject("Complete Registration!");
                 mailMessage.setFrom(env.getProperty("spring.mail.username"));
+                mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
                 mailMessage.setText("To confirm your account, please click here : "
                         + env.getProperty("referexpert.confirm.account.url") + "?email=" + userRegistration.getEmail()
                         + "&token=" + confirmationToken.getConfirmationToken());
@@ -140,7 +141,7 @@ public class RegistrationController {
         return entity;
     }
 
-    @GetMapping(value = "/referexpert/confirmaccount")
+    @GetMapping(value = "/confirmaccount")
     public ResponseEntity<GenericResponse> confirmUserAccount(@RequestParam("token") String token,
             @RequestParam("user") String email) {
         logger.info("RegistrationController :: In confirmUserAccount token : " + token + " email : " + email);
@@ -163,7 +164,7 @@ public class RegistrationController {
         return entity;
     }
 
-    @PostMapping(value = "/referexpert/referuser")
+    @PostMapping(value = "/referuser")
     public ResponseEntity<GenericResponse> referUser(@RequestBody String referString) {
         logger.info("RegistrationController :: In referUser : " + referString);
         ObjectMapper mapper = new ObjectMapper();
@@ -207,9 +208,10 @@ public class RegistrationController {
         if (value != 0) {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setTo(tokenizer);
-            mailMessage.setSubject("You Referred to registered in ReferExpert Network");
+            mailMessage.setSubject("You Referred to registered in Cephalad Network");
             mailMessage.setFrom(env.getProperty("spring.mail.username"));
-            mailMessage.setText("Congratulations!! Please register with ReferExpert using link :: "
+            mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
+            mailMessage.setText("Congratulations!! Please register with Cephalad using link :: "
                     + env.getProperty("referexpert.register.url") + "?email=" + tokenizer + "&token=" + referralId);
             emailSenderService.sendEmail(mailMessage);
         } else {
@@ -218,7 +220,7 @@ public class RegistrationController {
         return entity;
     }
     
-    @GetMapping(value = "/referexpert/users/{email}")
+    @GetMapping(value = "/users/{email}")
     public ResponseEntity<UserRegistration> selectUserProfile(@PathVariable("email") String email) {
         logger.info("RegistrationController :: In selectUserProfile : " + email);
         UserRegistration userRegistration = getUserDetails(email);
@@ -233,7 +235,7 @@ public class RegistrationController {
         return userRegistration;
     }
     
-    @GetMapping(value = "/referexpert/userdetails")
+    @GetMapping(value = "/userdetails")
     public ResponseEntity<UserRegistration> selectUserDetails() {
         logger.info("RegistrationController :: In selectUserDetails");
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -242,7 +244,7 @@ public class RegistrationController {
         return new ResponseEntity<UserRegistration>(userRegistration, HttpStatus.OK);
     }
     
-    @PostMapping(value = "/referexpert/userprofile")
+    @PostMapping(value = "/userprofile")
     public ResponseEntity<GenericResponse> updateprofile(@RequestBody String registration) {
         ObjectMapper mapper = new ObjectMapper();
         ResponseEntity<GenericResponse> entity = null;
@@ -267,12 +269,12 @@ public class RegistrationController {
         return entity;
     }
  
-    @PostMapping(value = "/referexpert/updatepassword")
+    @PostMapping(value = "/updatepassword")
     public ResponseEntity<GenericResponse> updatePassword(@RequestBody String registration) {
         return managePassword(registration,"update");
     }
     
-    @PostMapping(value = "/referexpert/resetnotification")
+    @PostMapping(value = "/resetnotification")
     public ResponseEntity<GenericResponse> resetNotification(@RequestBody String registration) {
         ObjectMapper mapper = new ObjectMapper();
         UserRegistration userRegistration = null;
@@ -294,6 +296,7 @@ public class RegistrationController {
             mailMessage.setTo(user.getEmail());
             mailMessage.setSubject("Password rest request");
             mailMessage.setFrom(env.getProperty("spring.mail.username"));
+            mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
             mailMessage.setText("Please click on below link to reset your password :: "
                     + env.getProperty("referexpert.resetpass.url") + "?email=" + userRegistration.getEmail()
                     + "&token=" + confirmationToken.getConfirmationToken());
@@ -305,7 +308,7 @@ public class RegistrationController {
         }
     }
     
-    @PostMapping(value = "/referexpert/resetpassword")
+    @PostMapping(value = "/resetpassword")
     public ResponseEntity<GenericResponse> resetPassword(@RequestBody String registration,
             @RequestParam("token") String token) {
         if (mySQLService.selectConfirmationToken(token)) {
@@ -341,6 +344,7 @@ public class RegistrationController {
                 mailMessage.setTo(userRegistration.getEmail());
                 mailMessage.setSubject("Password rest successful");
                 mailMessage.setFrom(env.getProperty("spring.mail.username"));
+                mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
                 mailMessage.setText("Your pasword reset succesful, please login here "
                         + env.getProperty("referexpert.signin.url") + " with your new password");
                 emailSenderService.sendEmail(mailMessage);

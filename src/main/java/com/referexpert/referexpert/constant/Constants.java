@@ -48,9 +48,9 @@ public class Constants {
     
     public static String GOOGLE_API_KEY = "google.api.key";
     
-    public static String APPOINTMENT_SUBJECT = "ReferExpert : Appointment Notification";
+    public static String APPOINTMENT_SUBJECT = "Cephalad : Appointment Notification";
     
-    public static String APPOINTMENT_LOGIN_BODY = "\n Please login to Refer Expert and perform required action as necessary.";
+    public static String APPOINTMENT_LOGIN_BODY = "\n Please login to Cephalad and perform required action as necessary.";
     
     public static String APPOINTMENT_ACCEPTED = "Your requested appointment on DATEANDTIMESTAMP is accepted.";
 
