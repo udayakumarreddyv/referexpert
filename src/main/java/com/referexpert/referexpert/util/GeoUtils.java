@@ -18,7 +18,8 @@ public class GeoUtils {
 
     public static boolean isDistanceInRange(Double srcLattitude, Double srcLongitude, Double destLattitude,
             Double destLongitude, int distance) {
-        logger.info("GeoUtils :: In isDistanceInRange");
+        logger.info("GeoUtils :: In isDistanceInRange :: " + srcLattitude + " :: " + srcLongitude + " :: "+ destLattitude 
+        		+ " :: "+ destLongitude + " :: "+ distance + " :: ");
         if (srcLattitude == null || destLattitude == null || srcLongitude == null || destLongitude == null) {
             return false;
         }
@@ -38,7 +39,8 @@ public class GeoUtils {
     
     public static double getDistnace(Double srcLattitude, Double srcLongitude, Double destLattitude,
             Double destLongitude, int distance) {
-        logger.info("GeoUtils :: In getDistnace");
+        logger.info("GeoUtils :: In getDistnace :: " + srcLattitude + " :: " + srcLongitude + " :: "+ destLattitude 
+        		+ " :: "+ destLongitude + " :: "+ distance + " :: ");
         if (srcLattitude == null || destLattitude == null || srcLongitude == null || destLongitude == null) {
             return 0;
         }
@@ -57,7 +59,7 @@ public class GeoUtils {
     }
     
     public static Coordinates getCoordinates(String address, GeoApiContext geoApiContext) {
-        logger.info("GeoUtils :: In getCoordinates from Google API");
+        logger.info("GeoUtils :: In getCoordinates from Google API :: " + address);
         try {
             GeocodingResult[] results = GeocodingApi.geocode(geoApiContext, address).await();
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -67,6 +69,9 @@ public class GeoUtils {
             return coordinates;
         }
         catch (Exception e) {
+        	logger.error("Exeption while getting Coordinated for address :: " + address);
+        	logger.error("Exception details :: " + e);
+        	e.printStackTrace();
             return new Coordinates(0.0, 0.0);
         }
     }

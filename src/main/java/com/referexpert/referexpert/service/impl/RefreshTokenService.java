@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.referexpert.referexpert.beans.RefreshToken;
-import com.referexpert.referexpert.exception.TokenRefreshException;
 import com.referexpert.referexpert.repository.MySQLRepository;
 
 @Service
@@ -26,10 +25,12 @@ public class RefreshTokenService {
 	private MySQLRepository mysqlRepository;
 
 	public RefreshToken findByToken(String token) {
+		logger.info("RefreshTokenService :: findByToken :: " + token);
 		return mysqlRepository.findByRequestToken(token);
 	}
 
 	public RefreshToken createRefreshToken(String userId) {
+		logger.info("RefreshTokenService :: createRefreshToken :: " + userId);
 		RefreshToken refreshToken = new RefreshToken();
 		
 		long currentTimeStamp = System.currentTimeMillis();
@@ -49,22 +50,21 @@ public class RefreshTokenService {
         try {
             mysqlRepository.insertRefreshToken(refreshToken);
         } catch (Exception e) {
-            logger.error("Exception while inserting data into refresh_token");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while inserting data into refresh_token");
             return new RefreshToken();
         }
 		return mysqlRepository.findByRequestTokenId(refreshTokenId);
 	}
 
 	public RefreshToken verifyExpiration(RefreshToken token) {
+		logger.info("RefreshTokenService :: verifyExpiration :: " + token.toString());
 		if (token.getExpiryDate().compareTo(new Timestamp(System.currentTimeMillis())) < 0) {
 			try {
 				mysqlRepository.deleteRefreshToken(token.getToken());
 				logger.info("Refresh token was expired. Please make a new signin request");
 				return null;
 			} catch (Exception e) {
-				logger.error("Exception while deleting data into refresh_token");
-				e.printStackTrace();
+				exceptionBlock(e, "Exception while deleting data from refresh_token");
 			}
 		}
 
@@ -72,23 +72,29 @@ public class RefreshTokenService {
 	}
 	
 	public int deleteByToken(String token) {
+		logger.info("RefreshTokenService :: deleteByToken :: " + token);
 		try {
 			logger.info("Refresh token deleted on logout. Please make a new signin request");
 			return mysqlRepository.deleteRefreshToken(token);
 		} catch (Exception e) {
-			logger.error("Exception while deleting data into refresh_token");
-			e.printStackTrace();
+			exceptionBlock(e, "Exception while deleting data from refresh_token");
 		}
 		return 0;
 	}
 
 	public int deleteByUserId(String userId) {
+		logger.info("RefreshTokenService :: deleteByUserId :: " + userId);
 		try {
 			return mysqlRepository.deleteRefreshTokenByUser(userId);
 		} catch (Exception e) {
-			logger.error("Exception while deleting data into refresh_token");
-			e.printStackTrace();
+			exceptionBlock(e, "Exception while deleting data from refresh_token");
 		}
 		return 0;
+	}
+	
+	private void exceptionBlock(Exception e, String message) {
+		logger.error(message);
+		logger.error("Exception details :: " + e);
+		e.printStackTrace();
 	}
 }

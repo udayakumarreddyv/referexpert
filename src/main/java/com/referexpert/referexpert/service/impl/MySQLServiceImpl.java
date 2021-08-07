@@ -41,23 +41,21 @@ public class MySQLServiceImpl implements MySQLService {
             userTypes = mysqlRepository.selectAllUserTypes();
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data for user_type");
-            logger.error("Exception details :: " + e);
+            exceptionBlock(e, "Exception while fetching data for user_type");
             return null;
         }
         return userTypes;
     }
 
-    @Override
+	@Override
     public List<UserType> selectUserTypeByUserType(String userType) {
-        logger.info("MySQLServiceImpl :: In selectUserTypeByUserType");
+        logger.info("MySQLServiceImpl :: In selectUserTypeByUserType :: " + userType);
         List<UserType> userTypes;
         try {
             userTypes = mysqlRepository.selectUserTypeByUserType(userType);
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data for user_type");
-            logger.error("Exception details :: " + e);
+            exceptionBlock(e, "Exception while fetching data for user_type");
             return null;
         }
         return userTypes;
@@ -65,28 +63,27 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public UserSpeciality selectUserSpecialityByUserType(String userType) {
-        logger.info("MySQLServiceImpl :: In selectUserSpecialityByUserType");
+        logger.info("MySQLServiceImpl :: In selectUserSpecialityByUserType :: " + userType);
         UserSpeciality userSpeciality;
         try {
             userSpeciality = mysqlRepository.selectUserSpecialityByUserType(userType);
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data for user_speciality");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data for user_speciality");
             return null;
         }
         return userSpeciality;
     }
     
     private String getFullAddress(UserRegistration userRegistration) {
-        logger.info("MySQLServiceImpl :: In getFullAddress");
+        logger.info("MySQLServiceImpl :: In getFullAddress :: " + userRegistration.toString());
         return userRegistration.getAddress() + " " + userRegistration.getCity() + " " + userRegistration.getState()
                 + " " + userRegistration.getZip();
     }
 
     @Override
     public int insertUserProfile(UserRegistration userRegistration) {
-        logger.info("MySQLServiceImpl :: In insertUserProfile");
+        logger.info("MySQLServiceImpl :: In insertUserProfile :: " + userRegistration.toString());
         Integer userTypeId = selectUserTypeById(userRegistration.getUserType());
         Integer userSpecialityId = selectUserSpecialityById(userTypeId, userRegistration.getUserSpeciality());
         Coordinates coordinates = GeoUtils.getCoordinates(getFullAddress(userRegistration), geoApiContext);
@@ -97,18 +94,15 @@ public class MySQLServiceImpl implements MySQLService {
             value = mysqlRepository.insertUserProfile(userRegistration, userTypeId, userSpecialityId);
         }
         catch (DuplicateKeyException e) {
-            logger.error("Exception while inserting data into user_profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while inserting data into user_profile");
             return 999999;
         }
         catch (DataIntegrityViolationException e) {
-            logger.error("Exception while inserting data into user_profile");
-            logger.error("Exception details :: " + e);
-            return 888888;
+        	exceptionBlock(e, "Exception while inserting data into user_profile");
+        	return 888888;
         }
         catch (Exception e) {
-            logger.error("Exception while inserting data into user_profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while inserting data into user_profile");
             return 0;
         }
         return value;
@@ -116,14 +110,13 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public Integer selectUserTypeById(String userType) {
-        logger.info("MySQLServiceImpl :: In selectUserTypeById");
+        logger.info("MySQLServiceImpl :: In selectUserTypeById :: " + userType);
         Integer userTypeId = null;
         try {
             userTypeId = mysqlRepository.selectUserTypeById(userType);
         }
         catch (Exception e) {
-            logger.error("Exception while inserting data into user_profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from user_type");
             return 0;
         }
         return userTypeId;
@@ -131,14 +124,13 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public Integer selectUserSpecialityById(Integer userTypeId, String speciality) {
-        logger.info("MySQLServiceImpl :: In selectUserSpecialityById");
+        logger.info("MySQLServiceImpl :: In selectUserSpecialityById :: " + userTypeId + " :: " + speciality);
         Integer userSpecialityId = null;
         try {
             userSpecialityId = mysqlRepository.selectUserSpecialityById(userTypeId, speciality);
         }
         catch (Exception e) {
-            logger.error("Exception while inserting data into user_profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from user_speciality");
             return 0;
         }
         return userSpecialityId;
@@ -146,14 +138,13 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int insertConfirmationToken(ConfirmationToken confirmationToken) {
-        logger.info("MySQLServiceImpl :: In insertConfirmationToken");
+        logger.info("MySQLServiceImpl :: In insertConfirmationToken :: " + confirmationToken);
         int value = 0;
         try {
             value = mysqlRepository.insertConfirmationToken(confirmationToken);
         }
         catch (Exception e) {
-            logger.error("Exception while inserting data into user_profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while inserting data into confirmation_token");
             return 0;
         }
         return value;
@@ -161,61 +152,59 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public boolean selectUserProfile(String email, String criteria) {
-        logger.info("MySQLServiceImpl :: In selectUserProfile");
+        logger.info("MySQLServiceImpl :: In selectUserProfile :: " + email + " :: " + criteria);
         try {
             return mysqlRepository.selectUserProfile(email, criteria);
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data for user_profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from user_profile");
             return false;
         }
     }
 
     @Override
     public boolean selectConfirmationToken(String token) {
-        logger.info("MySQLServiceImpl :: In selectConfirmationToken");
+        logger.info("MySQLServiceImpl :: In selectConfirmationToken :: " + token);
         try {
             return mysqlRepository.selectConfirmationToken(token);
         }
         catch (Exception e) {
             logger.error("Exception while fetching data for confirmation_token");
             logger.error("Exception details :: " + e);
+            e.printStackTrace();
             return false;
         }
     }
 
     @Override
     public int updateUserActivation(String email, String indicator) {
-        logger.info("MySQLServiceImpl :: In updateUserActivation");
+        logger.info("MySQLServiceImpl :: In updateUserActivation :: " + email + " :: " + indicator);
         int value = 0;
         try {
             value = mysqlRepository.updateUserActivation(email, indicator);
         }
         catch (Exception e) {
-            logger.error("Exception while updating active indicator into user_profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while updating active indicator into user_profile");
             return 0;
         }
         return value;
     }
 
     public int updateUserPassword(String email, String password) {
-        logger.info("MySQLServiceImpl :: In updateUserPassword");
+        logger.info("MySQLServiceImpl :: In updateUserPassword :: " + email);
         int value = 0;
         try {
             value = mysqlRepository.updateUserPassword(email, password);
         }
         catch (Exception e) {
-            logger.error("Exception while updating password into user_profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while updating password into user_profile");
             return 0;
         }
         return value;
     }
 
     public int updateUserProfile(UserRegistration userRegistration) {
-        logger.info("MySQLServiceImpl :: In updateUserProfile");
+        logger.info("MySQLServiceImpl :: In updateUserProfile :: " + userRegistration.toString());
         int value = 0;
         Integer userTypeId = selectUserTypeById(userRegistration.getUserType());
         Integer userSpecialityId = selectUserSpecialityById(userTypeId, userRegistration.getUserSpeciality());
@@ -226,8 +215,7 @@ public class MySQLServiceImpl implements MySQLService {
             value = mysqlRepository.updateUserProfile(userRegistration, userTypeId, userSpecialityId);
         }
         catch (Exception e) {
-            logger.error("Exception while updating profile into user_profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while updating user_profile table");
             return 0;
         }
         return value;
@@ -235,14 +223,13 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int deleteConfirmationToken(String token) {
-        logger.info("MySQLServiceImpl :: In deleteConfirmationToken");
+        logger.info("MySQLServiceImpl :: In deleteConfirmationToken :: " + token);
         int value = 0;
         try {
             value = mysqlRepository.deleteConfirmationToken(token);
         }
         catch (Exception e) {
-            logger.error("Exception while deleting data from confirmation_token");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while deleting data from confirmation_token");
             return 0;
         }
         return value;
@@ -250,14 +237,14 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int insertUserReferral(String referralId, String userEmail, String docEmail, String isRegistered) {
-        logger.info("MySQLServiceImpl :: In insertUserReferral");
+        logger.info("MySQLServiceImpl :: In insertUserReferral :: " + referralId + " :: " + userEmail + " :: " 
+        			+ docEmail + " :: " + isRegistered);
         int value = 0;
         try {
             value = mysqlRepository.insertUserReferral(referralId, userEmail, docEmail, isRegistered);
         }
         catch (Exception e) {
-            logger.error("Exception while inserting data into user_referral");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while inserting data into user_referral");
             return 0;
         }
         return value;
@@ -265,27 +252,25 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public boolean selectUserReferral(String userReferralId, String docEmail) {
-        logger.info("MySQLServiceImpl :: In selectUserReferral");
+        logger.info("MySQLServiceImpl :: In selectUserReferral :: " + userReferralId + " :: " + docEmail);
         try {
             return mysqlRepository.selectUserReferral(userReferralId, docEmail);
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data for user_referral");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from user_referral");
             return false;
         }
     }
 
     @Override
     public int updateUserReferral(String email, String indicator) {
-        logger.info("MySQLServiceImpl :: In updateUserReferral");
+        logger.info("MySQLServiceImpl :: In updateUserReferral :: " + email + " :: " + indicator);
         int value = 0;
         try {
             value = mysqlRepository.updateUserReferral(email, indicator);
         }
         catch (Exception e) {
-            logger.error("Exception while updating data into user_referral");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while updating data into user_referral");
             return 0;
         }
         return value;
@@ -293,22 +278,21 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public List<UserRegistration> selectActiveUsers(String criteria) {
-        logger.info("MySQLServiceImpl :: In selectActiveUsers");
+        logger.info("MySQLServiceImpl :: In selectActiveUsers :: " + criteria);
         List<UserRegistration> userRegistrations = new ArrayList<UserRegistration>();
         try {
             userRegistrations = mysqlRepository.selectActiveUsers(criteria);
             userRegistrations.parallelStream().forEach(x -> x.setPassword(null));
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data into user_referral");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from user_profile");
         }
         return userRegistrations;
     }
     
     @Override
     public List<UserRegistration> selectActiveUsersByDistance(String criteria, int distance, String email) {
-        logger.info("MySQLServiceImpl :: In selectActiveUsersByDistance");
+        logger.info("MySQLServiceImpl :: In selectActiveUsersByDistance :: " + criteria + " :: " + distance + " :: " + email);
         UserRegistration userRegistration = selectUser(" email = '" + email + "'");
         List<UserRegistration> userRegistrations = new ArrayList<UserRegistration>();
         try {
@@ -316,8 +300,7 @@ public class MySQLServiceImpl implements MySQLService {
                     userRegistration.getLongitude());
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data into user_referral");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from user_profile");
         }
         return userRegistrations;
     }
@@ -325,21 +308,22 @@ public class MySQLServiceImpl implements MySQLService {
     @Override
     public List<UserRegistration> selectActiveUsersByCoordinates(String criteria, Double lattitude, Double longitude,
             int distance) {
-        logger.info("MySQLServiceImpl :: In selectActiveUsersByCoordinates");
+        logger.info("MySQLServiceImpl :: In selectActiveUsersByCoordinates :: " + criteria + " :: " + lattitude
+        		+ " :: " + longitude +" :: " + distance);
         List<UserRegistration> userRegistrations = new ArrayList<UserRegistration>();
         try {
             userRegistrations = getUserRegistrations(criteria, distance, lattitude, longitude);
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data into user_referral");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from user_profile");
         }
         return userRegistrations;
     }
 
     private List<UserRegistration> getUserRegistrations(String criteria, int distance, Double lattitude,
             Double longitude) throws Exception {
-        logger.info("MySQLServiceImpl :: In getUserRegistrations");
+        logger.info("MySQLServiceImpl :: In getUserRegistrations :: " + criteria + " :: " + distance + " :: " + lattitude
+        		+ " :: " + longitude);
         List<UserRegistration> userRegistrations = mysqlRepository.selectActiveUsers(criteria);
         userRegistrations.parallelStream().forEach(x -> x.setPassword(null));
         List<UserRegistration> finalList = userRegistrations.parallelStream()
@@ -353,7 +337,7 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int insertAppointment(Appointment appointment) {
-        logger.info("MySQLServiceImpl :: In insertAppointment");
+        logger.info("MySQLServiceImpl :: In insertAppointment :: " + appointment);
         String criteriaFrom = " email = '" + appointment.getAppointmentFrom() + "'";
         UserRegistration fromUser = selectUser(criteriaFrom);
         String criteriaTo = " email = '" + appointment.getAppointmentTo() + "'";
@@ -363,18 +347,15 @@ public class MySQLServiceImpl implements MySQLService {
             value = mysqlRepository.insertAppointment(appointment, fromUser.getUserId(), toUser.getUserId());
         }
         catch (DuplicateKeyException e) {
-            logger.error("Exception while inserting data into appointment");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while inserting data into appointment");
             return 999999;
         }
         catch (DataIntegrityViolationException e) {
-            logger.error("Exception while inserting data into appointment");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while inserting data into appointment");
             return 888888;
         }
         catch (Exception e) {
-            logger.error("Exception while inserting data into appointment");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while inserting data into appointment");
             return 0;
         }
         return value;
@@ -382,14 +363,13 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int updateAppointmentAccepted(String appointmentId, String indicator) {
-        logger.info("MySQLServiceImpl :: In updateAppointmentAccepted");
+        logger.info("MySQLServiceImpl :: In updateAppointmentAccepted :: " + appointmentId + " :: " + indicator);
         int value = 0;
         try {
             value = mysqlRepository.updateAppointmentAccepted(appointmentId, indicator);
         }
         catch (Exception e) {
-            logger.error("Exception while updating data into appointment");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while updating data into appointment");
             return 0;
         }
         return value;
@@ -397,14 +377,13 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public int updateAppointmentServed(String appointmentId, String indicator) {
-        logger.info("MySQLServiceImpl :: In updateAppointmentServed");
+        logger.info("MySQLServiceImpl :: In updateAppointmentServed :: " + appointmentId + " :: " + indicator);
         int value = 0;
         try {
             value = mysqlRepository.updateAppointmentServed(appointmentId, indicator);
         }
         catch (Exception e) {
-            logger.error("Exception while updating data into appointment");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while updating data into appointment");
             return 0;
         }
         return value;
@@ -412,28 +391,26 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public List<Appointment> selectAppointments(String criteria) {
-        logger.info("MySQLServiceImpl :: In selectAppointments");
+        logger.info("MySQLServiceImpl :: In selectAppointments :: " + criteria);
         List<Appointment> appointments = new ArrayList<Appointment>();
         try {
             appointments = mysqlRepository.selectAppointments(criteria);
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data into appointment");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from appointment");
         }
         return appointments;
     }
     
     @Override
     public Appointment selectAppointmentById(String criteria) {
-        logger.info("MySQLServiceImpl :: In selectAppointments");
+        logger.info("MySQLServiceImpl :: In selectAppointments :: " + criteria);
         List<Appointment> appointments = new ArrayList<Appointment>();
         try {
             appointments = mysqlRepository.selectAppointments(criteria);
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data into appointment");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from appointment");
         }
         if(appointments.size() > 0) {
         	return appointments.get(0);
@@ -443,41 +420,44 @@ public class MySQLServiceImpl implements MySQLService {
 
     @Override
     public UserRegistration selectUser(String criteria) {
-        logger.info("MySQLServiceImpl :: In selectUser");
+        logger.info("MySQLServiceImpl :: In selectUser :: " + criteria);
         UserRegistration userRegistration = new UserRegistration();
         try {
             userRegistration = mysqlRepository.selectUser(criteria);
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data from User profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from user profile");
         }
         return userRegistration;
     }
 
     @Override
     public UserRegistration save(UserRegistration userRegistration) {
-        logger.info("MySQLServiceImpl :: In save");
+        logger.info("MySQLServiceImpl :: In save :: " + userRegistration.toString());
         try {
             insertUserProfile(userRegistration);
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data from User profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while saving data into user profile");
         }
         return userRegistration;
     }
     
     @Override
     public int getUserCountByStatus(String activeFlag) {
-    	logger.info("MySQLServiceImpl :: In getUserCountByStatus");
+    	logger.info("MySQLServiceImpl :: In getUserCountByStatus :: " + activeFlag);
         try {
             return mysqlRepository.getUserCountByStatus(activeFlag);
         }
         catch (Exception e) {
-            logger.error("Exception while fetching data from User profile");
-            logger.error("Exception details :: " + e);
+        	exceptionBlock(e, "Exception while fetching data from user profile");
             return 0;
         }	
     }
+    
+    private void exceptionBlock(Exception e, String message) {
+		logger.error(message);
+		logger.error("Exception details :: " + e);
+		e.printStackTrace();
+	}
 }
