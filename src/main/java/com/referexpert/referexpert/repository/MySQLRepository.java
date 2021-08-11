@@ -118,7 +118,7 @@ public class MySQLRepository {
                         userRegistration.getState(), userRegistration.getZip(), userRegistration.getPhone(),
                         userRegistration.getFax(), Constants.PENDING, userRegistration.getLattitude(),
                         userRegistration.getLongitude(), new Timestamp(System.currentTimeMillis()),
-                        new Timestamp(System.currentTimeMillis()) });
+                        new Timestamp(System.currentTimeMillis()), userRegistration.getService(), userRegistration.getInsurance() });
         return value;
     }
 
@@ -178,7 +178,8 @@ public class MySQLRepository {
                         userSpecialityId, userRegistration.getAddress(), userRegistration.getCity(),
                         userRegistration.getState(), userRegistration.getZip(), userRegistration.getPhone(),
                         userRegistration.getFax(), userRegistration.getLattitude(), userRegistration.getLongitude(),
-                        new Timestamp(System.currentTimeMillis()), userRegistration.getEmail() });
+                        new Timestamp(System.currentTimeMillis()), userRegistration.getService(), userRegistration.getInsurance(),
+                        userRegistration.getEmail() });
         return value;
     }
 
@@ -267,6 +268,8 @@ public class MySQLRepository {
         userRegistration.setPassword(rs.getString(++i));
         userRegistration.setLattitude(rs.getDouble(++i));
         userRegistration.setLongitude(rs.getDouble(++i));
+        userRegistration.setService(rs.getString(++i));
+        userRegistration.setInsurance(rs.getString(++i));
         return userRegistration;
     }
 

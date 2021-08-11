@@ -40,6 +40,10 @@ public class UserRegistration {
     private Double distance;
 
     private String isActive;
+    
+    private String service;
+    
+    private String insurance;
 
     public String getUserId() {
         return userId;
@@ -176,13 +180,29 @@ public class UserRegistration {
     public void setDistance(Double distance) {
         this.distance = distance;
     }
+    
+    public String getService() {
+		return service;
+	}
 
-    @Override
+	public void setService(String service) {
+		this.service = service;
+	}
+	
+	public String getInsurance() {
+		return insurance;
+	}
+
+	public void setInsurance(String insurance) {
+		this.insurance = insurance;
+	}
+
+	@Override
     public String toString() {
         return "UserRegistration [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
                 + email + ", userType=" + userType + ", userSpeciality=" + userSpeciality
                 + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip + ", phone=" + phone
                 + ", fax=" + fax + ", lattitude=" + lattitude + ", longitude=" + longitude + ", distance=" + distance
-                + ", isActive=" + isActive + "]";
+                + ", isActive=" + isActive + ", service=" + service + ", insurance=" + insurance + "]";
     }
 }
