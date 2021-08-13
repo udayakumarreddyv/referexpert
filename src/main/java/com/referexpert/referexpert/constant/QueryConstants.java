@@ -10,7 +10,7 @@ public class QueryConstants {
 
     public static String SELECT_USER_SPL_ID = "select us.user_speciality_id user_speciality_id "
             + " from user_speciality us, user_type ut " + "where us.user_type_id = ut.user_type_id "
-            + " and ut.user_type <> 'ADMIN' and ut.user_type_id = ? and us.user_speciality = ? order by us.user_speciality";
+            + " and ut.user_type_id = ? and us.user_speciality = ? order by us.user_speciality";
 
     public static String SELECT_USER_SPECIALITY_BY_USER_TYPE = "select us.user_speciality user_speciality "
             + " from user_speciality us, user_type ut " + "where us.user_type_id = ut.user_type_id "
