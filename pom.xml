@@ -24,6 +24,7 @@
 		<jaxb.version>2.3.0</jaxb.version>
 		<google.maps.version>0.18.0</google.maps.version>
 		<slf4j.version>1.7.25</slf4j.version>
+		<twilio.version>8.18.0</twilio.version>
 	</properties>
 
 	<dependencies>
@@ -130,6 +131,11 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+		  <groupId>com.twilio.sdk</groupId>
+		  <artifactId>twilio</artifactId>
+		  <version>${twilio.version}</version>
 		</dependency>
 	</dependencies>
 

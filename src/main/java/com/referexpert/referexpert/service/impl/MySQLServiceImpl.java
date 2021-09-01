@@ -15,6 +15,7 @@ import com.google.maps.GeoApiContext;
 import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.Coordinates;
+import com.referexpert.referexpert.beans.UserNotification;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
@@ -460,4 +461,47 @@ public class MySQLServiceImpl implements MySQLService {
 		logger.error("Exception details :: " + e);
 		e.printStackTrace();
 	}
+    
+    @Override
+    public UserNotification selectUserNotification(String criteria) {
+        logger.info("MySQLServiceImpl :: In selectUserNotification :: " + criteria);
+        UserNotification userNotification = new UserNotification();
+        try {
+        	userNotification = mysqlRepository.selectUserNotification(criteria);
+        }
+        catch (Exception e) {
+        	exceptionBlock(e, "Exception while fetching data from user notification");
+        }
+        return userNotification;
+    }
+    
+    @Override
+    public int upsertUserNotification(UserNotification userNotification, String userEmail) {
+    	logger.info("MySQLServiceImpl :: In upsertUserNotification :: " + userNotification.toString());
+    	String criteria = " email = '" + userEmail + "'";
+        UserNotification userNotificationfromDB = selectUserNotification(criteria);
+        int value = 0;
+    	try {
+    		if(userNotificationfromDB == null) {
+    			String criteriaFrom = " email = '" + userEmail + "'";
+    	        UserRegistration user = selectUser(criteriaFrom);
+    			value = mysqlRepository.insertUserNotification(userNotification, user.getUserId());
+    		} else {
+    			value = mysqlRepository.updateUsernotification(userNotification, userNotificationfromDB.getUserEmail());
+    		}
+        }
+        catch (DuplicateKeyException e) {
+        	exceptionBlock(e, "Exception while upserting data into user_notification");
+            return 999999;
+        }
+        catch (DataIntegrityViolationException e) {
+        	exceptionBlock(e, "Exception while upserting data into user_notification");
+        	return 888888;
+        }
+        catch (Exception e) {
+        	exceptionBlock(e, "Exception while upserting data into user_notification");
+            return 0;
+        }
+    	return value;
+    }
 }

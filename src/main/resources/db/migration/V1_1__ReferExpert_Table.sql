@@ -1,8 +1,8 @@
 CREATE TABLE appointment
 (
-   appointment_id varchar(255) PRIMARY KEY NOT NULL,
-   appointment_from varchar(255) NOT NULL,
-   appointment_to varchar(255) NOT NULL,
+   appointment_id varchar(50) PRIMARY KEY NOT NULL,
+   appointment_from varchar(50) NOT NULL,
+   appointment_to varchar(50) NOT NULL,
    date_time varchar(100),
    subject varchar(100),
    reason varchar(500),

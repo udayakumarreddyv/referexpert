@@ -48,15 +48,25 @@ public class Constants {
     
     public static String GOOGLE_API_KEY = "google.api.key";
     
+    public static String TWILIO_ACCOUNT_ID = "twilio.account.sid";
+    
+    public static String TWILIO_ACCOUNT_AUTH = "twilio.account.auth";
+    
+    public static String FROM_PHONE_NUMBER = "from.phone.number";
+    
     public static String APPOINTMENT_SUBJECT = "Cephalad : Appointment Notification";
     
-    public static String APPOINTMENT_LOGIN_BODY = "\n Please login to Cephalad and perform required action as necessary.";
+    public static String APPOINTMENT_LOGIN_BODY = "\n Login : ";
     
-    public static String APPOINTMENT_ACCEPTED = "Your requested appointment on DATEANDTIMESTAMP is accepted.";
+    public static String APPOINTMENT_REQUESTED = "Cephalad : Your have an appointment request on DATEANDTIMESTAMP.";
+    
+    public static String APPOINTMENT_ACCEPTED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is accepted.";
 
-    public static String APPOINTMENT_REJECTED = "Your requested appointment on DATEANDTIMESTAMP is rejected.";
+    public static String APPOINTMENT_REJECTED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is rejected.";
 
-    public static String APPOINTMENT_COMPLETED = "Your requested appointment on DATEANDTIMESTAMP is completed.";
+    public static String APPOINTMENT_COMPLETED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is completed.";
+    
+    public static String US_CODE = "+1";
 
 }
 

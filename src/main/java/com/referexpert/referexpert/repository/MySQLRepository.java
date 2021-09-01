@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.RefreshToken;
+import com.referexpert.referexpert.beans.UserNotification;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
@@ -392,5 +393,41 @@ public class MySQLRepository {
         } else {
             return 0;
         }
+	}
+	
+	public UserNotification selectUserNotification(String criteria) throws Exception {
+        logger.info("MySQLRepository :: In selectUserNotification");
+        StringBuffer query = new StringBuffer(QueryConstants.SELECT_USER_NOTIFICATION).append(criteria);
+        List<UserNotification> userNotifications = mysqlJdbcTemplate.query(query.toString(), new Object[] {},
+                (rs, rowNum) -> {
+                	int i = 0;
+                	UserNotification userNotification = new UserNotification();
+                    userNotification.setUserEmail(rs.getString(++i));
+                    userNotification.setNotificationEmail(rs.getString(++i));
+                    userNotification.setNotificationMobile(rs.getString(++i));
+                    return userNotification;
+                });
+        if (userNotifications != null && userNotifications.size() > 0) {
+            return userNotifications.get(0);
+        } else {
+            return null;
+        }
+    }
+	
+	public int insertUserNotification(UserNotification userNotification, String userId) throws Exception {
+		logger.info("MySQLRepository :: In insertUserNotification");
+		int value = mysqlJdbcTemplate.update(QueryConstants.INSERT_USER_NOTIFICATION,
+				new Object[] { userId, userNotification.getNotificationEmail(),
+						userNotification.getNotificationMobile(), new Timestamp(System.currentTimeMillis()),
+						new Timestamp(System.currentTimeMillis()) });
+		return value;
+	}
+
+	public int updateUsernotification(UserNotification userNotification, String userId) throws Exception {
+		logger.info("MySQLRepository :: In updateUsernotification");
+		int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_USER_NOTIFICATION,
+				new Object[] { userNotification.getNotificationEmail(), userNotification.getNotificationMobile(),
+						new Timestamp(System.currentTimeMillis()), userId });
+		return value;
 	}
 }

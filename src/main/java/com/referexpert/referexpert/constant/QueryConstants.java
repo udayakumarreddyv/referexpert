@@ -77,4 +77,10 @@ public class QueryConstants {
     public static String DELETE_REFRESH_TOKEN_BYUSER = "delete from refresh_token where user_id = ?";
     
     public static String SELECT_USER_COUNTS = "select count(0) from user_profile where is_active = ? and user_type_id <> 1";
+    
+    public static String SELECT_USER_NOTIFICATION = "select un.user_id, un.notification_email, un.notification_mobile from user_profile up, user_notification un where up.user_id = un.user_id and ";
+    
+    public static String INSERT_USER_NOTIFICATION = "insert into user_notification (user_id, notification_email, notification_mobile, created_timestamp, updated_timestamp) values(?, ?, ?, ?, ?)";
+    
+    public static String UPDATE_USER_NOTIFICATION = "update user_notification set notification_email = ?, notification_mobile = ?, updated_timestamp = ? where user_id = ?";
 }

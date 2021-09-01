@@ -6,7 +6,7 @@ CREATE TABLE user_type
    updated_timestamp timestamp
 );
 
-insert into user_type (user_type_id, user_type, created_timestamp, updated_timestamp) values(10, 'Admin',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+insert into user_type (user_type_id, user_type, created_timestamp, updated_timestamp) values(10, 'ADMIN',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into user_type (user_type_id, user_type, created_timestamp, updated_timestamp) values(11, 'Allergy-Immunology',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into user_type (user_type_id, user_type, created_timestamp, updated_timestamp) values(12, 'Anesthesiology',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into user_type (user_type_id, user_type, created_timestamp, updated_timestamp) values(13, 'Cardiology',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
@@ -50,7 +50,7 @@ ADD CONSTRAINT fk_us_spl_usr_id
 FOREIGN KEY (user_type_id)
 REFERENCES user_type(user_type_id);
 
-insert into user_speciality (user_speciality_id, user_speciality, user_type_id, created_timestamp, updated_timestamp) values(10, 'Admin',(select user_type_id from user_type where user_type = 'Admin'),CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+insert into user_speciality (user_speciality_id, user_speciality, user_type_id, created_timestamp, updated_timestamp) values(10, 'ADMIN',(select user_type_id from user_type where user_type = 'ADMIN'),CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into user_speciality (user_speciality_id, user_speciality, user_type_id, created_timestamp, updated_timestamp) values(11, 'Allergy',(select user_type_id from user_type where user_type = 'Allergy-Immunology'),CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into user_speciality (user_speciality_id, user_speciality, user_type_id, created_timestamp, updated_timestamp) values(12, 'Allergy-Immunology',(select user_type_id from user_type where user_type = 'Allergy-Immunology'),CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into user_speciality (user_speciality_id, user_speciality, user_type_id, created_timestamp, updated_timestamp) values(13, 'Clinical Lab Immunology And Allergy',(select user_type_id from user_type where user_type = 'Allergy-Immunology'),CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
@@ -234,10 +234,10 @@ COMMIT;
 
 CREATE TABLE user_profile
 (
-   user_id varchar(255) PRIMARY KEY NOT NULL,
-   first_name varchar(255),
-   last_name varchar(255),
-   email varchar(255),
+   user_id varchar(50) PRIMARY KEY NOT NULL,
+   first_name varchar(25),
+   last_name varchar(25),
+   email varchar(100),
    password varchar(255),
    user_type_id bigint,
    user_speciality_id bigint,
@@ -245,8 +245,8 @@ CREATE TABLE user_profile
    city varchar(50),
    state varchar(25),
    zip varchar(15),
-   phone varchar(20),
-   fax varchar(20),
+   phone varchar(15),
+   fax varchar(15),
    is_active varchar(1),
    lattitude decimal(20,17),
    longitude decimal(20,17),
@@ -263,15 +263,15 @@ ADD CONSTRAINT fk_up_usr_spl_id
 FOREIGN KEY (user_speciality_id)
 REFERENCES user_speciality(user_speciality_id);
 
-INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,city,state,zip,phone,fax,is_active,lattitude,longitude,created_timestamp,updated_timestamp) VALUES ('manual_insert','Uday','Reddy','udayakumarreddyv@gmail.com','test*987',1,1,'1234 AND LN','Atlanta','Georgia','33333','999999999','999999999','Y',34.09085883350354, -84.27777246068659,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+INSERT INTO user_profile (user_id,first_name,last_name,email,password,user_type_id,user_speciality_id,address,city,state,zip,phone,fax,is_active,lattitude,longitude,created_timestamp,updated_timestamp) VALUES ('manual_insert','Uday','Reddy','udayakumarreddyv@gmail.com','test*987',10,10,'1234 AND LN','Atlanta','Georgia','33333','999999999','999999999','Y',34.09085883350354, -84.27777246068659,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 COMMIT;
 
 CREATE TABLE confirmation_token
 (
-   token_id varchar(255) PRIMARY KEY NOT NULL,
-   confirmation_token varchar(255),
+   token_id varchar(50) PRIMARY KEY NOT NULL,
+   confirmation_token varchar(50),
    created_timestamp timestamp,
-   user_id varchar(255) NOT NULL
+   user_id varchar(50) NOT NULL
 );
 ALTER TABLE confirmation_token
 ADD CONSTRAINT FK_cnf_usrid
@@ -281,9 +281,9 @@ CREATE INDEX IDX_CNF_USR_ID ON confirmation_token(user_id);
 
 CREATE TABLE user_referral
 (
-   user_referral_id varchar(255) PRIMARY KEY NOT NULL,
-   user_email varchar(255),
-   doc_email varchar(255),
+   user_referral_id varchar(50) PRIMARY KEY NOT NULL,
+   user_email varchar(100),
+   doc_email varchar(100),
    is_registered varchar(1),
    created_timestamp timestamp,
    updated_timestamp timestamp
