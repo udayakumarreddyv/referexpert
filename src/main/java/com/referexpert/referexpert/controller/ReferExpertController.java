@@ -220,7 +220,7 @@ public class ReferExpertController {
         	userNotification.setUserEmail(null);
         	return new ResponseEntity<UserNotification>(userNotification, HttpStatus.OK);
         } else {
-        	return new ResponseEntity<UserNotification>(userNotification, HttpStatus.NOT_FOUND);
+        	return new ResponseEntity<UserNotification>(new UserNotification(), HttpStatus.OK);
         }
     }
     
