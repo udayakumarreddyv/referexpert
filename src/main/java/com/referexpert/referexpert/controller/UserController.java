@@ -95,7 +95,7 @@ public class UserController {
 			@RequestParam(required = false) String lastName, @RequestParam(required = false) String city,
 			@RequestParam(required = false) String state, @RequestParam(required = false) String zip,
 			@RequestParam(required = false) String type, @RequestParam(required = false) String speciality,
-			@RequestParam(required = false) String active, @RequestParam(required = false) String service) {
+			@RequestParam(required = false) String active, @RequestParam(required = false) String services) {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
 		boolean isCriteriaPresent = false;
@@ -134,9 +134,9 @@ public class UserController {
 			criteria.append(" and user_speciality like '" + speciality + "%'");
 			isCriteriaPresent = true;
 		}
-		if (!StringUtils.isEmpty(service)) {
-			logger.info("UserController :: In selectUsersByParams service: " + service);
-			criteria.append(" and service like '%" + service+ "%'");
+		if (!StringUtils.isEmpty(services)) {
+			logger.info("UserController :: In selectUsersByParams service: " + services);
+			criteria.append(" and service like '%" + services + "%'");
 			isCriteriaPresent = true;
 		}
 		if (StringUtils.isEmpty(active)) {
@@ -157,7 +157,7 @@ public class UserController {
 	public ResponseEntity<List<UserRegistration>> selectUsersByDistance(@PathVariable("distance") int distance,
 			@RequestParam(required = false) String type, @RequestParam(required = false) String speciality,
 			@RequestParam(required = false) String firstName, @RequestParam(required = false) String lastName,
-			@RequestParam(required = false) String service) {
+			@RequestParam(required = false) String services) {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
 		boolean isCriteriaPresent = false;
@@ -181,9 +181,9 @@ public class UserController {
 			criteria.append(" and user_speciality like '" + speciality + "%'");
 			isCriteriaPresent = true;
 		}
-		if (!StringUtils.isEmpty(service)) {
-			logger.info("UserController :: In selectUsersByDistance service: " + service);
-			criteria.append(" and service like '%" + service + "%'");
+		if (!StringUtils.isEmpty(services)) {
+			logger.info("UserController :: In selectUsersByDistance service: " + services);
+			criteria.append(" and service like '%" + services + "%'");
 			isCriteriaPresent = true;
 		}
 		criteria.append(" and is_active = 'Y'");
@@ -202,7 +202,7 @@ public class UserController {
 			@PathVariable("longitude") Double longitude, @PathVariable("distance") int distance,
 			@RequestParam(required = false) String type, @RequestParam(required = false) String speciality,
 			@RequestParam(required = false) String firstName, @RequestParam(required = false) String lastName,
-			@RequestParam(required = false) String service) {
+			@RequestParam(required = false) String services) {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
 		boolean isCriteriaPresent = false;
@@ -226,9 +226,9 @@ public class UserController {
 			criteria.append(" and user_speciality like '" + speciality + "%'");
 			isCriteriaPresent = true;
 		}
-		if (!StringUtils.isEmpty(service)) {
-			logger.info("UserController :: In selectUsersByCoordinates service: " + service);
-			criteria.append(" and service like '%" + service + "%'");
+		if (!StringUtils.isEmpty(services)) {
+			logger.info("UserController :: In selectUsersByCoordinates service: " + services);
+			criteria.append(" and service like '%" + services + "%'");
 			isCriteriaPresent = true;
 		}
 		criteria.append(" and is_active = 'Y'");
@@ -245,7 +245,7 @@ public class UserController {
     @GetMapping(value = "/users/distance/{address}/{distance}")
     public ResponseEntity<List<UserRegistration>> selectUsersByAddress(@PathVariable("address") String address,
             @PathVariable("distance") int distance, @RequestParam(required = false) String type,
-            @RequestParam(required = false) String speciality, @RequestParam(required = false) String service) {
+            @RequestParam(required = false) String speciality, @RequestParam(required = false) String services) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Coordinates coordinates = GeoUtils.getCoordinates(address, geoApiContext);
         StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
@@ -260,9 +260,9 @@ public class UserController {
             criteria.append(" and user_speciality like '" + speciality + "%'");
             isCriteriaPresent = true;
         }
-        if (!StringUtils.isEmpty(service)) {
-			logger.info("UserController :: In selectUsersByAddress service: " + service);
-			criteria.append(" and service like '%" + service + "%'");
+        if (!StringUtils.isEmpty(services)) {
+			logger.info("UserController :: In selectUsersByAddress service: " + services);
+			criteria.append(" and service like '%" + services + "%'");
 			isCriteriaPresent = true;
 		}
         criteria.append(" and is_active = 'Y'");
