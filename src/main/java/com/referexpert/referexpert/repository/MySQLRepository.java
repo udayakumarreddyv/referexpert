@@ -269,9 +269,13 @@ public class MySQLRepository {
         userRegistration.setPassword(rs.getString(++i));
         userRegistration.setLattitude(rs.getDouble(++i));
         userRegistration.setLongitude(rs.getDouble(++i));
-        userRegistration.setService(rs.getString(++i));
-        userRegistration.setInsurance(rs.getString(++i));
+        userRegistration.setService(getValue(rs.getString(++i)));
+        userRegistration.setInsurance(getValue(rs.getString(++i)));
         return userRegistration;
+    }
+    
+    private String getValue(String str) {
+    	return str != null? str : "";
     }
 
     public int insertAppointment(Appointment appointment, String referFrom, String referTo) throws Exception {

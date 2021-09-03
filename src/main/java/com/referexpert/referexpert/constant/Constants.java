@@ -66,7 +66,7 @@ public class Constants {
 
     public static String APPOINTMENT_COMPLETED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is completed.";
     
-    public static String US_CODE = "+1";
+    public static String US_CODE = "+";
 
 }
 
