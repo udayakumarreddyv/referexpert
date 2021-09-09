@@ -52,7 +52,7 @@ public class Constants {
     
     public static String TWILIO_ACCOUNT_AUTH = "twilio.account.auth";
     
-    public static String FROM_PHONE_NUMBER = "from.phone.number";
+    public static String TWILIO_FROM_PHONE_NUMBER = "twilio.from.phone.number";
     
     public static String APPOINTMENT_SUBJECT = "Cephalad : Appointment Notification";
     

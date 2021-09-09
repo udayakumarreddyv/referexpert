@@ -10,6 +10,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,6 +32,7 @@ import com.referexpert.referexpert.service.SMSSenderService;
 
 @RestController
 @CrossOrigin()
+@EnableAsync
 public class ReferExpertController {
     
     private final static Logger logger = LoggerFactory.getLogger(ReferExpertController.class);
@@ -100,6 +103,7 @@ public class ReferExpertController {
         return entity;
     }
     
+    @Async
 	private void sendNotification(String toEmail, String subject, String body) {
 		logger.info("ReferExpertController :: In sendNotification to : " + toEmail);
 		UserNotification userNotification = getuserNotifications(toEmail);

@@ -7,7 +7,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.referexpert.referexpert.constant.Constants;
-import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 
@@ -20,9 +19,8 @@ public class SMSSenderService {
 	Environment env;
 
 	public void sendSMS(String toPhoneNumber, String textMessage) {
-		Twilio.init(env.getProperty(Constants.TWILIO_ACCOUNT_ID), env.getProperty(Constants.TWILIO_ACCOUNT_AUTH));
 		Message message = Message.creator(new PhoneNumber(toPhoneNumber),
-				new PhoneNumber(env.getProperty(Constants.FROM_PHONE_NUMBER)), textMessage).create();
+				new PhoneNumber(env.getProperty(Constants.TWILIO_FROM_PHONE_NUMBER)), textMessage).create();
 
 		logger.info("SMS Sent to phone :: " + toPhoneNumber + " and response code is :: " + message.getSid());
 	}
