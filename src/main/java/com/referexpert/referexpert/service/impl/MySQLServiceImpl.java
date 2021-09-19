@@ -16,6 +16,7 @@ import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.Coordinates;
 import com.referexpert.referexpert.beans.UserNotification;
+import com.referexpert.referexpert.beans.UserReferral;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
@@ -260,6 +261,18 @@ public class MySQLServiceImpl implements MySQLService {
         catch (Exception e) {
         	exceptionBlock(e, "Exception while fetching data from user_referral");
             return false;
+        }
+    }
+    
+    @Override
+    public List<UserReferral> selectNonRegisteredUsers() {
+    	logger.info("MySQLServiceImpl :: In selectNonRegisteredUsers");
+        try {
+            return mysqlRepository.selectNonRegisteredUsers();
+        }
+        catch (Exception e) {
+        	exceptionBlock(e, "Exception while fetching data from user_referral");
+            return null;
         }
     }
 

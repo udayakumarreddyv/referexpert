@@ -206,14 +206,7 @@ public class RegistrationController {
         String referralId = UUID.randomUUID().toString();
         int value = mySQLService.insertUserReferral(referralId, userEmail, tokenizer, Constants.INACTIVE);
         if (value != 0) {
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(tokenizer);
-            mailMessage.setSubject("You Referred to registered in Cephalad Network");
-            mailMessage.setFrom(env.getProperty("spring.mail.username"));
-            mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
-            mailMessage.setText("Congratulations!! Please register with Cephalad using link :: "
-                    + env.getProperty("referexpert.register.url") + "?email=" + tokenizer + "&token=" + referralId);
-            emailSenderService.sendEmail(mailMessage);
+            emailSenderService.sendReferralEMail(tokenizer, referralId);
         } else {
             entity = new ResponseEntity<>(new GenericResponse("Referral not Successful"), HttpStatus.BAD_REQUEST);
         }

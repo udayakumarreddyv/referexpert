@@ -46,6 +46,9 @@ public class QueryConstants {
 
     public static String SELECT_USER_REFERRAL = "select user_referral_id, user_email, doc_email, is_registered,created_timestamp, updated_timestamp "
             + " from user_referral where user_referral_id = ? and doc_email = ?";
+    
+    public static String SELECT_USER_REFERRAL_NR = "select user_referral_id, user_email, doc_email, is_registered,created_timestamp, updated_timestamp "
+            + " from user_referral where is_registered = 'N'";
 
     public static String UPDATE_USER_REFERRAL = "update user_referral set is_registered = ?, updated_timestamp = ? where doc_email = ?";
 
@@ -75,6 +78,8 @@ public class QueryConstants {
     public static String DELETE_REFRESH_TOKEN = "delete from refresh_token where token = ?";
     
     public static String DELETE_REFRESH_TOKEN_BYUSER = "delete from refresh_token where user_id = ?";
+    
+    public static String CLEANUP_REFRESH_TOKEN = "delete from refresh_token where expiry_date <= NOW()";
     
     public static String SELECT_USER_COUNTS = "select count(0) from user_profile where is_active = ? and user_type_id <> 10";
     

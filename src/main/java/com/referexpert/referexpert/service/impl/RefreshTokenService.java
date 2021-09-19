@@ -81,6 +81,17 @@ public class RefreshTokenService {
 		}
 		return 0;
 	}
+	
+	public int cleanupRefreshToken() {
+		logger.info("RefreshTokenService :: cleanupRefreshToken");
+		try {
+			logger.info("Expired refresh tokens are deleted from database");
+			return mysqlRepository.cleanupRefreshToken();
+		} catch (Exception e) {
+			exceptionBlock(e, "Exception while deleting data from refresh_token");
+		}
+		return 0;
+	}
 
 	public int deleteByUserId(String userId) {
 		logger.info("RefreshTokenService :: deleteByUserId :: " + userId);

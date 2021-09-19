@@ -16,6 +16,7 @@ import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.RefreshToken;
 import com.referexpert.referexpert.beans.UserNotification;
+import com.referexpert.referexpert.beans.UserReferral;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
 import com.referexpert.referexpert.beans.UserType;
@@ -211,6 +212,31 @@ public class MySQLRepository {
             return false;
         }
     }
+    
+    public List<UserReferral> selectNonRegisteredUsers() throws Exception {
+        logger.info("MySQLRepository :: In selectNonRegisteredUsers");
+        List<UserReferral> referrals = mysqlJdbcTemplate.query(QueryConstants.SELECT_USER_REFERRAL_NR,
+                new Object[] {}, (rs, rowNum) -> {
+                	UserReferral userReferral = populateUserReferral(rs);
+                    return userReferral;
+                });
+        if (referrals != null && referrals.size() > 0) {
+            return referrals;
+        } else {
+        	 return new ArrayList<UserReferral>();
+        }
+    }
+    
+    private UserReferral populateUserReferral(ResultSet rs) throws SQLException {
+        logger.info("MySQLRepository :: In populateReferral");
+        int i = 0;
+        UserReferral userReferral = new UserReferral();
+        userReferral.setUserReferralId(rs.getString(++i));
+        userReferral.setUserEmail(rs.getString(++i));
+        userReferral.setDocEmail(rs.getString(++i));
+        userReferral.setIsRegistered(rs.getString(++i));
+        return userReferral;
+    }
 
     public int updateUserReferral(String email, String indicator) throws Exception {
         logger.info("MySQLRepository :: In updateUserReferral");
@@ -378,6 +404,12 @@ public class MySQLRepository {
 	public int deleteRefreshToken(String token) throws Exception {
         logger.info("MySQLRepository :: In deleteRefreshToken");
         int value = mysqlJdbcTemplate.update(QueryConstants.DELETE_REFRESH_TOKEN, new Object[] { token });
+        return value;
+    }
+	
+	public int cleanupRefreshToken() throws Exception {
+        logger.info("MySQLRepository :: In cleanupRefreshToken");
+        int value = mysqlJdbcTemplate.update(QueryConstants.CLEANUP_REFRESH_TOKEN, new Object[] { });
         return value;
     }
 	

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.UserNotification;
+import com.referexpert.referexpert.beans.UserReferral;
 import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.beans.UserSpeciality;
@@ -68,4 +69,6 @@ public interface MySQLService {
     public UserNotification selectUserNotification(String criteria);
     
     public int upsertUserNotification(UserNotification userNotification, String userEmail);
+    
+    public List<UserReferral> selectNonRegisteredUsers();
 }
