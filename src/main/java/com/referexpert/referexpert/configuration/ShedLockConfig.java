@@ -63,7 +63,7 @@ public class ShedLockConfig {
 	@SchedulerLock(name = "removeExpiredTokens", lockAtLeastFor = "10s", lockAtMostFor = "50s")
 	public void removeExpiredTokens() {
 		logger.info("In removeExpiredTokens");
-		refreshTokenService.cleanupRefreshToken();
+		refreshTokenService.cleanupActivities();
 		logger.info("Expired tokens removed successfully");
 	}
 }

@@ -9,6 +9,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.referexpert.referexpert.constant.Constants;
+
 @Service("emailSenderService")
 public class EmailSenderService {
 
@@ -29,15 +31,15 @@ public class EmailSenderService {
         javaMailSender.send(email);
     }
     
-    public void sendReferralEMail(String email, String referralId) {
-    	logger.info("Sending Referral email to :: " + email);
+	public void sendReferralEMail(String email, String referralId) {
+		logger.info("Sending Referral email to :: " + email);
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo(email);
-		mailMessage.setSubject("You Referred to registered in Cephalad Network");
+		mailMessage.setSubject(Constants.WELCOME_SUBJECT);
 		mailMessage.setFrom(env.getProperty("spring.mail.username"));
 		mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
-		mailMessage.setText("Congratulations!! Please register with Cephalad using link :: "
-		        + env.getProperty("referexpert.register.url") + "?email=" + email + "&token=" + referralId);
+		mailMessage.setText(Constants.WELCOME_MESSAGE + env.getProperty("referexpert.register.url") + "?email=" + email
+				+ "&token=" + referralId);
 		sendEmail(mailMessage);
 	}
 }

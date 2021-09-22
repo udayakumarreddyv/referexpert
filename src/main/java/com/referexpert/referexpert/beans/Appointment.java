@@ -7,132 +7,143 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Appointment {
 
-    private String appointmentId;
+	private String appointmentId;
 
-    private String appointmentFrom;
+	private String appointmentFrom;
 
-    private String fromFirstName;
+	private String fromFirstName;
 
-    private String fromLastName;
+	private String fromLastName;
 
-    private String appointmentTo;
+	private String appointmentTo;
 
-    private String toFirstName;
+	private String toFirstName;
 
-    private String toLastName;
+	private String toLastName;
 
-    private String dateAndTimeString;
+	private String dateAndTimeString;
 
-    private String subject;
+	private String subject;
 
-    private String reason;
+	private String reason;
 
-    private String isAccepted;
+	private String isAccepted;
 
-    private String isServed;
+	private String isServed;
 
-    public String getAppointmentId() {
-        return appointmentId;
-    }
+	private String isAvailabilityCheck;
 
-    public void setAppointmentId(String appointmentId) {
-        this.appointmentId = appointmentId;
-    }
+	public String getAppointmentId() {
+		return appointmentId;
+	}
 
-    public String getAppointmentFrom() {
-        return appointmentFrom;
-    }
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
 
-    public void setAppointmentFrom(String appointmentFrom) {
-        this.appointmentFrom = appointmentFrom;
-    }
+	public String getAppointmentFrom() {
+		return appointmentFrom;
+	}
 
-    public String getAppointmentTo() {
-        return appointmentTo;
-    }
+	public void setAppointmentFrom(String appointmentFrom) {
+		this.appointmentFrom = appointmentFrom;
+	}
 
-    public void setAppointmentTo(String appointmentTo) {
-        this.appointmentTo = appointmentTo;
-    }
+	public String getAppointmentTo() {
+		return appointmentTo;
+	}
 
-    public String getDateAndTimeString() {
-        return dateAndTimeString;
-    }
+	public void setAppointmentTo(String appointmentTo) {
+		this.appointmentTo = appointmentTo;
+	}
 
-    public void setDateAndTimeString(String dateAndTimeString) {
-        this.dateAndTimeString = dateAndTimeString;
-    }
+	public String getDateAndTimeString() {
+		return dateAndTimeString;
+	}
 
-    public String getIsAccepted() {
-        return isAccepted;
-    }
+	public void setDateAndTimeString(String dateAndTimeString) {
+		this.dateAndTimeString = dateAndTimeString;
+	}
 
-    public void setIsAccepted(String isAccepted) {
-        this.isAccepted = isAccepted;
-    }
+	public String getIsAccepted() {
+		return isAccepted;
+	}
 
-    public String getIsServed() {
-        return isServed;
-    }
+	public void setIsAccepted(String isAccepted) {
+		this.isAccepted = isAccepted;
+	}
 
-    public void setIsServed(String isServed) {
-        this.isServed = isServed;
-    }
+	public String getIsServed() {
+		return isServed;
+	}
 
-    public String getSubject() {
-        return subject;
-    }
+	public void setIsServed(String isServed) {
+		this.isServed = isServed;
+	}
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
+	public String getSubject() {
+		return subject;
+	}
 
-    public String getReason() {
-        return reason;
-    }
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
 
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
+	public String getReason() {
+		return reason;
+	}
 
-    public String getFromFirstName() {
-        return fromFirstName;
-    }
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
 
-    public void setFromFirstName(String fromFirstName) {
-        this.fromFirstName = fromFirstName;
-    }
+	public String getFromFirstName() {
+		return fromFirstName;
+	}
 
-    public String getFromLastName() {
-        return fromLastName;
-    }
+	public void setFromFirstName(String fromFirstName) {
+		this.fromFirstName = fromFirstName;
+	}
 
-    public void setFromLastName(String fromLastName) {
-        this.fromLastName = fromLastName;
-    }
+	public String getFromLastName() {
+		return fromLastName;
+	}
 
-    public String getToFirstName() {
-        return toFirstName;
-    }
+	public void setFromLastName(String fromLastName) {
+		this.fromLastName = fromLastName;
+	}
 
-    public void setToFirstName(String toFirstName) {
-        this.toFirstName = toFirstName;
-    }
+	public String getToFirstName() {
+		return toFirstName;
+	}
 
-    public String getToLastName() {
-        return toLastName;
-    }
+	public void setToFirstName(String toFirstName) {
+		this.toFirstName = toFirstName;
+	}
 
-    public void setToLastName(String toLastName) {
-        this.toLastName = toLastName;
-    }
+	public String getToLastName() {
+		return toLastName;
+	}
 
-    @Override
-    public String toString() {
-        return "Appointment [appointmentId=" + appointmentId + ", appointmentFrom=" + appointmentFrom
-                + ", fromFirstName=" + fromFirstName + ", fromLastName=" + fromLastName + ", appointmentTo="
-                + appointmentTo + ", toFirstName=" + toFirstName + ", toLastName=" + toLastName + ", dateAndTimeString="
-                + dateAndTimeString + ", subject=" + subject + ", reason=" + reason + ", isAccepted=" + isAccepted
-                + ", isServed=" + isServed + "]";
-    }
+	public void setToLastName(String toLastName) {
+		this.toLastName = toLastName;
+	}
+
+	public String getIsAvailabilityCheck() {
+		return isAvailabilityCheck;
+	}
+
+	public void setIsAvailabilityCheck(String isAvailabilityCheck) {
+		this.isAvailabilityCheck = isAvailabilityCheck;
+	}
+
+	@Override
+	public String toString() {
+		return "Appointment [appointmentId=" + appointmentId + ", appointmentFrom=" + appointmentFrom
+				+ ", fromFirstName=" + fromFirstName + ", fromLastName=" + fromLastName + ", appointmentTo="
+				+ appointmentTo + ", toFirstName=" + toFirstName + ", toLastName=" + toLastName + ", dateAndTimeString="
+				+ dateAndTimeString + ", subject=" + subject + ", reason=" + reason + ", isAccepted=" + isAccepted
+				+ ", isServed=" + isServed + ", isAvailabilityCheck=" + isAvailabilityCheck + "]";
+	}
+
 }

@@ -82,13 +82,15 @@ public class RefreshTokenService {
 		return 0;
 	}
 	
-	public int cleanupRefreshToken() {
-		logger.info("RefreshTokenService :: cleanupRefreshToken");
+	public int cleanupActivities() {
+		logger.info("RefreshTokenService :: cleanupActivities");
 		try {
-			logger.info("Expired refresh tokens are deleted from database");
-			return mysqlRepository.cleanupRefreshToken();
+			logger.info("Cleanup Activities Stats here");
+			mysqlRepository.cleanupRefreshToken();
+			mysqlRepository.markAppointmentComplete();
+			return 1;
 		} catch (Exception e) {
-			exceptionBlock(e, "Exception while deleting data from refresh_token");
+			exceptionBlock(e, "Exception while deleting data from database");
 		}
 		return 0;
 	}

@@ -61,14 +61,16 @@ public class QueryConstants {
             + " where up.user_type_id = ut.user_type_id and up.user_speciality_id = us.user_speciality_id and user_type <> 'ADMIN' and ";
 
     public static String INSERT_APPOINTMENT = "insert into appointment (appointment_id, appointment_from, appointment_to, date_time, subject, reason, "
-            + "is_accepted, is_served, created_timestamp, updated_timestamp) values (?,?,?,?,?,?,?,?,?,?)";
+            + "is_accepted, is_served, is_avail, created_timestamp, updated_timestamp) values (?,?,?,?,?,?,?,?,?,?,?)";
 
     public static String UPDATE_APPOINTMENT_STATUS = "update appointment set is_accepted = ?, updated_timestamp = ? where appointment_id = ?";
+    
+    public static String UPDATE_APPOINTMENT_RESPONSE = "update appointment set date_time = ?, is_accepted = ?, updated_timestamp = ? where appointment_id = ?";
 
     public static String UPDATE_SERVED_STATUS = "update appointment set is_served = ?, updated_timestamp = ? where appointment_id = ?";
 
     public static String SELECT_APPOINTMENT = "select re.appointment_id, f.email, f.first_name, f.last_name, t.email, t.first_name, t.last_name, "
-            + "re.date_time, re.is_accepted, re.is_served, re.subject, re.reason from appointment re, user_profile f, user_profile t "
+            + "re.date_time, re.is_accepted, re.is_served, re.is_avail, re.subject, re.reason from appointment re, user_profile f, user_profile t "
             + "where re.appointment_from = f.user_id and re.appointment_to = t.user_id and ";
     
     public static String SELECT_REFRESH_TOKEN = "select refresh_token_id, user_id, token, expiry_date from refresh_token where ";
@@ -81,6 +83,9 @@ public class QueryConstants {
     
     public static String CLEANUP_REFRESH_TOKEN = "delete from refresh_token where expiry_date <= NOW()";
     
+    public static String MARK_APPOINTMENT_COMPLETE = "update appointment set is_served = 'Y' where is_avail='N' and is_accepted = 'Y' and is_served = 'N' "
+    		+ " and TIMESTAMP(date_time) < TIMESTAMP(NOW()) ";
+    
     public static String SELECT_USER_COUNTS = "select count(0) from user_profile where is_active = ? and user_type_id <> 10";
     
     public static String SELECT_USER_NOTIFICATION = "select un.user_id, un.notification_email, un.notification_mobile from user_profile up, user_notification un where up.user_id = un.user_id and ";
@@ -88,4 +93,6 @@ public class QueryConstants {
     public static String INSERT_USER_NOTIFICATION = "insert into user_notification (user_id, notification_email, notification_mobile, created_timestamp, updated_timestamp) values(?, ?, ?, ?, ?)";
     
     public static String UPDATE_USER_NOTIFICATION = "update user_notification set notification_email = ?, notification_mobile = ?, updated_timestamp = ? where user_id = ?";
+    
+    public static String PENDING_TASKS = "select up.user_id from user_profile up, appointment a where a.appointment_to = up.user_id and a.is_accepted = 'P' and a.is_avail= ? and up.email = ?";
 }

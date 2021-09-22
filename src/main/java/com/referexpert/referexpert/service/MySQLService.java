@@ -50,10 +50,12 @@ public interface MySQLService {
     
     public List<UserRegistration> selectActiveUsersByCoordinates(String criteria, Double lattitude, Double longitude, int distance);
 
-    public int insertAppointment(Appointment referExpert);
+    public int insertAppointment(Appointment referExpert, String type);
 
     public int updateAppointmentAccepted(String referExpertId, String indicator);
 
+    public int updateAppointmentResponse(String referExpertId, String response);
+    
     public int updateAppointmentServed(String referExpertId, String indicator);
     
     public List<Appointment> selectAppointments(String criteria);
@@ -71,4 +73,6 @@ public interface MySQLService {
     public int upsertUserNotification(UserNotification userNotification, String userEmail);
     
     public List<UserReferral> selectNonRegisteredUsers();
+    
+    public boolean getPendingTasks(String isReferral, String email);
 }

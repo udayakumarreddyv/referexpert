@@ -350,7 +350,7 @@ public class MySQLServiceImpl implements MySQLService {
     }
 
     @Override
-    public int insertAppointment(Appointment appointment) {
+    public int insertAppointment(Appointment appointment, String type) {
         logger.info("MySQLServiceImpl :: In insertAppointment :: " + appointment);
         String criteriaFrom = " email = '" + appointment.getAppointmentFrom() + "'";
         UserRegistration fromUser = selectUser(criteriaFrom);
@@ -358,7 +358,7 @@ public class MySQLServiceImpl implements MySQLService {
         UserRegistration toUser = selectUser(criteriaTo);
         int value = 0;
         try {
-            value = mysqlRepository.insertAppointment(appointment, fromUser.getUserId(), toUser.getUserId());
+            value = mysqlRepository.insertAppointment(appointment, fromUser.getUserId(), toUser.getUserId(), type);
         }
         catch (DuplicateKeyException e) {
         	exceptionBlock(e, "Exception while inserting data into appointment");
@@ -381,6 +381,20 @@ public class MySQLServiceImpl implements MySQLService {
         int value = 0;
         try {
             value = mysqlRepository.updateAppointmentAccepted(appointmentId, indicator);
+        }
+        catch (Exception e) {
+        	exceptionBlock(e, "Exception while updating data into appointment");
+            return 0;
+        }
+        return value;
+    }
+    
+    @Override
+    public int updateAppointmentResponse(String appointmentId, String response) {
+        logger.info("MySQLServiceImpl :: In updateAppointmentResponse :: " + appointmentId + " :: " + response);
+        int value = 0;
+        try {
+            value = mysqlRepository.updateAppointmentResponse(appointmentId, response);
         }
         catch (Exception e) {
         	exceptionBlock(e, "Exception while updating data into appointment");
@@ -516,5 +530,17 @@ public class MySQLServiceImpl implements MySQLService {
             return 0;
         }
     	return value;
+    }
+    
+    @Override
+    public boolean getPendingTasks(String isReferral, String email) {
+    	logger.info("MySQLServiceImpl :: In getPendingTasks :: " + email);
+        try {
+            return mysqlRepository.getPendingTasks(isReferral, email);
+        }
+        catch (Exception e) {
+        	exceptionBlock(e, "Exception while fetching data from appointments data");
+            return false;
+        }	
     }
 }

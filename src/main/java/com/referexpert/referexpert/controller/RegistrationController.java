@@ -124,10 +124,10 @@ public class RegistrationController {
                 mySQLService.insertConfirmationToken(confirmationToken);
                 SimpleMailMessage mailMessage = new SimpleMailMessage();
                 mailMessage.setTo(userRegistration.getEmail());
-                mailMessage.setSubject("Complete Registration!");
+                mailMessage.setSubject(Constants.REGISTRATION_SUBJECT);
                 mailMessage.setFrom(env.getProperty("spring.mail.username"));
                 mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
-                mailMessage.setText("To confirm your account, please click here : "
+                mailMessage.setText(Constants.REGISTRATION_BODY
                         + env.getProperty("referexpert.confirm.account.url") + "?email=" + userRegistration.getEmail()
                         + "&token=" + confirmationToken.getConfirmationToken());
                 emailSenderService.sendEmail(mailMessage);
@@ -287,10 +287,10 @@ public class RegistrationController {
             mySQLService.insertConfirmationToken(confirmationToken);
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setTo(user.getEmail());
-            mailMessage.setSubject("Password rest request");
+            mailMessage.setSubject(Constants.PASSWORD_RESET_SUBJECT);
             mailMessage.setFrom(env.getProperty("spring.mail.username"));
             mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
-            mailMessage.setText("Please click on below link to reset your password :: "
+            mailMessage.setText(Constants.PASSWORD_RESET_BODY
                     + env.getProperty("referexpert.resetpass.url") + "?email=" + userRegistration.getEmail()
                     + "&token=" + confirmationToken.getConfirmationToken());
             emailSenderService.sendEmail(mailMessage);
@@ -335,11 +335,11 @@ public class RegistrationController {
             if ("reset".equals(action)) {
                 SimpleMailMessage mailMessage = new SimpleMailMessage();
                 mailMessage.setTo(userRegistration.getEmail());
-                mailMessage.setSubject("Password rest successful");
+                mailMessage.setSubject(Constants.PASSWORD_SUCCESS_SUBJECT);
                 mailMessage.setFrom(env.getProperty("spring.mail.username"));
                 mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
-                mailMessage.setText("Your pasword reset succesful, please login here "
-                        + env.getProperty("referexpert.signin.url") + " with your new password");
+                mailMessage.setText(Constants.PASSWORD_SUCCESS_BODY
+                        + env.getProperty("referexpert.signin.url") + Constants.WITH_NEW_PASSWORD);
                 emailSenderService.sendEmail(mailMessage);
             }
             entity = new ResponseEntity<>(new GenericResponse("Password updated Successfully"), HttpStatus.OK);

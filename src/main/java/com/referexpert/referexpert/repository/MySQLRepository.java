@@ -300,16 +300,20 @@ public class MySQLRepository {
         return userRegistration;
     }
     
-    private String getValue(String str) {
-    	return str != null? str : "";
-    }
-
-    public int insertAppointment(Appointment appointment, String referFrom, String referTo) throws Exception {
+    public int insertAppointment(Appointment appointment, String referFrom, String referTo, String type) throws Exception {
         logger.info("MySQLRepository :: In insertAppointment");
-        int value = mysqlJdbcTemplate.update(QueryConstants.INSERT_APPOINTMENT,
+        int value = 0;
+        if(Constants.APPOINTMENT.equals(type)) {
+        	value = mysqlJdbcTemplate.update(QueryConstants.INSERT_APPOINTMENT,
                 new Object[] { appointment.getAppointmentId(), referFrom, referTo, appointment.getDateAndTimeString(),
-                        appointment.getSubject(), appointment.getReason(), Constants.PENDING, Constants.INACTIVE,
+                        appointment.getSubject(), appointment.getReason(), Constants.PENDING, Constants.INACTIVE, Constants.INACTIVE,
                         new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()) });
+        } else {
+        	value = mysqlJdbcTemplate.update(QueryConstants.INSERT_APPOINTMENT,
+                    new Object[] { appointment.getAppointmentId(), referFrom, referTo, appointment.getDateAndTimeString(),
+                            appointment.getSubject(), appointment.getReason(), Constants.PENDING, null, Constants.ACTIVE, 
+                            new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()) });
+        }
         return value;
     }
 
@@ -317,6 +321,13 @@ public class MySQLRepository {
         logger.info("MySQLRepository :: In updateAppointmentAccepted");
         int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_APPOINTMENT_STATUS,
                 new Object[] { indicator, new Timestamp(System.currentTimeMillis()), appointmentId });
+        return value;
+    }
+    
+    public int updateAppointmentResponse(String appointmentId, String response) throws Exception {
+        logger.info("MySQLRepository :: In updateAppointmentResponse");
+        int value = mysqlJdbcTemplate.update(QueryConstants.UPDATE_APPOINTMENT_RESPONSE,
+                new Object[] { response, Constants.ACTIVE, new Timestamp(System.currentTimeMillis()), appointmentId });
         return value;
     }
 
@@ -340,11 +351,12 @@ public class MySQLRepository {
             appointment.setAppointmentTo(rs.getString(++i));
             appointment.setToFirstName(rs.getString(++i));
             appointment.setToLastName(rs.getString(++i));
-            appointment.setDateAndTimeString(rs.getString(++i));
-            appointment.setIsAccepted(rs.getString(++i));
-            appointment.setIsServed(rs.getString(++i));
-            appointment.setSubject(rs.getString(++i));
-            appointment.setReason(rs.getString(++i));
+            appointment.setDateAndTimeString(getValue(rs.getString(++i)));
+            appointment.setIsAccepted(getValue(rs.getString(++i)));
+            appointment.setIsServed(getValue(rs.getString(++i)));
+            appointment.setIsAvailabilityCheck(getValue(rs.getString(++i)));
+            appointment.setSubject(getValue(rs.getString(++i)));
+            appointment.setReason(getValue(rs.getString(++i)));
             return appointment;
         });
         if (appointments != null && appointments.size() > 0) {
@@ -413,6 +425,12 @@ public class MySQLRepository {
         return value;
     }
 	
+	public int markAppointmentComplete() throws Exception {
+        logger.info("MySQLRepository :: In markAppointmentComplete");
+        int value = mysqlJdbcTemplate.update(QueryConstants.MARK_APPOINTMENT_COMPLETE, new Object[] { });
+        return value;
+    }
+	
 	public int deleteRefreshTokenByUser(String userId) throws Exception {
         logger.info("MySQLRepository :: In deleteRefreshTokenByUser");
         int value = mysqlJdbcTemplate.update(QueryConstants.DELETE_REFRESH_TOKEN_BYUSER, new Object[] { userId });
@@ -466,4 +484,21 @@ public class MySQLRepository {
 						new Timestamp(System.currentTimeMillis()), userId });
 		return value;
 	}
+	
+	private String getValue(String str) {
+    	return str != null? str : "";
+    }
+	
+	public boolean getPendingTasks(String isReferral, String email) {
+		logger.info("MySQLRepository :: In getPendingTasks");
+		List<String> userIds = mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS, new Object[] { isReferral, email }, (rs, rowNum) -> {
+            return rs.getString(1);
+        });
+        if (userIds != null && userIds.size() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+	}
+    
 }

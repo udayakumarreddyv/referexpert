@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,29 +24,25 @@ import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.GenericResponse;
 import com.referexpert.referexpert.beans.UserNotification;
 import com.referexpert.referexpert.constant.Constants;
-import com.referexpert.referexpert.service.EmailSenderService;
 import com.referexpert.referexpert.service.MySQLService;
-import com.referexpert.referexpert.service.SMSSenderService;
+import com.referexpert.referexpert.util.CommonUtils;
 
 @RestController
 @CrossOrigin()
 @EnableAsync
-public class ReferExpertController {
+public class AppointmentController {
     
-    private final static Logger logger = LoggerFactory.getLogger(ReferExpertController.class);
+    private final static Logger logger = LoggerFactory.getLogger(AppointmentController.class);
     
     @Autowired
     private MySQLService mySQLService;
     
     @Autowired
+    private CommonUtils commonUtils;
+    
+    @Autowired
     Environment env;
     
-    @Autowired
-    private EmailSenderService emailSenderService;
-    
-    @Autowired
-    private SMSSenderService smsSenderService;
-
     @PostMapping(value = "/requestappointment")
     public ResponseEntity<GenericResponse> requestAppointment(@RequestBody String appointmentString) {
         logger.info("ReferExpertController :: In requestAppointment : " + appointmentString);
@@ -65,7 +59,7 @@ public class ReferExpertController {
         }
         logger.info("JSON to Object Conversion :: " + appointment != null ? appointment.toString() : null);
         appointment.setAppointmentId(UUID.randomUUID().toString());
-        int value = mySQLService.insertAppointment(appointment);
+        int value = mySQLService.insertAppointment(appointment, Constants.APPOINTMENT);
         if (value == 999999) {
             entity = new ResponseEntity<>(new GenericResponse("Unable to insert appointment due to unique constraint"), HttpStatus.BAD_REQUEST);
         } else if (value == 888888) {
@@ -73,10 +67,11 @@ public class ReferExpertController {
         } else if (value == 0) {
             entity = new ResponseEntity<>(new GenericResponse("Issue in request appointment"), HttpStatus.BAD_REQUEST);
         } else {
-        	sendNotification(appointment.getAppointmentTo(), Constants.APPOINTMENT_SUBJECT, 
+        	UserNotification userNotification = commonUtils.getUserNotifications(appointment.getAppointmentTo());
+        	commonUtils.sendNotification(appointment.getAppointmentTo(), Constants.APPOINTMENT_SUBJECT, 
         			Constants.APPOINTMENT_REQUESTED.replaceAll("DATEANDTIMESTAMP",
         					appointment.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
-							+ env.getProperty("referexpert.signin.url"));
+							+ env.getProperty("referexpert.signin.url"), userNotification);
             entity = new ResponseEntity<>(new GenericResponse("Appointment Request Successful"), HttpStatus.OK);
         }
         return entity;
@@ -103,54 +98,7 @@ public class ReferExpertController {
         return entity;
     }
     
-    @Async
-	private void sendNotification(String toEmail, String subject, String body) {
-		logger.info("ReferExpertController :: In sendNotification to : " + toEmail);
-		UserNotification userNotification = getuserNotifications(toEmail);
-
-		if (userNotification != null) {
-			// Email Notification goes here.
-			String notificationEmail = userNotification.getNotificationEmail();
-			if (notificationEmail != null) {
-				String[] emailArray = notificationEmail.split(",");
-				for (String email : emailArray) {
-					sendEmail(email, subject, body);
-				}
-			} else {
-				sendEmail(toEmail, subject, body);
-			}
-
-			// SMS notification goes here
-			String notificationMobile = userNotification.getNotificationMobile();
-			if (notificationMobile != null) {
-				String[] mobileArray = notificationMobile.split(",");
-				for (String mobile : mobileArray) {
-					try {
-						smsSenderService.sendSMS(Constants.US_CODE + mobile, body);
-					} catch (Exception e) {
-						logger.error("Failed to send apppointment notification to :: " + mobile);
-					}
-				}
-			} 
-		}
-	}
-
-	private void sendEmail(String toEmail, String subject, String body) {
-		try {
-			SimpleMailMessage mailMessage = new SimpleMailMessage();
-			mailMessage.setTo(toEmail);
-			mailMessage.setSubject(subject);
-			mailMessage.setFrom(env.getProperty("spring.mail.username"));
-			mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
-			mailMessage.setText(body);
-			emailSenderService.sendEmail(mailMessage);
-			logger.info("Appointment notification sent to :: " + toEmail);
-		} catch (Exception e) {
-			logger.error("Failed to send apppointment notification to :: " + toEmail);
-		}
-	}
-    
-	private ResponseEntity<GenericResponse> updateStatus(String appointmentString, String status, String type) {
+    private ResponseEntity<GenericResponse> updateStatus(String appointmentString, String status, String type) {
 		logger.info("ReferExpertController :: In updateStatus  : " + appointmentString + " : " + status + " : " + type);
 		ObjectMapper mapper = new ObjectMapper();
 		ResponseEntity<GenericResponse> entity = null;
@@ -169,28 +117,31 @@ public class ReferExpertController {
 		int value = 0;
 		if (Constants.SERVICE.equals(type)) {
 			value = mySQLService.updateAppointmentServed(appointmentId, status);
-			sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
+			UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
+			commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
 					Constants.APPOINTMENT_COMPLETED.replaceAll("DATEANDTIMESTAMP",
 							appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
-							+ env.getProperty("referexpert.signin.url"));
+							+ env.getProperty("referexpert.signin.url"), userNotification);
 		} else {
 			if (Constants.INACTIVE.equals(status)) {
 				mySQLService.updateAppointmentServed(appointmentId, Constants.INACTIVE);
 				value = mySQLService.updateAppointmentAccepted(appointmentId, status);
-				sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
+				UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
+				commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
 						Constants.APPOINTMENT_REJECTED.replaceAll("DATEANDTIMESTAMP",
 								appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
-								+ env.getProperty("referexpert.signin.url"));
+								+ env.getProperty("referexpert.signin.url"), userNotification);
 			} else {
 				value = mySQLService.updateAppointmentAccepted(appointmentId, status);
-				sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
+				UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
+				commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
 						Constants.APPOINTMENT_ACCEPTED.replaceAll("DATEANDTIMESTAMP",
 								appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
-								+ env.getProperty("referexpert.signin.url"));
+								+ env.getProperty("referexpert.signin.url"), userNotification);
 			}
 		}
 		if (value == 0) {
-			entity = new ResponseEntity<>(new GenericResponse("Issue while updating refer expert"),
+			entity = new ResponseEntity<>(new GenericResponse("Issue while updating appointment table"),
 					HttpStatus.BAD_REQUEST);
 		} else {
 			entity = new ResponseEntity<>(new GenericResponse("Updated Successfully"), HttpStatus.OK);
@@ -201,7 +152,7 @@ public class ReferExpertController {
     @GetMapping(value = "/myreferrals/{useremail}")
     public ResponseEntity<List<Appointment>> getMyReferrals(@PathVariable("useremail") String userEmail) {
         logger.info("ReferExpertController :: In getMyReferrals  : " + userEmail);
-        String criteria = " f.email = '" + userEmail + "'";
+        String criteria = " f.email = '" + userEmail + "' and is_avail = 'N'";
         List<Appointment> appointments =  mySQLService.selectAppointments(criteria);
         return new ResponseEntity<List<Appointment>>(appointments, HttpStatus.OK);
     }
@@ -209,7 +160,7 @@ public class ReferExpertController {
     @GetMapping(value = "/myappointments/{useremail}")
     public ResponseEntity<List<Appointment>> getMyAppointments(@PathVariable("useremail") String userEmail) {
         logger.info("ReferExpertController :: In getMyAppointments  : " + userEmail);
-        String criteria = " t.email = '" + userEmail + "'";
+        String criteria = " t.email = '" + userEmail + "' and is_avail = 'N'";
         List<Appointment> appointments =  mySQLService.selectAppointments(criteria);
         return new ResponseEntity<List<Appointment>>(appointments, HttpStatus.OK);
     }
@@ -219,7 +170,7 @@ public class ReferExpertController {
         logger.info("RegistrationController :: In selectUserNotifications");
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
-        UserNotification userNotification = getuserNotifications(userDetails.getUsername());
+        UserNotification userNotification = commonUtils.getUserNotifications(userDetails.getUsername());
         if(userNotification != null) {
         	userNotification.setUserEmail(null);
         	return new ResponseEntity<UserNotification>(userNotification, HttpStatus.OK);
@@ -254,10 +205,4 @@ public class ReferExpertController {
         return entity;
     }
     
-    private UserNotification getuserNotifications(String userEmail) {
-    	logger.info("RegistrationController :: In getuserNotifications : " + userEmail);
-        String criteria = " email = '" + userEmail + "'";
-        UserNotification userNotification =  mySQLService.selectUserNotification(criteria);
-        return userNotification;
-    }
 }

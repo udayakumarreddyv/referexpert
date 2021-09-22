@@ -56,9 +56,15 @@ public class Constants {
     
     public static String APPOINTMENT_SUBJECT = "Cephalad : Appointment Notification";
     
+    public static String AVAILABILITY_NOTIFICATION = "Cephalad : Avilability Notification";
+    
     public static String APPOINTMENT_LOGIN_BODY = "\n Login : ";
     
     public static String APPOINTMENT_REQUESTED = "Cephalad : Your have an appointment request on DATEANDTIMESTAMP.";
+    
+    public static String AVAILABILITY_REQUESTED = "Cephalad : Your have an availability notification request.";
+    
+    public static String AVAILABILITY_RESPONDED = "Cephalad : Your have an availability notification response.";
     
     public static String APPOINTMENT_ACCEPTED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is accepted.";
 
@@ -66,7 +72,27 @@ public class Constants {
 
     public static String APPOINTMENT_COMPLETED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is completed.";
     
+    public static String WELCOME_SUBJECT = "You Referred to registered in Cephalad Network"; 
+    
+    public static String WELCOME_MESSAGE = "Congratulations!! Please register with Cephalad using link :: "; 
+    
+    public static String REGISTRATION_SUBJECT = "Complete Registration!";
+    
+    public static String REGISTRATION_BODY = "To confirm your account, please click here : ";
+    
+    public static String PASSWORD_RESET_SUBJECT = "Password rest request";
+    
+    public static String PASSWORD_RESET_BODY = "Please click on below link to reset your password :: ";
+    
+    public static String PASSWORD_SUCCESS_SUBJECT = "Password rest successful";
+    
+    public static String PASSWORD_SUCCESS_BODY = "Your pasword reset succesful, please login here ";
+    
+    public static String WITH_NEW_PASSWORD = " with your new password";
+    
     public static String US_CODE = "+";
-
+    
+    public static String APPOINTMENT_REQUEST = "APPOINTMENT_REQUEST";
+    
 }
 
