@@ -340,7 +340,8 @@ public class MySQLRepository {
 
     public List<Appointment> selectAppointments(String criteria) throws Exception {
         logger.info("MySQLRepository :: In selectAppointments");
-        StringBuffer query = new StringBuffer(QueryConstants.SELECT_APPOINTMENT).append(criteria);
+        StringBuffer query = new StringBuffer(QueryConstants.SELECT_APPOINTMENT).append(criteria)
+        		.append(QueryConstants.ORDERBY_APPOINT_TIMESTAMP);
         List<Appointment> appointments = mysqlJdbcTemplate.query(query.toString(), new Object[] {}, (rs, rowNum) -> {
             int i = 0;
             Appointment appointment = new Appointment();

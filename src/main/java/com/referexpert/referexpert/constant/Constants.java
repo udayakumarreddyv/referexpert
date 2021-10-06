@@ -66,6 +66,10 @@ public class Constants {
     
     public static String AVAILABILITY_RESPONDED = "Cephalad : Your have an availability notification response.";
     
+    public static String AVAILABILITY_COMPLETED = "Cephalad : Your have an availability notification completed.";
+    
+    public static String AVAILABILITY_REJECTED = "Cephalad : Your have an availability notification rejected.";
+    
     public static String APPOINTMENT_ACCEPTED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is accepted.";
 
     public static String APPOINTMENT_REJECTED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is rejected.";

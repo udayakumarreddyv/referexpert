@@ -139,4 +139,57 @@ public class AvailabilityController {
     	pendingTask.setPendingAvailability(mySQLService.getPendingTasks(Constants.ACTIVE, userDetails.getUsername()) ? "Y": "N");
     	return new ResponseEntity<PendingTask>(pendingTask, HttpStatus.OK);
     }
+    
+    @PostMapping(value = "/finalizeavailability")
+    public ResponseEntity<GenericResponse> finalizeAvailability(@RequestBody String appointmentString) {
+        logger.info("AvailabilityController :: In finalizeAvailability : " + appointmentString);
+        ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.ACTIVE, Constants.SERVICE);
+        return entity;
+    }
+    
+    @PostMapping(value = "/rejectavailability")
+    public ResponseEntity<GenericResponse> rejectAvailability(@RequestBody String appointmentString) {
+        logger.info("AvailabilityController :: In rejectAvailability : " + appointmentString);
+        ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.INACTIVE, Constants.SERVICE);
+        return entity;
+    }
+    
+	private ResponseEntity<GenericResponse> updateStatus(String appointmentString, String status, String type) {
+		logger.info("AvailabilityController :: In updateStatus  : " + appointmentString + " : " + status + " : " + type);
+		ObjectMapper mapper = new ObjectMapper();
+		ResponseEntity<GenericResponse> entity = null;
+		Appointment appointment = null;
+		try {
+			appointment = mapper.readValue(appointmentString, Appointment.class);
+		} catch (Exception e) {
+			logger.error("Unable to parse the input :: " + appointmentString);
+			logger.error("Exception as follows :: " + e);
+			entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
+		}
+		logger.info("JSON to Object Conversion :: " + appointment != null ? appointment.toString() : null);
+		String appointmentId = appointment.getAppointmentId();
+		String criteria = " appointment_id = '" + appointmentId + "'";
+		Appointment appointmentFromDB = mySQLService.selectAppointmentById(criteria);
+		int value = 0;
+		if (Constants.ACTIVE.equals(status)) {
+			value = mySQLService.updateAppointmentServed(appointmentId, status);
+			UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
+			commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.AVAILABILITY_NOTIFICATION,
+					Constants.AVAILABILITY_COMPLETED + Constants.APPOINTMENT_LOGIN_BODY
+							+ env.getProperty("referexpert.signin.url"), userNotification);
+		} else {
+			value = mySQLService.updateAppointmentServed(appointmentId, status);
+			UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
+			commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.AVAILABILITY_NOTIFICATION,
+					Constants.AVAILABILITY_REJECTED + Constants.APPOINTMENT_LOGIN_BODY
+							+ env.getProperty("referexpert.signin.url"), userNotification);
+		}
+		if (value == 0) {
+			entity = new ResponseEntity<>(new GenericResponse("Issue while updating appointment table"),
+					HttpStatus.BAD_REQUEST);
+		} else {
+			entity = new ResponseEntity<>(new GenericResponse("Updated Successfully"), HttpStatus.OK);
+		}
+		return entity;
+	}
 }
