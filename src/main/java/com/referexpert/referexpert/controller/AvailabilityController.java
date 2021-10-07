@@ -130,15 +130,20 @@ public class AvailabilityController {
     }
     
     @GetMapping(value = "/pendingtasks")
-    public ResponseEntity<PendingTask> getPendingTasks() {
-    	UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-    	logger.info("ReferExpertController :: In getPendingTasks  : " + userDetails.getUsername());
-    	PendingTask pendingTask = new PendingTask();
-    	pendingTask.setPendingAppointment(mySQLService.getPendingTasks(Constants.INACTIVE, userDetails.getUsername()) ? "Y": "N");
-    	pendingTask.setPendingAvailability(mySQLService.getPendingTasks(Constants.ACTIVE, userDetails.getUsername()) ? "Y": "N");
-    	return new ResponseEntity<PendingTask>(pendingTask, HttpStatus.OK);
-    }
+	public ResponseEntity<PendingTask> getPendingTasks() {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		logger.info("ReferExpertController :: In getPendingTasks  : " + userDetails.getUsername());
+		PendingTask pendingTask = new PendingTask();
+		pendingTask.setPendingAppointment(mySQLService.getPendingTasks(Constants.RESPONSE, Constants.PENDING,
+				Constants.INACTIVE, userDetails.getUsername()) ? Constants.ACTIVE : Constants.INACTIVE);
+		pendingTask.setCurrentAppointment(mySQLService.getPendingTasks(Constants.REQUEST, Constants.ACTIVE,
+				Constants.INACTIVE, userDetails.getUsername()) ? Constants.ACTIVE : Constants.INACTIVE);
+		pendingTask.setPendingAvailabilityResponse(mySQLService.getPendingTasks(Constants.RESPONSE, Constants.PENDING,
+				Constants.ACTIVE, userDetails.getUsername()) ? Constants.ACTIVE : Constants.INACTIVE);
+		pendingTask.setPendingAvailabilityRequest(mySQLService.getPendingTasks(Constants.REQUEST, Constants.PENDING,
+				Constants.ACTIVE, userDetails.getUsername()) ? Constants.ACTIVE : Constants.INACTIVE);
+		return new ResponseEntity<PendingTask>(pendingTask, HttpStatus.OK);
+	}
     
     @PostMapping(value = "/finalizeavailability")
     public ResponseEntity<GenericResponse> finalizeAvailability(@RequestBody String appointmentString) {

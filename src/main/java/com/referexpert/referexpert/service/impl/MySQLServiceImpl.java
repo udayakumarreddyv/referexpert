@@ -533,10 +533,10 @@ public class MySQLServiceImpl implements MySQLService {
     }
     
     @Override
-    public boolean getPendingTasks(String isReferral, String email) {
+    public boolean getPendingTasks(String type, String isAccepted, String isReferral, String email) {
     	logger.info("MySQLServiceImpl :: In getPendingTasks :: " + email);
         try {
-            return mysqlRepository.getPendingTasks(isReferral, email);
+            return mysqlRepository.getPendingTasks(type, isAccepted, isReferral, email);
         }
         catch (Exception e) {
         	exceptionBlock(e, "Exception while fetching data from appointments data");

@@ -2,9 +2,21 @@ package com.referexpert.referexpert.beans;
 
 public class PendingTask {
 
+	private String currentAppointment;
+
 	private String pendingAppointment;
 
-	private String pendingAvailability;
+	private String pendingAvailabilityResponse;
+
+	private String pendingAvailabilityRequest;
+
+	public String getCurrentAppointment() {
+		return currentAppointment;
+	}
+
+	public void setCurrentAppointment(String currentAppointment) {
+		this.currentAppointment = currentAppointment;
+	}
 
 	public String getPendingAppointment() {
 		return pendingAppointment;
@@ -14,18 +26,27 @@ public class PendingTask {
 		this.pendingAppointment = pendingAppointment;
 	}
 
-	public String getPendingAvailability() {
-		return pendingAvailability;
+	public String getPendingAvailabilityResponse() {
+		return pendingAvailabilityResponse;
 	}
 
-	public void setPendingAvailability(String pendingAvailability) {
-		this.pendingAvailability = pendingAvailability;
+	public void setPendingAvailabilityResponse(String pendingAvailabilityResponse) {
+		this.pendingAvailabilityResponse = pendingAvailabilityResponse;
+	}
+
+	public String getPendingAvailabilityRequest() {
+		return pendingAvailabilityRequest;
+	}
+
+	public void setPendingAvailabilityRequest(String pendingAvailabilityRequest) {
+		this.pendingAvailabilityRequest = pendingAvailabilityRequest;
 	}
 
 	@Override
 	public String toString() {
-		return "PendingTask [pendingAppointment=" + pendingAppointment + ", pendingAvailability=" + pendingAvailability
-				+ "]";
+		return "PendingTask [currentAppointment=" + currentAppointment + ", pendingAppointment=" + pendingAppointment
+				+ ", pendingAvailabilityResponse=" + pendingAvailabilityResponse + ", pendingAvailabilityRequest="
+				+ pendingAvailabilityRequest + "]";
 	}
 
 }

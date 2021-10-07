@@ -96,5 +96,7 @@ public class QueryConstants {
     
     public static String UPDATE_USER_NOTIFICATION = "update user_notification set notification_email = ?, notification_mobile = ?, updated_timestamp = ? where user_id = ?";
     
-    public static String PENDING_TASKS = "select up.user_id from user_profile up, appointment a where a.appointment_to = up.user_id and a.is_accepted = 'P' and a.is_avail= ? and up.email = ?";
+    public static String PENDING_TASKS_WAITING_RESPONSE = "select up.user_id from user_profile up, appointment a where a.appointment_to = up.user_id and a.is_accepted = ? and a.is_avail= ? and up.email = ?";
+    
+    public static String PENDING_TASKS_WAITING_REQUEST = "select up.user_id from user_profile up, appointment a where a.appointment_from = up.user_id and a.is_accepted = ? and a.is_avail= ? and up.email = ?";
 }

@@ -98,5 +98,9 @@ public class Constants {
     
     public static String APPOINTMENT_REQUEST = "APPOINTMENT_REQUEST";
     
+    public static String REQUEST = "REQUEST";
+    
+    public static String RESPONSE = "RESPONSE";
+    
 }
 

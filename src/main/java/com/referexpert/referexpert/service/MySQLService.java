@@ -74,5 +74,5 @@ public interface MySQLService {
     
     public List<UserReferral> selectNonRegisteredUsers();
     
-    public boolean getPendingTasks(String isReferral, String email);
+    public boolean getPendingTasks(String type, String isAccepted, String isReferral, String email);
 }

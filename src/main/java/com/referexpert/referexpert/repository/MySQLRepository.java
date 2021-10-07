@@ -490,11 +490,18 @@ public class MySQLRepository {
     	return str != null? str : "";
     }
 	
-	public boolean getPendingTasks(String isReferral, String email) {
+	public boolean getPendingTasks(String type, String isAccepted, String isReferral, String email) {
 		logger.info("MySQLRepository :: In getPendingTasks");
-		List<String> userIds = mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS, new Object[] { isReferral, email }, (rs, rowNum) -> {
-            return rs.getString(1);
-        });
+		List<String> userIds = null;
+		if(Constants.RESPONSE.equals(type)) {
+			userIds= mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS_WAITING_RESPONSE, new Object[] { isAccepted, isReferral, email }, (rs, rowNum) -> {
+	            return rs.getString(1);
+	        });
+		} else {
+			userIds= mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS_WAITING_REQUEST, new Object[] { isAccepted, isReferral, email }, (rs, rowNum) -> {
+	            return rs.getString(1);
+	        });
+		}
         if (userIds != null && userIds.size() > 0) {
             return true;
         } else {
