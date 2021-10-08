@@ -493,20 +493,31 @@ public class MySQLRepository {
 	public boolean getPendingTasks(String type, String isAccepted, String isReferral, String email) {
 		logger.info("MySQLRepository :: In getPendingTasks");
 		List<String> userIds = null;
-		if(Constants.RESPONSE.equals(type)) {
-			userIds= mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS_WAITING_RESPONSE, new Object[] { isAccepted, isReferral, email }, (rs, rowNum) -> {
-	            return rs.getString(1);
-	        });
+		String clause = "";
+		if (Constants.RESPONSE.equals(type)) {
+			if (Constants.ACTIVE.equals(isAccepted)) {
+				clause = " and a.is_served = ?";
+				userIds = mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS_WAITING_RESPONSE + clause,
+						new Object[] { isAccepted, isReferral, email, Constants.INACTIVE }, (rs, rowNum) -> {
+							return rs.getString(1);
+						});
+			} else {
+				userIds = mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS_WAITING_RESPONSE,
+						new Object[] { isAccepted, isReferral, email }, (rs, rowNum) -> {
+							return rs.getString(1);
+						});
+			}
 		} else {
-			userIds= mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS_WAITING_REQUEST, new Object[] { isAccepted, isReferral, email }, (rs, rowNum) -> {
-	            return rs.getString(1);
-	        });
+			userIds = mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS_WAITING_REQUEST,
+					new Object[] { isAccepted, isReferral, email }, (rs, rowNum) -> {
+						return rs.getString(1);
+					});
 		}
-        if (userIds != null && userIds.size() > 0) {
-            return true;
-        } else {
-            return false;
-        }
+		if (userIds != null && userIds.size() > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
     
 }
