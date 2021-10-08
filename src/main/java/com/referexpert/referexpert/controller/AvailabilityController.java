@@ -136,7 +136,7 @@ public class AvailabilityController {
 		PendingTask pendingTask = new PendingTask();
 		pendingTask.setPendingAppointment(mySQLService.getPendingTasks(Constants.RESPONSE, Constants.PENDING,
 				Constants.INACTIVE, userDetails.getUsername()) ? Constants.ACTIVE : Constants.INACTIVE);
-		pendingTask.setCurrentAppointment(mySQLService.getPendingTasks(Constants.REQUEST, Constants.ACTIVE,
+		pendingTask.setCurrentAppointment(mySQLService.getPendingTasks(Constants.RESPONSE, Constants.ACTIVE,
 				Constants.INACTIVE, userDetails.getUsername()) ? Constants.ACTIVE : Constants.INACTIVE);
 		pendingTask.setPendingAvailabilityResponse(mySQLService.getPendingTasks(Constants.RESPONSE, Constants.PENDING,
 				Constants.ACTIVE, userDetails.getUsername()) ? Constants.ACTIVE : Constants.INACTIVE);
