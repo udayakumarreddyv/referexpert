@@ -508,7 +508,8 @@ public class MySQLRepository {
 						});
 			}
 		} else {
-			userIds = mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS_WAITING_REQUEST,
+			clause = " and a.is_served is null";
+			userIds = mysqlJdbcTemplate.query(QueryConstants.PENDING_TASKS_WAITING_REQUEST + clause,
 					new Object[] { isAccepted, isReferral, email }, (rs, rowNum) -> {
 						return rs.getString(1);
 					});

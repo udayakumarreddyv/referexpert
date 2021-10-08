@@ -140,7 +140,7 @@ public class AvailabilityController {
 				Constants.INACTIVE, userDetails.getUsername()) ? Constants.ACTIVE : Constants.INACTIVE);
 		pendingTask.setPendingAvailabilityResponse(mySQLService.getPendingTasks(Constants.RESPONSE, Constants.PENDING,
 				Constants.ACTIVE, userDetails.getUsername()) ? Constants.ACTIVE : Constants.INACTIVE);
-		pendingTask.setPendingAvailabilityRequest(mySQLService.getPendingTasks(Constants.REQUEST, Constants.PENDING,
+		pendingTask.setPendingAvailabilityRequest(mySQLService.getPendingTasks(Constants.REQUEST, Constants.ACTIVE,
 				Constants.ACTIVE, userDetails.getUsername()) ? Constants.ACTIVE : Constants.INACTIVE);
 		return new ResponseEntity<PendingTask>(pendingTask, HttpStatus.OK);
 	}
