@@ -60,8 +60,6 @@ public class Constants {
     
     public static String APPOINTMENT_LOGIN_BODY = "\n Login : ";
     
-    public static String APPOINTMENT_REQUESTED = "Cephalad : Your have an appointment request on DATEANDTIMESTAMP.";
-    
     public static String AVAILABILITY_REQUESTED = "Cephalad : Your have an availability notification request.";
     
     public static String AVAILABILITY_RESPONDED = "Cephalad : Your have an availability notification response.";
@@ -70,13 +68,15 @@ public class Constants {
     
     public static String AVAILABILITY_REJECTED = "Cephalad : Your have an availability notification rejected.";
     
+    public static String APPOINTMENT_REQUESTED = "Cephalad : Your have an appointment request on DATEANDTIMESTAMP.";
+    
     public static String APPOINTMENT_ACCEPTED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is accepted.";
 
     public static String APPOINTMENT_REJECTED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is rejected.";
 
     public static String APPOINTMENT_COMPLETED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is completed.";
     
-    public static String WELCOME_SUBJECT = "You Referred to registered in Cephalad Network"; 
+    public static String WELCOME_SUBJECT = "You referred to register in Cephalad network"; 
     
     public static String WELCOME_MESSAGE = "Congratulations!! Please register with Cephalad using link :: "; 
     
