@@ -9,8 +9,8 @@
 			</PatternLayout>
 		</Console>
 		<RollingFile name="RollingFile-Appender"
-			fileName="/var/log/tomcat9/referexpert.log"
-			filePattern="/var/log/tomcat9/archive-referexpert.log.%d{yyyy-MM-dd-hh-mm}.gz">
+			fileName="/opt/tomcat9/logs/referexpert.log"
+			filePattern="/opt/tomcat9/logs/referexpert.%d{yyyy-MM-dd}.log">
 			<PatternLayout
 				pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
 			<Policies>
@@ -20,15 +20,9 @@
 		</RollingFile>
 	</Appenders>
 	<Loggers>
-		<Logger name="com.referexpert.referexpert" level="info,error"
-			additivity="false">
-			<AppenderRef ref="RollingFile-Appender"
-				level="info,error" />
-			<AppenderRef ref="Console-Appender" level="info" />
-		</Logger>
 		<Root level="info">
-			<AppenderRef ref="RollingFile-Appender" />
-			<AppenderRef ref="Console-Appender" />
+			<AppenderRef ref="RollingFile-Appender" level="info,error" />			
+			<AppenderRef ref="Console-Appender" level="info" />
 		</Root>
 	</Loggers>
 </Configuration>

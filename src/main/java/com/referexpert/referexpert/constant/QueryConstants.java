@@ -86,7 +86,7 @@ public class QueryConstants {
     public static String CLEANUP_REFRESH_TOKEN = "delete from refresh_token where expiry_date <= NOW()";
     
     public static String MARK_APPOINTMENT_COMPLETE = "update appointment set is_served = 'Y' where is_avail='N' and is_accepted = 'Y' and is_served = 'N' "
-    		+ " and TIMESTAMP(date_time) < TIMESTAMP(NOW()) ";
+    		+ " and STR_TO_DATE(date_time, '%m/%d/%Y %h:%i %p') < TIMESTAMP(NOW()) ";
     
     public static String SELECT_USER_COUNTS = "select count(0) from user_profile where is_active = ? and user_type_id <> 10";
     

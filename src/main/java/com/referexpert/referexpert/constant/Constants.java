@@ -56,19 +56,19 @@ public class Constants {
     
     public static String APPOINTMENT_SUBJECT = "Cephalad : Appointment Notification";
     
-    public static String AVAILABILITY_NOTIFICATION = "Cephalad : Avilability Notification";
+    public static String AVAILABILITY_NOTIFICATION = "Cephalad : Availability Notification";
     
     public static String APPOINTMENT_LOGIN_BODY = "\n Login : ";
     
-    public static String AVAILABILITY_REQUESTED = "Cephalad : Your have an availability notification request.";
+    public static String AVAILABILITY_REQUESTED = "Cephalad : You have an availability notification request.";
     
-    public static String AVAILABILITY_RESPONDED = "Cephalad : Your have an availability notification response.";
+    public static String AVAILABILITY_RESPONDED = "Cephalad : You have an availability notification response.";
     
-    public static String AVAILABILITY_COMPLETED = "Cephalad : Your have an availability notification completed.";
+    public static String AVAILABILITY_COMPLETED = "Cephalad : You have an availability notification completed.";
     
-    public static String AVAILABILITY_REJECTED = "Cephalad : Your have an availability notification rejected.";
+    public static String AVAILABILITY_REJECTED = "Cephalad : You have an availability notification rejected.";
     
-    public static String APPOINTMENT_REQUESTED = "Cephalad : Your have an appointment request on DATEANDTIMESTAMP.";
+    public static String APPOINTMENT_REQUESTED = "Cephalad : You have an appointment request on DATEANDTIMESTAMP.";
     
     public static String APPOINTMENT_ACCEPTED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is accepted.";
 
@@ -76,7 +76,7 @@ public class Constants {
 
     public static String APPOINTMENT_COMPLETED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is completed.";
     
-    public static String WELCOME_SUBJECT = "You referred to register in Cephalad network"; 
+    public static String WELCOME_SUBJECT = "You have been referred to register in the Cephalad network"; 
     
     public static String WELCOME_MESSAGE = "Congratulations!! Please register with Cephalad using link :: "; 
     
