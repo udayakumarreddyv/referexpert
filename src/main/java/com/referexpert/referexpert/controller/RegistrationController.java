@@ -192,7 +192,6 @@ public class RegistrationController {
                     entity = processReferral(userEmail, tokenizer.nextToken());
                 }
             }
-            entity = new ResponseEntity<>(new GenericResponse("Referral Successful"), HttpStatus.OK);
         } else {
             entity = new ResponseEntity<>(new GenericResponse("Referrer is not registed with system"),
                     HttpStatus.BAD_REQUEST);
@@ -200,15 +199,21 @@ public class RegistrationController {
         return entity;
     }
 
-    private ResponseEntity<GenericResponse> processReferral(String userEmail, String tokenizer) {
-        logger.info("RegistrationController :: In processReferral : " + userEmail + " : " + tokenizer);
+    private ResponseEntity<GenericResponse> processReferral(String userEmail, String docEmail) {
+        logger.info("RegistrationController :: In processReferral : " + userEmail + " : " + docEmail);
         ResponseEntity<GenericResponse> entity = null;
-        String referralId = UUID.randomUUID().toString();
-        int value = mySQLService.insertUserReferral(referralId, userEmail, tokenizer, Constants.INACTIVE);
-        if (value != 0) {
-            emailSenderService.sendReferralEMail(tokenizer, referralId);
+        String criteria = " email = ?";
+        if(!mySQLService.selectUserProfile(docEmail, criteria) && !mySQLService.selectUserReferralByUser(docEmail)) {
+	        String referralId = UUID.randomUUID().toString();
+	        int value = mySQLService.insertUserReferral(referralId, userEmail, docEmail, Constants.INACTIVE);
+	        if (value != 0) {
+	            emailSenderService.sendReferralEMail(docEmail, referralId);
+	            entity = new ResponseEntity<>(new GenericResponse("Referral Successful"), HttpStatus.OK);
+	        } else {
+	            entity = new ResponseEntity<>(new GenericResponse("Referral not Successful"), HttpStatus.BAD_REQUEST);
+	        }
         } else {
-            entity = new ResponseEntity<>(new GenericResponse("Referral not Successful"), HttpStatus.BAD_REQUEST);
+        	entity = new ResponseEntity<>(new GenericResponse("User already referred or registered"), HttpStatus.OK);
         }
         return entity;
     }

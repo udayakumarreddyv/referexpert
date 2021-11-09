@@ -213,6 +213,19 @@ public class MySQLRepository {
         }
     }
     
+    public boolean selectUserReferralByUser(String docEmail) throws Exception {
+        logger.info("MySQLRepository :: In selectUserReferral");
+        List<String> referrals = mysqlJdbcTemplate.query(QueryConstants.SELECT_USER_REFERRAL_BY_USER,
+                new Object[] { docEmail }, (rs, rowNum) -> {
+                    return rs.getString(1);
+                });
+        if (referrals != null && referrals.size() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     public List<UserReferral> selectNonRegisteredUsers() throws Exception {
         logger.info("MySQLRepository :: In selectNonRegisteredUsers");
         List<UserReferral> referrals = mysqlJdbcTemplate.query(QueryConstants.SELECT_USER_REFERRAL_NR,

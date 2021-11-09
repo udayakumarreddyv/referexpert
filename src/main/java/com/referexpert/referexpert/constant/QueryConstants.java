@@ -47,6 +47,9 @@ public class QueryConstants {
     public static String SELECT_USER_REFERRAL = "select user_referral_id, user_email, doc_email, is_registered,created_timestamp, updated_timestamp "
             + " from user_referral where user_referral_id = ? and doc_email = ?";
     
+    public static String SELECT_USER_REFERRAL_BY_USER = "select user_referral_id, user_email, doc_email, is_registered,created_timestamp, updated_timestamp "
+            + " from user_referral where doc_email = ?";
+    
     public static String SELECT_USER_REFERRAL_NR = "select user_referral_id, user_email, doc_email, is_registered,created_timestamp, updated_timestamp "
             + " from user_referral where is_registered = 'N'";
 

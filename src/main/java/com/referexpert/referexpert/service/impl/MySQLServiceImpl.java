@@ -265,6 +265,18 @@ public class MySQLServiceImpl implements MySQLService {
     }
     
     @Override
+    public boolean selectUserReferralByUser(String docEmail) {
+    	logger.info("MySQLServiceImpl :: In selectUserReferralByUser :: "  + docEmail);
+        try {
+            return mysqlRepository.selectUserReferralByUser(docEmail);
+        }
+        catch (Exception e) {
+        	exceptionBlock(e, "Exception while fetching data from user_referral");
+            return false;
+        }
+    }
+    
+    @Override
     public List<UserReferral> selectNonRegisteredUsers() {
     	logger.info("MySQLServiceImpl :: In selectNonRegisteredUsers");
         try {
