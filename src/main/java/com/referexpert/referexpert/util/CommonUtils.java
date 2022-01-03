@@ -47,19 +47,10 @@ public class CommonUtils {
 
 			// SMS notification goes here
 			String notificationMobile = userNotification.getNotificationMobile();
-			if (notificationMobile != null) {
-				String[] mobileArray = notificationMobile.split(",");
-				for (String mobile : mobileArray) {
-					try {
-						smsSenderService.sendSMS(Constants.US_CODE + mobile, body);
-					} catch (Exception e) {
-						logger.error("Failed to send apppointment notification to :: " + mobile);
-					}
-				}
-			} 
+			sendSMS(body, notificationMobile); 
 		}
 	}
-	
+
 	@Async
 	public void contactSupport(SupportContact supportContact, String subject, String body) {
 		logger.info("CommonUtils :: In contactSupport");
@@ -70,16 +61,20 @@ public class CommonUtils {
 			
 			// SMS notification goes here
 			String notificationMobile = supportContact.getMobile();
-			if (notificationMobile != null) {
-				String[] mobileArray = notificationMobile.split(",");
-				for (String mobile : mobileArray) {
-					try {
-						smsSenderService.sendSMS(Constants.US_CODE + mobile, body);
-					} catch (Exception e) {
-						logger.error("Failed to send apppointment notification to :: " + mobile);
-					}
+			sendSMS(body, notificationMobile); 
+		}
+	}
+	
+	private void sendSMS(String body, String notificationMobile) {
+		if (notificationMobile != null) {
+			String[] mobileArray = notificationMobile.split(",");
+			for (String mobile : mobileArray) {
+				try {
+					smsSenderService.sendSMS(Constants.US_CODE + mobile, body);
+				} catch (Exception e) {
+					logger.error("Failed to send apppointment notification to :: " + mobile);
 				}
-			} 
+			}
 		}
 	}
 	
