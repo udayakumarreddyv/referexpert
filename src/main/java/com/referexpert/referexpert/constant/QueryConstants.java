@@ -102,4 +102,6 @@ public class QueryConstants {
     public static String PENDING_TASKS_WAITING_RESPONSE = "select up.user_id from user_profile up, appointment a where a.appointment_to = up.user_id and a.is_accepted = ? and a.is_avail= ? and up.email = ?";
     
     public static String PENDING_TASKS_WAITING_REQUEST = "select up.user_id from user_profile up, appointment a where a.appointment_from = up.user_id and a.is_accepted = ? and a.is_avail= ? and up.email = ?";
+    
+    public static String SELECT_SUPPORT_CONTACT = "select email, mobile from support_contact";
 }

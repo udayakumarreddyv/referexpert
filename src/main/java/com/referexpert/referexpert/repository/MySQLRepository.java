@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.RefreshToken;
+import com.referexpert.referexpert.beans.SupportContact;
 import com.referexpert.referexpert.beans.UserNotification;
 import com.referexpert.referexpert.beans.UserReferral;
 import com.referexpert.referexpert.beans.UserRegistration;
@@ -533,5 +534,23 @@ public class MySQLRepository {
 			return false;
 		}
 	}
+	
+	public SupportContact getSupportContact() throws Exception {
+        logger.info("MySQLRepository :: In getSupportContact");
+        StringBuffer query = new StringBuffer(QueryConstants.SELECT_SUPPORT_CONTACT);
+        List<SupportContact> supportContacts = mysqlJdbcTemplate.query(query.toString(), new Object[] {},
+                (rs, rowNum) -> {
+                	int i = 0;
+                	SupportContact supportContact = new SupportContact();
+                	supportContact.setEmail(rs.getString(++i));
+                	supportContact.setMobile(rs.getString(++i));
+                    return supportContact;
+                });
+        if (supportContacts != null && supportContacts.size() > 0) {
+            return supportContacts.get(0);
+        } else {
+            return null;
+        }
+    }
     
 }

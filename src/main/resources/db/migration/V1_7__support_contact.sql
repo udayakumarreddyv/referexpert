@@ -1,0 +1,1 @@
+CREATE TABLE support_contact(email VARCHAR(250), mobile VARCHAR(56));

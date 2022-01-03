@@ -56,17 +56,17 @@ public class Constants {
     
     public static String APPOINTMENT_SUBJECT = "Cephalad : Appointment Notification";
     
-    public static String AVAILABILITY_NOTIFICATION = "Cephalad : Availability Notification";
+    public static String AVAILABILITY_NOTIFICATION = "Cephalad : Appointment Availability Notification";
     
     public static String APPOINTMENT_LOGIN_BODY = "\n Login : ";
     
-    public static String AVAILABILITY_REQUESTED = "Cephalad : You have an availability notification request.";
+    public static String AVAILABILITY_REQUESTED = "Cephalad : You have an appointment availability notification request.";
     
-    public static String AVAILABILITY_RESPONDED = "Cephalad : You have an availability notification response.";
+    public static String AVAILABILITY_RESPONDED = "Cephalad : You have an appointment availability notification response.";
     
-    public static String AVAILABILITY_COMPLETED = "Cephalad : You have an availability notification completed.";
+    public static String AVAILABILITY_COMPLETED = "Cephalad : You have an appointment availability notification completed.";
     
-    public static String AVAILABILITY_REJECTED = "Cephalad : You have an availability notification rejected.";
+    public static String AVAILABILITY_REJECTED = "Cephalad : You have an appointment availability notification rejected.";
     
     public static String APPOINTMENT_REQUESTED = "Cephalad : You have an appointment request on DATEANDTIMESTAMP.";
     

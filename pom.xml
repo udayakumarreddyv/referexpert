@@ -23,9 +23,9 @@
 		<jwt.version>0.9.1</jwt.version>
 		<jaxb.version>2.3.0</jaxb.version>
 		<google.maps.version>0.18.0</google.maps.version>
-		<slf4j.version>1.7.25</slf4j.version>
 		<twilio.version>8.18.0</twilio.version>
 		<shedlock.version>4.20.0</shedlock.version>
+		<log4j2.version>2.16.0</log4j2.version>
 	</properties>
 
 	<dependencies>
@@ -94,6 +94,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -143,11 +149,6 @@
 		    <version>${google.maps.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-simple</artifactId>
-		    <version>${slf4j.version}</version>
-		</dependency>
-   		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>

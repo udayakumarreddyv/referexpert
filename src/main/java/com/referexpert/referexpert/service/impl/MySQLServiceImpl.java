@@ -15,6 +15,7 @@ import com.google.maps.GeoApiContext;
 import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.Coordinates;
+import com.referexpert.referexpert.beans.SupportContact;
 import com.referexpert.referexpert.beans.UserNotification;
 import com.referexpert.referexpert.beans.UserReferral;
 import com.referexpert.referexpert.beans.UserRegistration;
@@ -554,5 +555,18 @@ public class MySQLServiceImpl implements MySQLService {
         	exceptionBlock(e, "Exception while fetching data from appointments data");
             return false;
         }	
+    }
+    
+    @Override
+    public SupportContact getSupportContact() {
+        logger.info("MySQLServiceImpl :: In getSupportContact" );
+        SupportContact supportContact = new SupportContact();
+        try {
+        	supportContact = mysqlRepository.getSupportContact();
+        }
+        catch (Exception e) {
+        	exceptionBlock(e, "Exception while fetching data from support contact");
+        }
+        return supportContact;
     }
 }

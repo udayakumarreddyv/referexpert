@@ -3,6 +3,7 @@ package com.referexpert.referexpert.service;
 import java.util.List;
 
 import com.referexpert.referexpert.beans.ConfirmationToken;
+import com.referexpert.referexpert.beans.SupportContact;
 import com.referexpert.referexpert.beans.UserNotification;
 import com.referexpert.referexpert.beans.UserReferral;
 import com.referexpert.referexpert.beans.Appointment;
@@ -77,4 +78,6 @@ public interface MySQLService {
     public List<UserReferral> selectNonRegisteredUsers();
     
     public boolean getPendingTasks(String type, String isAccepted, String isReferral, String email);
+    
+    public SupportContact getSupportContact();
 }

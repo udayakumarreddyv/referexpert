@@ -8,6 +8,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.referexpert.referexpert.beans.SupportContact;
 import com.referexpert.referexpert.beans.UserNotification;
 import com.referexpert.referexpert.constant.Constants;
 import com.referexpert.referexpert.service.EmailSenderService;
@@ -33,16 +34,13 @@ public class CommonUtils {
 	
 	@Async
 	public void sendNotification(String toEmail, String subject, String body, UserNotification userNotification) {
-		logger.info("ReferExpertController :: In sendNotification to : " + toEmail);
+		logger.info("CommonUtils :: In sendNotification to : " + toEmail);
 		
 		if (userNotification != null) {
 			// Email Notification goes here.
 			String notificationEmail = userNotification.getNotificationEmail();
 			if (notificationEmail != null) {
-				String[] emailArray = notificationEmail.split(",");
-				for (String email : emailArray) {
-					sendEmail(email, subject, body);
-				}
+				sendEmail(notificationEmail, subject, body);
 			} else {
 				sendEmail(toEmail, subject, body);
 			}
@@ -62,10 +60,38 @@ public class CommonUtils {
 		}
 	}
 	
+	@Async
+	public void contactSupport(SupportContact supportContact, String subject, String body) {
+		logger.info("CommonUtils :: In contactSupport");
+		
+		if (supportContact != null) {
+			// Email Notification goes here.
+			sendEmail(supportContact.getEmail(), subject, body);
+			
+			// SMS notification goes here
+			String notificationMobile = supportContact.getMobile();
+			if (notificationMobile != null) {
+				String[] mobileArray = notificationMobile.split(",");
+				for (String mobile : mobileArray) {
+					try {
+						smsSenderService.sendSMS(Constants.US_CODE + mobile, body);
+					} catch (Exception e) {
+						logger.error("Failed to send apppointment notification to :: " + mobile);
+					}
+				}
+			} 
+		}
+	}
+	
 	private void sendEmail(String toEmail, String subject, String body) {
 		try {
 			SimpleMailMessage mailMessage = new SimpleMailMessage();
-			mailMessage.setTo(toEmail);
+			//mailMessage.setTo(toEmail);
+			if (toEmail.contains(",")) {
+	            mailMessage.setTo(toEmail.split(","));
+	        } else {
+	            mailMessage.setTo(toEmail);
+	        }
 			mailMessage.setSubject(subject);
 			mailMessage.setFrom(env.getProperty("spring.mail.username"));
 			mailMessage.setFrom(env.getProperty("spring.mail.replyto"));
