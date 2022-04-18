@@ -70,6 +70,8 @@ public class Constants {
     
     public static String APPOINTMENT_REQUESTED = "Cephalad : You have an appointment request on DATEANDTIMESTAMP.";
     
+    public static String PATIENT_APPOINTMENT_REQUESTED = "Cephalad : Your referred patient PATIENTNAME requested for appointment on DATEANDTIMESTAMP. You have no action required";
+    
     public static String APPOINTMENT_ACCEPTED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is accepted.";
 
     public static String APPOINTMENT_REJECTED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is rejected.";

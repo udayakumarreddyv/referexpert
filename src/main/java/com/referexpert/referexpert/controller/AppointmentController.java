@@ -72,11 +72,19 @@ public class AppointmentController {
 	        } else if (value == 0) {
 	            entity = new ResponseEntity<>(new GenericResponse("Issue in request appointment"), HttpStatus.BAD_REQUEST);
 	        } else {
+	        	//Send notification to specialist
 	        	UserNotification userNotification = commonUtils.getUserNotifications(email);
 	        	commonUtils.sendNotification(email, Constants.APPOINTMENT_SUBJECT, 
 	        			Constants.APPOINTMENT_REQUESTED.replaceAll("DATEANDTIMESTAMP",
 	        					appointment.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
 								+ env.getProperty("referexpert.signin.url"), userNotification);
+	        	//Send Notification to physician
+	        	UserNotification userNotification1 = commonUtils.getUserNotifications(appointment.getAppointmentFrom());
+	        	commonUtils.sendNotification(appointment.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT, 
+	        			(Constants.PATIENT_APPOINTMENT_REQUESTED.replaceAll("DATEANDTIMESTAMP",
+	        					appointment.getDateAndTimeString()).replaceAll("PATIENTNAME", appointment.getPatientName())) + Constants.APPOINTMENT_LOGIN_BODY
+								+ env.getProperty("referexpert.signin.url"), userNotification1);
+	        	
 	        	mySQLService.deleteConfirmationToken(token);
 	            entity = new ResponseEntity<>(new GenericResponse("Appointment Request Successful"), HttpStatus.OK);
 	        }
