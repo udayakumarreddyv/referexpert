@@ -58,22 +58,32 @@ public class AppointmentController {
             entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
         }
         logger.info("JSON to Object Conversion :: " + appointment != null ? appointment.toString() : null);
-        appointment.setAppointmentId(UUID.randomUUID().toString());
-        int value = mySQLService.insertAppointment(appointment, Constants.APPOINTMENT);
-        if (value == 999999) {
-            entity = new ResponseEntity<>(new GenericResponse("Unable to insert appointment due to unique constraint"), HttpStatus.BAD_REQUEST);
-        } else if (value == 888888) {
-            entity = new ResponseEntity<>(new GenericResponse("Reference Data Incorrect"), HttpStatus.BAD_REQUEST);
-        } else if (value == 0) {
-            entity = new ResponseEntity<>(new GenericResponse("Issue in request appointment"), HttpStatus.BAD_REQUEST);
+        
+        String criteria = " email = ?";
+        String email = appointment.getAppointmentTo();
+		String token = appointment.getToken();
+		if (mySQLService.selectConfirmationToken(token) && mySQLService.selectUserProfile(email, criteria)) {
+			appointment.setAppointmentId(UUID.randomUUID().toString());
+	        int value = mySQLService.insertAppointment(appointment, Constants.APPOINTMENT);
+	        if (value == 999999) {
+	            entity = new ResponseEntity<>(new GenericResponse("Unable to insert appointment due to unique constraint"), HttpStatus.BAD_REQUEST);
+	        } else if (value == 888888) {
+	            entity = new ResponseEntity<>(new GenericResponse("Reference Data Incorrect"), HttpStatus.BAD_REQUEST);
+	        } else if (value == 0) {
+	            entity = new ResponseEntity<>(new GenericResponse("Issue in request appointment"), HttpStatus.BAD_REQUEST);
+	        } else {
+	        	UserNotification userNotification = commonUtils.getUserNotifications(email);
+	        	commonUtils.sendNotification(email, Constants.APPOINTMENT_SUBJECT, 
+	        			Constants.APPOINTMENT_REQUESTED.replaceAll("DATEANDTIMESTAMP",
+	        					appointment.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
+								+ env.getProperty("referexpert.signin.url"), userNotification);
+	        	mySQLService.deleteConfirmationToken(token);
+	            entity = new ResponseEntity<>(new GenericResponse("Appointment Request Successful"), HttpStatus.OK);
+	        }
         } else {
-        	UserNotification userNotification = commonUtils.getUserNotifications(appointment.getAppointmentTo());
-        	commonUtils.sendNotification(appointment.getAppointmentTo(), Constants.APPOINTMENT_SUBJECT, 
-        			Constants.APPOINTMENT_REQUESTED.replaceAll("DATEANDTIMESTAMP",
-        					appointment.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
-							+ env.getProperty("referexpert.signin.url"), userNotification);
-            entity = new ResponseEntity<>(new GenericResponse("Appointment Request Successful"), HttpStatus.OK);
+            entity = new ResponseEntity<>(new GenericResponse("The link is invalid or broken!"), HttpStatus.NOT_FOUND);
         }
+        
         return entity;
     }
 
@@ -117,27 +127,45 @@ public class AppointmentController {
 		int value = 0;
 		if (Constants.SERVICE.equals(type)) {
 			value = mySQLService.updateAppointmentServed(appointmentId, status);
+			//Send Notification to requested doctor
 			UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
 			commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
 					Constants.APPOINTMENT_COMPLETED.replaceAll("DATEANDTIMESTAMP",
 							appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
 							+ env.getProperty("referexpert.signin.url"), userNotification);
+			//Send Notification to patient
+			UserNotification patientNotification = new UserNotification(appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientPhone());
+			commonUtils.sendNotification(appointmentFromDB.getPatientEmail(), Constants.APPOINTMENT_SUBJECT,
+					Constants.APPOINTMENT_COMPLETED.replaceAll("DATEANDTIMESTAMP",
+							appointmentFromDB.getDateAndTimeString()), patientNotification);
 		} else {
 			if (Constants.INACTIVE.equals(status)) {
 				mySQLService.updateAppointmentServed(appointmentId, Constants.INACTIVE);
 				value = mySQLService.updateAppointmentAccepted(appointmentId, status);
+				//Send Notification to requested doctor
 				UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
 				commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
 						Constants.APPOINTMENT_REJECTED.replaceAll("DATEANDTIMESTAMP",
 								appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
 								+ env.getProperty("referexpert.signin.url"), userNotification);
+				//Send Notification to patient
+				UserNotification patientNotification = new UserNotification(appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientPhone());
+				commonUtils.sendNotification(appointmentFromDB.getPatientEmail(), Constants.APPOINTMENT_SUBJECT,
+						Constants.APPOINTMENT_REJECTED.replaceAll("DATEANDTIMESTAMP",
+								appointmentFromDB.getDateAndTimeString()), patientNotification);
 			} else {
 				value = mySQLService.updateAppointmentAccepted(appointmentId, status);
+				//Send Notification to requested doctor
 				UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
 				commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
 						Constants.APPOINTMENT_ACCEPTED.replaceAll("DATEANDTIMESTAMP",
 								appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
 								+ env.getProperty("referexpert.signin.url"), userNotification);
+				//Send Notification to patient
+				UserNotification patientNotification = new UserNotification(appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientPhone());
+				commonUtils.sendNotification(appointmentFromDB.getPatientEmail(), Constants.APPOINTMENT_SUBJECT,
+						Constants.APPOINTMENT_ACCEPTED.replaceAll("DATEANDTIMESTAMP",
+								appointmentFromDB.getDateAndTimeString()), patientNotification);
 			}
 		}
 		if (value == 0) {

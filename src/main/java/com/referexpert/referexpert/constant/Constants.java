@@ -76,6 +76,12 @@ public class Constants {
 
     public static String APPOINTMENT_COMPLETED = "Cephalad : Your requested appointment on DATEANDTIMESTAMP is completed.";
     
+    public static String PATIENT_REPONSE_BODY = "Cephalad : You have an appointment from ";
+    
+    public static String PATIENT_REPONSE_BODY_SELECTION = ". Please use below link to choose from given options.";
+    
+    public static String PATIENT_REPONSE_BODY_URL = "\n Cliick on link : ";    
+    
     public static String WELCOME_SUBJECT = "You have been referred to register in the Cephalad network"; 
     
     public static String WELCOME_MESSAGE = "Congratulations!! Please register with Cephalad using link :: "; 

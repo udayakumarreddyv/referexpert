@@ -121,7 +121,7 @@ public class MySQLRepository {
                         userRegistration.getState(), userRegistration.getZip(), userRegistration.getPhone(),
                         userRegistration.getFax(), Constants.PENDING, userRegistration.getLattitude(),
                         userRegistration.getLongitude(), new Timestamp(System.currentTimeMillis()),
-                        new Timestamp(System.currentTimeMillis()), userRegistration.getService(), userRegistration.getInsurance() });
+                        new Timestamp(System.currentTimeMillis()), userRegistration.getService(), userRegistration.getInsurance(), userRegistration.getOfficeName() });
         return value;
     }
 
@@ -182,7 +182,7 @@ public class MySQLRepository {
                         userRegistration.getState(), userRegistration.getZip(), userRegistration.getPhone(),
                         userRegistration.getFax(), userRegistration.getLattitude(), userRegistration.getLongitude(),
                         new Timestamp(System.currentTimeMillis()), userRegistration.getService(), userRegistration.getInsurance(),
-                        userRegistration.getEmail() });
+                        userRegistration.getOfficeName(), userRegistration.getEmail() });
         return value;
     }
 
@@ -311,6 +311,7 @@ public class MySQLRepository {
         userRegistration.setLongitude(rs.getDouble(++i));
         userRegistration.setService(getValue(rs.getString(++i)));
         userRegistration.setInsurance(getValue(rs.getString(++i)));
+        userRegistration.setOfficeName(getValue(rs.getString(++i)));
         return userRegistration;
     }
     
@@ -321,11 +322,13 @@ public class MySQLRepository {
         	value = mysqlJdbcTemplate.update(QueryConstants.INSERT_APPOINTMENT,
                 new Object[] { appointment.getAppointmentId(), referFrom, referTo, appointment.getDateAndTimeString(),
                         appointment.getSubject(), appointment.getReason(), Constants.PENDING, Constants.INACTIVE, Constants.INACTIVE,
+                        appointment.getPatientName(), appointment.getPatientEmail(), appointment.getPatientPhone(),
                         new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()) });
         } else {
         	value = mysqlJdbcTemplate.update(QueryConstants.INSERT_APPOINTMENT,
                     new Object[] { appointment.getAppointmentId(), referFrom, referTo, appointment.getDateAndTimeString(),
                             appointment.getSubject(), appointment.getReason(), Constants.PENDING, null, Constants.ACTIVE, 
+                            appointment.getPatientName(), appointment.getPatientEmail(), appointment.getPatientPhone(),
                             new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()) });
         }
         return value;
@@ -372,6 +375,11 @@ public class MySQLRepository {
             appointment.setIsAvailabilityCheck(getValue(rs.getString(++i)));
             appointment.setSubject(getValue(rs.getString(++i)));
             appointment.setReason(getValue(rs.getString(++i)));
+            appointment.setFromDoctorOffice(getValue(rs.getString(++i)));
+            appointment.setToDoctorOffice(getValue(rs.getString(++i)));
+            appointment.setPatientName(getValue(rs.getString(++i)));
+            appointment.setPatientEmail(getValue(rs.getString(++i)));
+            appointment.setPatientPhone(getValue(rs.getString(++i)));
             return appointment;
         });
         if (appointments != null && appointments.size() > 0) {

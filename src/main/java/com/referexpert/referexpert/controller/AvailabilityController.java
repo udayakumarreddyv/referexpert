@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.referexpert.referexpert.beans.Appointment;
+import com.referexpert.referexpert.beans.ConfirmationToken;
 import com.referexpert.referexpert.beans.GenericResponse;
 import com.referexpert.referexpert.beans.PendingTask;
 import com.referexpert.referexpert.beans.UserNotification;
+import com.referexpert.referexpert.beans.UserRegistration;
 import com.referexpert.referexpert.constant.Constants;
 import com.referexpert.referexpert.service.MySQLService;
 import com.referexpert.referexpert.util.CommonUtils;
@@ -103,14 +105,39 @@ public class AvailabilityController {
 			String criteria = " appointment_id = '" + appointmentId + "'";
 			Appointment appointmentFromDB = mySQLService.selectAppointmentById(criteria);
 			
-			UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
+			UserNotification userNotification = new UserNotification(appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientPhone());
+			UserRegistration userRegistrationTo = getUserDetails(appointmentFromDB.getAppointmentTo());
+			ConfirmationToken confirmationToken = new ConfirmationToken(userRegistrationTo);
+            mySQLService.insertConfirmationToken(confirmationToken);
+			/*UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
 			commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.AVAILABILITY_NOTIFICATION,
 					Constants.AVAILABILITY_RESPONDED + Constants.APPOINTMENT_LOGIN_BODY
-							+ env.getProperty("referexpert.signin.url"), userNotification);
+							+ env.getProperty("referexpert.signin.url"), userNotification);*/
+			commonUtils.sendNotification(appointmentFromDB.getPatientEmail(), Constants.AVAILABILITY_NOTIFICATION,
+					Constants.PATIENT_REPONSE_BODY + userRegistrationTo.getOfficeName() + Constants.PATIENT_REPONSE_BODY_SELECTION +
+					Constants.PATIENT_REPONSE_BODY_URL + env.getProperty("referexpert.patientconfirm.url") + "?appointmentid=" +
+							appointmentFromDB.getAppointmentId() + "&token=" + confirmationToken.getConfirmationToken(), userNotification);
+            
 	        entity = new ResponseEntity<>(new GenericResponse("Appointment Response Updated Successful"), HttpStatus.OK);
 		}
        
         return entity;
+    }
+    
+    private UserRegistration getUserDetails(String email) {
+        logger.info("RegistrationController :: In getUserDetails : " + email);
+        String criteria = " email = '" + email + "'";
+        UserRegistration userRegistration =  mySQLService.selectUser(criteria);
+        userRegistration.setPassword(null);
+        return userRegistration;
+    }
+    
+    @GetMapping(value = "/appointment/{appointmentid}")
+    public ResponseEntity<Appointment> getAppointmentById(@PathVariable("appointmentid") String appointmentId) {
+        logger.info("ReferExpertController :: In getAppointmentById : " + appointmentId);
+        String criteria = " appointment_id = '" + appointmentId + "'";
+        Appointment appointment = mySQLService.selectAppointmentById(criteria);
+        return new ResponseEntity<Appointment>(appointment, HttpStatus.OK);
     }
     
     @GetMapping(value = "/myavailabilityrequests/{useremail}")

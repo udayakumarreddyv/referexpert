@@ -32,6 +32,18 @@ public class Appointment {
 	private String isServed;
 
 	private String isAvailabilityCheck;
+	
+	private String patientName;
+	
+	private String patientEmail;
+	
+	private String patientPhone;
+	
+	private String fromDoctorOffice;
+	
+	private String toDoctorOffice;
+	
+	private String token;
 
 	public String getAppointmentId() {
 		return appointmentId;
@@ -137,13 +149,64 @@ public class Appointment {
 		this.isAvailabilityCheck = isAvailabilityCheck;
 	}
 
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getPatientEmail() {
+		return patientEmail;
+	}
+
+	public void setPatientEmail(String patientEmail) {
+		this.patientEmail = patientEmail;
+	}
+
+	public String getPatientPhone() {
+		return patientPhone;
+	}
+
+	public void setPatientPhone(String patientPhone) {
+		this.patientPhone = patientPhone;
+	}
+
+	public String getFromDoctorOffice() {
+		return fromDoctorOffice;
+	}
+
+	public void setFromDoctorOffice(String fromDoctorOffice) {
+		this.fromDoctorOffice = fromDoctorOffice;
+	}
+
+	public String getToDoctorOffice() {
+		return toDoctorOffice;
+	}
+
+	public void setToDoctorOffice(String toDoctorOffice) {
+		this.toDoctorOffice = toDoctorOffice;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [appointmentId=" + appointmentId + ", appointmentFrom=" + appointmentFrom
 				+ ", fromFirstName=" + fromFirstName + ", fromLastName=" + fromLastName + ", appointmentTo="
 				+ appointmentTo + ", toFirstName=" + toFirstName + ", toLastName=" + toLastName + ", dateAndTimeString="
 				+ dateAndTimeString + ", subject=" + subject + ", reason=" + reason + ", isAccepted=" + isAccepted
-				+ ", isServed=" + isServed + ", isAvailabilityCheck=" + isAvailabilityCheck + "]";
+				+ ", isServed=" + isServed + ", isAvailabilityCheck=" + isAvailabilityCheck + ", patientName="
+				+ patientName + ", patientEmail=" + patientEmail + ", patientPhone=" + patientPhone
+				+ ", fromDoctorOffice=" + fromDoctorOffice + ", toDoctorOffice=" + toDoctorOffice + ", token=" + token
+				+ "]";
 	}
 
 }

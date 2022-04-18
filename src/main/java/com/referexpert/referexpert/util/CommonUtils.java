@@ -48,6 +48,8 @@ public class CommonUtils {
 			// SMS notification goes here
 			String notificationMobile = userNotification.getNotificationMobile();
 			sendSMS(body, notificationMobile); 
+		} else {
+			sendEmail(toEmail, subject, body);
 		}
 	}
 

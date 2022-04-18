@@ -11,6 +11,17 @@ public class UserNotification {
 	private String notificationEmail;
 
 	private String notificationMobile;
+	
+	public UserNotification() {
+		
+	}
+
+	public UserNotification(String userEmail, String notificationEmail, String notificationMobile) {
+		super();
+		this.userEmail = userEmail;
+		this.notificationEmail = notificationEmail;
+		this.notificationMobile = notificationMobile;
+	}
 
 	public String getUserEmail() {
 		return userEmail;

@@ -19,18 +19,18 @@ public class QueryConstants {
     public static String SELECT_USER_SPECIALITY = "select user_type from user_type where user_type <> 'ADMIN'";
 
     public static String INSERT_USER_PROFILE = "insert into user_profile (user_id, first_name, last_name, email, password, user_type_id, "
-            + "user_speciality_id, address, city, state, zip, phone, fax, is_active, lattitude, longitude, created_timestamp, updated_timestamp, service, insurance) "
-            + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            + "user_speciality_id, address, city, state, zip, phone, fax, is_active, lattitude, longitude, created_timestamp, updated_timestamp, service, insurance, office_name) "
+            + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     public static String UPDATE_USER_ACTIVATION = "update user_profile set is_active = ?, updated_timestamp = ? where email = ?";
 
     public static String UPDATE_USER_PASSWORD = "update user_profile set password = ?, updated_timestamp = ? where email = ?";
 
     public static String UPDATE_USER_PROFILE = "update user_profile set first_name = ?, last_name = ?, user_type_id  = ?, user_speciality_id  = ?, "
-            + " address  = ?, city = ?, state = ?, zip = ?, phone  = ?, fax  = ?, lattitude =?, longitude = ?, updated_timestamp = ?, service = ?, insurance = ? where email = ?";
+            + " address  = ?, city = ?, state = ?, zip = ?, phone  = ?, fax  = ?, lattitude =?, longitude = ?, updated_timestamp = ?, service = ?, insurance = ?, office_name = ? where email = ?";
 
     public static String SELECT_USER_PROFILE = "select user_id, first_name, last_name, email, password, user_type_id, "
-            + " user_speciality_id, address, city, state, zip, phone, fax, is_active, lattitude, longitude, created_timestamp, updated_timestamp, service, insurance "
+            + " user_speciality_id, address, city, state, zip, phone, fax, is_active, lattitude, longitude, created_timestamp, updated_timestamp, service, insurance, office_name "
             + " from user_profile where ";
 
     public static String INSERT_CONFIRMATION_TOKEN = "insert into confirmation_token (token_id, confirmation_token, created_timestamp, user_id) "
@@ -56,15 +56,15 @@ public class QueryConstants {
     public static String UPDATE_USER_REFERRAL = "update user_referral set is_registered = ?, updated_timestamp = ? where doc_email = ?";
 
     public static String SELECT_ACTIVE_USER = "select up.user_id, up.first_name, up.last_name, up.email, ut.user_type, us.user_speciality, up.address, "
-            + "up.city, up.state, up.zip, up.phone, up.fax, up.is_active, up.password, up.lattitude, up.longitude, up.service, up.insurance from user_profile up, user_type ut, user_speciality us "
+            + "up.city, up.state, up.zip, up.phone, up.fax, up.is_active, up.password, up.lattitude, up.longitude, up.service, up.insurance, up.office_name from user_profile up, user_type ut, user_speciality us "
             + " where up.user_type_id = ut.user_type_id and up.user_speciality_id = us.user_speciality_id and up.is_active = 'Y' and ";
     
     public static String SELECT_ACTIVE_USERS = "select up.user_id, up.first_name, up.last_name, up.email, ut.user_type, us.user_speciality, up.address, "
-            + "up.city, up.state, up.zip, up.phone, up.fax, up.is_active, up.password, up.lattitude, up.longitude, up.service, up.insurance from user_profile up, user_type ut, user_speciality us "
+            + "up.city, up.state, up.zip, up.phone, up.fax, up.is_active, up.password, up.lattitude, up.longitude, up.service, up.insurance, up.office_name from user_profile up, user_type ut, user_speciality us "
             + " where up.user_type_id = ut.user_type_id and up.user_speciality_id = us.user_speciality_id and user_type <> 'ADMIN' and ";
 
     public static String INSERT_APPOINTMENT = "insert into appointment (appointment_id, appointment_from, appointment_to, date_time, subject, reason, "
-            + "is_accepted, is_served, is_avail, created_timestamp, updated_timestamp) values (?,?,?,?,?,?,?,?,?,?,?)";
+            + "is_accepted, is_served, is_avail, patient_name, patient_email, patient_phone, created_timestamp, updated_timestamp) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     public static String UPDATE_APPOINTMENT_STATUS = "update appointment set is_accepted = ?, updated_timestamp = ? where appointment_id = ?";
     
@@ -73,7 +73,8 @@ public class QueryConstants {
     public static String UPDATE_SERVED_STATUS = "update appointment set is_served = ?, updated_timestamp = ? where appointment_id = ?";
 
     public static String SELECT_APPOINTMENT = "select re.appointment_id, f.email, f.first_name, f.last_name, t.email, t.first_name, t.last_name, "
-            + "re.date_time, re.is_accepted, re.is_served, re.is_avail, re.subject, re.reason from appointment re, user_profile f, user_profile t "
+            + "re.date_time, re.is_accepted, re.is_served, re.is_avail, re.subject, re.reason, f.office_name, t.office_name, re.patient_name, re.patient_email, re.patient_phone"
+            + " from appointment re, user_profile f, user_profile t "
             + "where re.appointment_from = f.user_id and re.appointment_to = t.user_id and ";
     
     public static String ORDERBY_APPOINT_TIMESTAMP = " order by re.updated_timestamp desc";

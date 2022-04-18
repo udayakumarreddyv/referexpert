@@ -44,6 +44,8 @@ public class UserRegistration {
     private String service;
     
     private String insurance;
+    
+    private String officeName;
 
     public String getUserId() {
         return userId;
@@ -197,12 +199,22 @@ public class UserRegistration {
 		this.insurance = insurance;
 	}
 
+	public String getOfficeName() {
+		return officeName;
+	}
+
+	public void setOfficeName(String officeName) {
+		this.officeName = officeName;
+	}
+
 	@Override
-    public String toString() {
-        return "UserRegistration [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
-                + email + ", userType=" + userType + ", userSpeciality=" + userSpeciality
-                + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip + ", phone=" + phone
-                + ", fax=" + fax + ", lattitude=" + lattitude + ", longitude=" + longitude + ", distance=" + distance
-                + ", isActive=" + isActive + ", service=" + service + ", insurance=" + insurance + "]";
-    }
+	public String toString() {
+		return "UserRegistration [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
+				+ email + ", password=" + password + ", userType=" + userType + ", userSpeciality=" + userSpeciality
+				+ ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip + ", phone=" + phone
+				+ ", fax=" + fax + ", lattitude=" + lattitude + ", longitude=" + longitude + ", distance=" + distance
+				+ ", isActive=" + isActive + ", service=" + service + ", insurance=" + insurance + ", officeName="
+				+ officeName + "]";
+	}
+
 }
