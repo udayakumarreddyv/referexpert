@@ -54,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/authenticate", "/register", "/referuser", "/health",
                         "/usertype*", "/confirmaccount", "/usertype/**",
                         "/registeruser", "/validateuser", "/resetpassword",
-                        "/resetnotification","/refreshtoken", "/logout", "/requestappointment")
+                        "/resetnotification","/refreshtoken", "/logout", "/requestappointment", "/appointment/**")
                 .permitAll().anyRequest().authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
