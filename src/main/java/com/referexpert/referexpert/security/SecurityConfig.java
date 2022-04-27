@@ -55,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/usertype*", "/confirmaccount", "/usertype/**",
                         "/registeruser", "/validateuser", "/resetpassword",
                         "/resetnotification","/refreshtoken", "/logout", "/requestappointment", 
-                        "/appointment/**", "/rejectavailability")
+                        "/appointment/**", "/rejectavailability", "/finalizeavailability")
                 .permitAll().anyRequest().authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
