@@ -54,7 +54,7 @@ public class GeoUtils {
             dist = Math.acos(dist);
             dist = Math.toDegrees(dist);
             dist = dist * 60 * 1.1515;
-            return dist;
+            return Math.round(dist);
         }
     }
     

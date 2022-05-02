@@ -245,11 +245,22 @@ public class UserController {
     @GetMapping(value = "/users/distance/{address}/{distance}")
     public ResponseEntity<List<UserRegistration>> selectUsersByAddress(@PathVariable("address") String address,
             @PathVariable("distance") int distance, @RequestParam(required = false) String type,
+            @RequestParam(required = false) String firstName, @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String speciality, @RequestParam(required = false) String services) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Coordinates coordinates = GeoUtils.getCoordinates(address, geoApiContext);
         StringBuffer criteria = new StringBuffer(" email != '" + userDetails.getUsername() + "'");
         boolean isCriteriaPresent = false;
+        if (!StringUtils.isEmpty(firstName)) {
+			logger.info("UserController :: In selectUsersByAddress firstname: " + firstName);
+			criteria.append(" and first_name like '" + firstName + "%'");
+			isCriteriaPresent = true;
+		}
+		if (!StringUtils.isEmpty(lastName)) {
+			logger.info("UserController :: In selectUsersByAddress lastname: " + lastName);
+			criteria.append(" and last_name like '" + lastName + "%'");
+			isCriteriaPresent = true;
+		}
         if (!StringUtils.isEmpty(type)) {
             logger.info("UserController :: In selectUsersByAddress type: " + type);
             criteria.append(" and user_type like '" + type + "%'");
