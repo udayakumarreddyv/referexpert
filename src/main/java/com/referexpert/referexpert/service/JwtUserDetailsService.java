@@ -24,12 +24,10 @@ public class JwtUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	private PasswordEncoder bcryptEncoder;
-
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-	    logger.info("JwtUserDetailsService :: In loadUserByUsername : " + username);
-	    String criteria = " email = '" + username +"'";
-   	    UserRegistration userRegistration = mySQLService.selectUser(criteria);
+	    logger.info("JwtUserDetailsService :: In loadUserByUsername : {}", username);
+	    UserRegistration userRegistration = mySQLService.findUserByEmail(username);
 		if (userRegistration == null) {
 			throw new UsernameNotFoundException("User not found with username: " + username);
 		}
