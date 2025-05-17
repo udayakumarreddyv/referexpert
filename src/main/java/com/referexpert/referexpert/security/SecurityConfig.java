@@ -46,19 +46,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
-    }
+    }    @Autowired
+    private RateLimitingFilter rateLimitingFilter;
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf().disable().authorizeRequests()
+        httpSecurity
+            .cors().and()
+            .csrf().disable()
+            .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/authenticate", "/register", "/referuser", "/health",
                         "/usertype*", "/confirmaccount", "/usertype/**",
                         "/registeruser", "/validateuser", "/resetpassword",
-                        "/resetnotification","/refreshtoken", "/logout", "/requestappointment", 
-                        "/appointment/**", "/rejectavailability", "/finalizeavailability")
-                .permitAll().anyRequest().authenticated().and().exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                        "/resetnotification","/refreshtoken", "/logout").permitAll()
+                .antMatchers(HttpMethod.GET, "/appointment/**").authenticated()
+                .antMatchers("/requestappointment", "/rejectavailability", "/finalizeavailability").authenticated()
+                .anyRequest().authenticated()
+            .and()
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+                .headers()
+                .frameOptions().deny()
+                .xssProtection()
+                .and()
+                .contentSecurityPolicy("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'");
+                
+        // Add rate limiting filter before JWT filter
+        httpSecurity.addFilterBefore(rateLimitingFilter, JwtRequestFilter.class);
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

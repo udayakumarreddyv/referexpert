@@ -71,18 +71,28 @@ public class JwtTokenUtil implements Serializable {
 		Map<String, Object> claims = new HashMap<>();
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
-	
-	public String generateTokenFromUsername(String username) {
-		return Jwts.builder().setSubject(username).setIssuedAt(new Date())
+		public String generateTokenFromUsername(String username) {
+		logger.debug("Generating token for username: {}", username);
+		return Jwts.builder()
+				.setSubject(username)
+				.setIssuedAt(new Date())
 				.setExpiration(new Date((new Date()).getTime() + jwtTokenValidity))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
+				.setId(UUID.randomUUID().toString())
+				.signWith(SignatureAlgorithm.HS512, secret)
+				.compact();
 	}
 
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
-
-		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+		logger.debug("Generating token with claims for subject: {}", subject);
+		return Jwts.builder()
+				.setClaims(claims)
+				.setSubject(subject)
+				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + jwtTokenValidity))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
+				.setId(UUID.randomUUID().toString())
+				.setHeaderParam("typ", "JWT")
+				.signWith(SignatureAlgorithm.HS512, secret)
+				.compact();
 	}
 
 	public Boolean canTokenBeRefreshed(String token) {
