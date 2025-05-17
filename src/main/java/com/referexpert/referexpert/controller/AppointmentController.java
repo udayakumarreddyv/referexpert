@@ -1,244 +1,136 @@
 package com.referexpert.referexpert.controller;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.referexpert.referexpert.beans.Appointment;
 import com.referexpert.referexpert.beans.GenericResponse;
-import com.referexpert.referexpert.beans.UserNotification;
 import com.referexpert.referexpert.constant.Constants;
-import com.referexpert.referexpert.service.MySQLService;
-import com.referexpert.referexpert.util.CommonUtils;
+import com.referexpert.referexpert.service.AppointmentService;
 
 @RestController
-@CrossOrigin()
-@EnableAsync
+@RequestMapping("/api/appointments")
 public class AppointmentController {
     
-    private final static Logger logger = LoggerFactory.getLogger(AppointmentController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentController.class);
     
     @Autowired
-    private MySQLService mySQLService;
+    private AppointmentService appointmentService;
     
-    @Autowired
-    private CommonUtils commonUtils;
-    
-    @Autowired
-    Environment env;
-    
-    @PostMapping(value = "/requestappointment")
-    public ResponseEntity<GenericResponse> requestAppointment(@RequestBody String appointmentString) {
-        logger.info("ReferExpertController :: In requestAppointment : " + appointmentString);
-        ObjectMapper mapper = new ObjectMapper();
-        ResponseEntity<GenericResponse> entity = null;
-        Appointment appointment = null;
-        try {
-            appointment = mapper.readValue(appointmentString, Appointment.class);
-        }
-        catch (Exception e) {
-            logger.error("Unable to parse the input :: " + appointmentString);
-            logger.error("Exception as follows :: " + e);
-            entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
-        }
-        logger.info("JSON to Object Conversion :: " + appointment != null ? appointment.toString() : null);
-        
-        String criteria = " email = ?";
-        String email = appointment.getAppointmentTo();
-		String token = appointment.getToken();
-		if (mySQLService.selectConfirmationToken(token) && mySQLService.selectUserProfile(email, criteria)) {
-			appointment.setAppointmentId(UUID.randomUUID().toString());
-	        int value = mySQLService.insertAppointment(appointment, Constants.APPOINTMENT);
-	        if (value == 999999) {
-	            entity = new ResponseEntity<>(new GenericResponse("Unable to insert appointment due to unique constraint"), HttpStatus.BAD_REQUEST);
-	        } else if (value == 888888) {
-	            entity = new ResponseEntity<>(new GenericResponse("Reference Data Incorrect"), HttpStatus.BAD_REQUEST);
-	        } else if (value == 0) {
-	            entity = new ResponseEntity<>(new GenericResponse("Issue in request appointment"), HttpStatus.BAD_REQUEST);
-	        } else {
-	        	//Send notification to specialist
-	        	UserNotification userNotification = commonUtils.getUserNotifications(email);
-	        	commonUtils.sendNotification(email, Constants.APPOINTMENT_SUBJECT, 
-	        			Constants.APPOINTMENT_REQUESTED.replaceAll("DATEANDTIMESTAMP",
-	        					appointment.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
-								+ env.getProperty("referexpert.signin.url"), userNotification);
-	        	//Send Notification to physician
-	        	UserNotification userNotification1 = commonUtils.getUserNotifications(appointment.getAppointmentFrom());
-	        	commonUtils.sendNotification(appointment.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT, 
-	        			(Constants.PATIENT_APPOINTMENT_REQUESTED.replaceAll("DATEANDTIMESTAMP",
-	        					appointment.getDateAndTimeString()).replaceAll("PATIENTNAME", appointment.getPatientName())) + Constants.APPOINTMENT_LOGIN_BODY
-								+ env.getProperty("referexpert.signin.url"), userNotification1);
-	        	
-	        	mySQLService.deleteConfirmationToken(token);
-	            entity = new ResponseEntity<>(new GenericResponse("Appointment Request Successful"), HttpStatus.OK);
-	        }
-        } else {
-            entity = new ResponseEntity<>(new GenericResponse("The link is invalid or broken!"), HttpStatus.NOT_FOUND);
-        }
-        
-        return entity;
-    }
-
-    @PostMapping(value = "/rejectappointment")
-    public ResponseEntity<GenericResponse> rejectAppointment(@RequestBody String appointmentString) {
-        logger.info("ReferExpertController :: In rejectAppointment : " + appointmentString);
-        ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.INACTIVE, Constants.APPOINTMENT);
-        return entity;
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Appointment>> getAllAppointments() {
+        logger.info("Getting all appointments");
+        return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
     
-    @PostMapping(value = "/acceptappointment")
-    public ResponseEntity<GenericResponse> acceptAppointment(@RequestBody String appointmentString) {
-        logger.info("ReferExpertController :: In acceptAppointment : " + appointmentString);
-        ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.ACTIVE, Constants.APPOINTMENT);
-        return entity;
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<?> getAppointmentById(@PathVariable("id") String appointmentId) {
+        logger.info("Getting appointment by ID: {}", appointmentId);
+        return appointmentService.getAppointmentById(appointmentId)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
     
-    @PostMapping(value = "/finalizeappointment")
-    public ResponseEntity<GenericResponse> finalizeAppointment(@RequestBody String appointmentString) {
-        logger.info("ReferExpertController :: In finalizeAppointment : " + appointmentString);
-        ResponseEntity<GenericResponse> entity = updateStatus(appointmentString, Constants.ACTIVE, Constants.SERVICE);
-        return entity;
+    @GetMapping("/from/{email}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<List<Appointment>> getAppointmentsFrom(@PathVariable String email) {
+        logger.info("Getting appointments from email: {}", email);
+        return ResponseEntity.ok(appointmentService.getAppointmentsByFrom(email));
     }
     
-    private ResponseEntity<GenericResponse> updateStatus(String appointmentString, String status, String type) {
-		logger.info("ReferExpertController :: In updateStatus  : " + appointmentString + " : " + status + " : " + type);
-		ObjectMapper mapper = new ObjectMapper();
-		ResponseEntity<GenericResponse> entity = null;
-		Appointment appointment = null;
-		try {
-			appointment = mapper.readValue(appointmentString, Appointment.class);
-		} catch (Exception e) {
-			logger.error("Unable to parse the input :: " + appointmentString);
-			logger.error("Exception as follows :: " + e);
-			entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
-		}
-		logger.info("JSON to Object Conversion :: " + appointment != null ? appointment.toString() : null);
-		String appointmentId = appointment.getAppointmentId();
-		String criteria = " appointment_id = '" + appointmentId + "'";
-		Appointment appointmentFromDB = mySQLService.selectAppointmentById(criteria);
-		int value = 0;
-		if (Constants.SERVICE.equals(type)) {
-			value = mySQLService.updateAppointmentServed(appointmentId, status);
-			//Send Notification to requested doctor
-			UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
-			commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
-					Constants.APPOINTMENT_COMPLETED.replaceAll("DATEANDTIMESTAMP",
-							appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
-							+ env.getProperty("referexpert.signin.url"), userNotification);
-			//Send Notification to patient
-			UserNotification patientNotification = new UserNotification(appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientPhone());
-			commonUtils.sendNotification(appointmentFromDB.getPatientEmail(), Constants.APPOINTMENT_SUBJECT,
-					Constants.APPOINTMENT_COMPLETED.replaceAll("DATEANDTIMESTAMP",
-							appointmentFromDB.getDateAndTimeString()), patientNotification);
-		} else {
-			if (Constants.INACTIVE.equals(status)) {
-				mySQLService.updateAppointmentServed(appointmentId, Constants.INACTIVE);
-				value = mySQLService.updateAppointmentAccepted(appointmentId, status);
-				//Send Notification to requested doctor
-				UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
-				commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
-						Constants.APPOINTMENT_REJECTED.replaceAll("DATEANDTIMESTAMP",
-								appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
-								+ env.getProperty("referexpert.signin.url"), userNotification);
-				//Send Notification to patient
-				UserNotification patientNotification = new UserNotification(appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientPhone());
-				commonUtils.sendNotification(appointmentFromDB.getPatientEmail(), Constants.APPOINTMENT_SUBJECT,
-						Constants.APPOINTMENT_REJECTED.replaceAll("DATEANDTIMESTAMP",
-								appointmentFromDB.getDateAndTimeString()), patientNotification);
-			} else {
-				value = mySQLService.updateAppointmentAccepted(appointmentId, status);
-				//Send Notification to requested doctor
-				UserNotification userNotification = commonUtils.getUserNotifications(appointmentFromDB.getAppointmentFrom());
-				commonUtils.sendNotification(appointmentFromDB.getAppointmentFrom(), Constants.APPOINTMENT_SUBJECT,
-						Constants.APPOINTMENT_ACCEPTED.replaceAll("DATEANDTIMESTAMP",
-								appointmentFromDB.getDateAndTimeString()) + Constants.APPOINTMENT_LOGIN_BODY
-								+ env.getProperty("referexpert.signin.url"), userNotification);
-				//Send Notification to patient
-				UserNotification patientNotification = new UserNotification(appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientEmail(), appointmentFromDB.getPatientPhone());
-				commonUtils.sendNotification(appointmentFromDB.getPatientEmail(), Constants.APPOINTMENT_SUBJECT,
-						Constants.APPOINTMENT_ACCEPTED.replaceAll("DATEANDTIMESTAMP",
-								appointmentFromDB.getDateAndTimeString()), patientNotification);
-			}
-		}
-		if (value == 0) {
-			entity = new ResponseEntity<>(new GenericResponse("Issue while updating appointment table"),
-					HttpStatus.BAD_REQUEST);
-		} else {
-			entity = new ResponseEntity<>(new GenericResponse("Updated Successfully"), HttpStatus.OK);
-		}
-		return entity;
-	}
-    
-    @GetMapping(value = "/myreferrals/{useremail}")
-    public ResponseEntity<List<Appointment>> getMyReferrals(@PathVariable("useremail") String userEmail) {
-        logger.info("ReferExpertController :: In getMyReferrals  : " + userEmail);
-        String criteria = " f.email = '" + userEmail + "' and is_avail = 'N'";
-        List<Appointment> appointments =  mySQLService.selectAppointments(criteria);
-        return new ResponseEntity<List<Appointment>>(appointments, HttpStatus.OK);
+    @GetMapping("/to/{email}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<List<Appointment>> getAppointmentsTo(@PathVariable String email) {
+        logger.info("Getting appointments to email: {}", email);
+        return ResponseEntity.ok(appointmentService.getAppointmentsByTo(email));
     }
     
-    @GetMapping(value = "/myappointments/{useremail}")
-    public ResponseEntity<List<Appointment>> getMyAppointments(@PathVariable("useremail") String userEmail) {
-        logger.info("ReferExpertController :: In getMyAppointments  : " + userEmail);
-        String criteria = " t.email = '" + userEmail + "' and is_avail = 'N'";
-        List<Appointment> appointments =  mySQLService.selectAppointments(criteria);
-        return new ResponseEntity<List<Appointment>>(appointments, HttpStatus.OK);
+    @GetMapping("/pending")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Appointment>> getPendingAppointments() {
+        logger.info("Getting pending appointments");
+        return ResponseEntity.ok(appointmentService.getPendingAppointments());
     }
     
-    @GetMapping(value = "/notification")
-    public ResponseEntity<UserNotification> selectUserNotifications() {
-        logger.info("RegistrationController :: In selectUserNotifications");
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        UserNotification userNotification = commonUtils.getUserNotifications(userDetails.getUsername());
-        if(userNotification != null) {
-        	userNotification.setUserEmail(null);
-        	return new ResponseEntity<UserNotification>(userNotification, HttpStatus.OK);
-        } else {
-        	return new ResponseEntity<UserNotification>(new UserNotification(), HttpStatus.OK);
-        }
+    @PostMapping
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Appointment> createAppointment(@RequestBody Appointment appointment) {
+        logger.info("Creating new appointment");
+        return ResponseEntity.ok(appointmentService.createAppointment(appointment));
     }
     
-    @PostMapping(value = "/notification")
-    public ResponseEntity<GenericResponse> upsertNotifications(@RequestBody String notification) {
-        logger.info("RegistrationController :: In upsertNotifications");
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        ObjectMapper mapper = new ObjectMapper();
-        ResponseEntity<GenericResponse> entity = null;
-        UserNotification userNotification = null;
-        try {
-        	userNotification = mapper.readValue(notification, UserNotification.class);
-            logger.info("RegistrationController :: In upsertNotifications : " + userDetails.getUsername());
-        }
-        catch (Exception e) {
-            logger.error("Unable to parse the input :: " + notification);
-            logger.error("Exception as follows :: " + e);
-            entity = new ResponseEntity<>(new GenericResponse("Unable to Parse Input"), HttpStatus.BAD_REQUEST);
-        }
-        int value = mySQLService.upsertUserNotification(userNotification, userDetails.getUsername());
-        if (value == 999999 || value == 888888 || value == 0) {
-            entity = new ResponseEntity<GenericResponse>(new GenericResponse("Issue in userting user_notification"), HttpStatus.BAD_REQUEST);
-        } else { 
-            entity = new ResponseEntity<GenericResponse>(new GenericResponse("Notifications inserted/updated Successfully"), HttpStatus.OK);
-        }
-        return entity;
+    @PutMapping("/{id}/status/{status}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<GenericResponse> updateAppointmentStatus(
+            @PathVariable("id") String appointmentId,
+            @PathVariable("status") String status) {
+        logger.info("Updating appointment status: {} to {}", appointmentId, status);
+        boolean updated = appointmentService.updateAppointmentStatus(appointmentId, status);
+        return getGenericResponse(updated, "Appointment status updated successfully", "Failed to update appointment status");
     }
     
+    @PutMapping("/{id}/response/{response}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<GenericResponse> updateAppointmentResponse(
+            @PathVariable("id") String appointmentId,
+            @PathVariable("response") String response) {
+        logger.info("Updating appointment response: {} to {}", appointmentId, response);
+        boolean updated = appointmentService.updateAppointmentResponse(appointmentId, response);
+        return getGenericResponse(updated, "Appointment response updated successfully", "Failed to update appointment response");
+    }
+    
+    @PutMapping("/{id}/served/{status}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<GenericResponse> updateServedStatus(
+            @PathVariable("id") String appointmentId,
+            @PathVariable("status") String status) {
+        logger.info("Updating appointment served status: {} to {}", appointmentId, status);
+        boolean updated = appointmentService.updateServedStatus(appointmentId, status);
+        return getGenericResponse(updated, "Appointment served status updated successfully", "Failed to update appointment served status");
+    }
+    
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<GenericResponse> deleteAppointment(@PathVariable("id") String appointmentId) {
+        logger.info("Deleting appointment: {}", appointmentId);
+        boolean deleted = appointmentService.deleteAppointment(appointmentId);
+        return getGenericResponse(deleted, "Appointment deleted successfully", "Failed to delete appointment");
+    }
+    
+    @GetMapping("/pending-tasks/{type}/{isAccepted}/{isReferral}/{email}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<GenericResponse> hasPendingTasks(
+            @PathVariable("type") String type,
+            @PathVariable("isAccepted") String isAccepted,
+            @PathVariable("isReferral") String isReferral,
+            @PathVariable("email") String email) {
+        logger.info("Checking pending tasks for email: {}", email);
+        boolean hasPending = appointmentService.hasPendingTasks(type, isAccepted, isReferral, email);
+        return ResponseEntity.ok(new GenericResponse(
+            hasPending ? Constants.SUCCESS : Constants.FAILURE,
+            hasPending ? "Pending tasks found" : "No pending tasks found"
+        ));
+    }
+    
+    private ResponseEntity<GenericResponse> getGenericResponse(boolean success, String successMessage, String failureMessage) {
+        return ResponseEntity.ok(new GenericResponse(
+            success ? Constants.SUCCESS : Constants.FAILURE,
+            success ? successMessage : failureMessage
+        ));
+    }
 }
