@@ -1,5 +1,13 @@
 package com.referexpert.referexpert.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +39,7 @@ import com.referexpert.referexpert.util.GeoUtils;
 
 @RestController
 @CrossOrigin()
+@Tag(name = "User Management", description = "APIs for managing user accounts and profiles")
 public class UserController {
     
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -41,13 +50,31 @@ public class UserController {
     @Autowired
     private GeoApiContext geoApiContext;
 
+    @Operation(summary = "Deactivate user account", 
+              description = "Deactivates a user account based on the provided email address")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Account deactivated successfully",
+            content = @Content(schema = @Schema(implementation = GenericResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid email provided"),
+        @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @PostMapping(value = "/deactiveuser")
-    public ResponseEntity<GenericResponse> deactivateUserAccount(@RequestBody String emailString) {
+    public ResponseEntity<GenericResponse> deactivateUserAccount(
+        @Parameter(description = "Email address of the user to deactivate") 
+        @RequestBody String emailString) {
         logger.info("UserController :: In deactivateUserAccount : " + emailString);
         ResponseEntity<GenericResponse> entity = updateUserStatus(emailString, Constants.INACTIVE);
         return entity;
     }
 
+    @Operation(summary = "Activate user account", 
+              description = "Activates a user account based on the provided email address")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Account activated successfully",
+            content = @Content(schema = @Schema(implementation = GenericResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid email provided"),
+        @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @PostMapping(value = "/activeuser")
     public ResponseEntity<GenericResponse> activateUserAccount(@RequestBody String emailString) {
         logger.info("UserController :: In activateUserAccount : " + emailString);
